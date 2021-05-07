@@ -1,6 +1,5 @@
 import sys
 import os
-import urllib.request
 from functools import partial
 
 import requests
