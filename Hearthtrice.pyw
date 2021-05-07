@@ -9,7 +9,7 @@ from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 
 
-
+fgjkfgj
 #in collect dl_2 write xml builder with sets=folders.. +move folders to CUSTOM and change path
 
 def resource_path(relative_path):
