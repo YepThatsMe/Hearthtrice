@@ -3,7 +3,7 @@ HearthTrice Manager v1.5
 HOW TO USE: hfgkjhjkfghkm
 
 1) Create a new .xml template with 'File --> Create blank (Ctrl+N)' in .../Cockatrice/data/customsets/ folder. If you already have an .xml library, open it for editing with 'File --> Open (Ctrl+O)' from the same directory.
-
+fgjfkhljgh
 2) Visit http://www.hearthcards.net/mycards/ and make sure your gallery is open by checking the box on the right. There you will find the link to your public gallery which looks like this: http://www.hearthcards.net/mycards/?cards=XXXXX . The last few digits of the link is your gallery ID.
 
 3) Enter your ID in the form on the top and hit 'Import'. All your cards will be collected from hearthcards.net and displayed on the screen.
