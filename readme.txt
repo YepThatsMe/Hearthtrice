@@ -1,6 +1,6 @@
 HearthTrice Manager v1.5
 
-HOW TO USE:
+HOW TO USE: hfgkjhjkfghkm
 
 1) Create a new .xml template with 'File --> Create blank (Ctrl+N)' in .../Cockatrice/data/customsets/ folder. If you already have an .xml library, open it for editing with 'File --> Open (Ctrl+O)' from the same directory.
 
