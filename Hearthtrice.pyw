@@ -8,8 +8,9 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 
+# Тест ветки PowerOfPelmenei
+# hui na
 
-fgjkfgj
 #in collect dl_2 write xml builder with sets=folders.. +move folders to CUSTOM and change path
 
 def resource_path(relative_path):
