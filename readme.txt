@@ -14,7 +14,7 @@ HOW TO USE: hfgkjhjkfghkm
 5*) Finally, open Cockatrice, then 'Card Database --> Add custom sets/cards', and pick your file. 
 *You can do this step once, after updating your .xml library all new cards will be added to Cockatrice Database automatically.
 
-
+jfdhjgfhjngfd
 
 Please send your suggestions, crash reports and feedback on:
 E-mail: animatorart24@gmail.com
