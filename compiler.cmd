@@ -1,0 +1,1 @@
+pyinstaller --onefile --add-data="assets/how_to_use.txt;assets" --add-data="assets/error_card.png;assets" --add-data="assets/start_card.png;assets" --add-data="assets/icon.ico;assets" Hearthtrice.pyw
