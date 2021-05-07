@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import *
 
 # Тест ветки PowerOfPelmenei
 # hui
-# govno
+# govno 8
 #in collect dl_2 write xml builder with sets=folders.. +move folders to CUSTOM and change path
 
 def resource_path(relative_path):
