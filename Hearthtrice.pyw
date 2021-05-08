@@ -1,9 +1,10 @@
-import sys
-import os
+import sys, os
+
 from functools import partial
 
 import requests
 from bs4 import BeautifulSoup
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
