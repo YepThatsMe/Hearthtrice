@@ -17,7 +17,7 @@ class Editor(QMainWindow):
 
         # Настроки окна
         self.setGeometry(0, 0, 1080, 720)
-        self.setWindowTitle("Deck's Editor")
+        self.setWindowTitle("Deck Editor")
         self.setWindowIcon(QIcon("icons/icon.jpg"))
         self.center()  # Центрирование окна
         self.statusBar().showMessage("Ready")

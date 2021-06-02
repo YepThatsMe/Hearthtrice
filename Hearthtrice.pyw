@@ -355,7 +355,7 @@ class MainWindow(QMainWindow):
 
     def dialog(self):
 
-        with open(resource_path('assets/how_to_use.txt'), 'r') as b:
+        with open(resource_path('assets\how_to_use.txt'), 'r') as b:
             text = b.read()
         a = QMessageBox.about(self, 'Help', text)
 
