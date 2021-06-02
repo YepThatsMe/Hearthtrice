@@ -1,9 +1,10 @@
-import sys
-import os
+import sys, os
+
 from functools import partial
 
 import requests
 from bs4 import BeautifulSoup
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
@@ -173,7 +174,7 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.tab1,"Tab 1")
         self.tabs.addTab(self.tab2,"Tab 2")
 
-        ## Create first tab
+        ## Create second tab
         self.tab2.layout = QVBoxLayout()
         self.pushButton1 = QPushButton("PyQt5 button")
         self.tab2.layout.addWidget(self.pushButton1)
