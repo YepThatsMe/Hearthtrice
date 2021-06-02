@@ -9,6 +9,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 
+# rofl branch
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -354,7 +355,7 @@ class MainWindow(QMainWindow):
 
     def dialog(self):
 
-        with open(resource_path('assets/how_to_use.txt'), 'r') as b:
+        with open(resource_path('assets\how_to_use.txt'), 'r') as b:
             text = b.read()
         a = QMessageBox.about(self, 'Help', text)
 
