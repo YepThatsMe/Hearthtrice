@@ -8,6 +8,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 
+# rofl branch
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
