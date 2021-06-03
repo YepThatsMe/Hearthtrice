@@ -144,8 +144,10 @@ class Editor(QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
     def hui(self):
-        win = ran.win()
-        win.show()
+        self.win = ran.win()
+        self.setCentralWidget(self.win)
+        # self.win.buttom.clicked.connect(self.win.close)
+        # self.win.show()
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
