@@ -64,7 +64,7 @@ class Editor(QMainWindow):
 
         # Список карт
         self.list_cards = QListWidget()
-        self.list_cards.currentRowChanged.connect(self.print_card)
+        # self.list_cards.currentRowChanged.connect(self.print_card)
 
         # Картинка для текущей карты
         self.image = QPixmap("icons/start_card.png")
