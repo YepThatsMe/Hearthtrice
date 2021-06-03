@@ -3,11 +3,12 @@ from PyQt5.QtWidgets import (QMainWindow, QWidget, QDesktopWidget, QApplication,
                              QVBoxLayout)
 
 from PyQt5.QtGui import QIcon, QPixmap
-
+from PyQt5.QtCore import Qt
 import sys
 import os
 
 import func
+
 
 class Editor(QMainWindow):
     def __init__(self):
@@ -16,6 +17,8 @@ class Editor(QMainWindow):
         self.iconPath = os.getcwd() + '/icons'
         print(self.iconPath)
         self.setupUI()
+
+        self.hero = 'Маг'
 
     def setupUI(self):
 
@@ -29,8 +32,8 @@ class Editor(QMainWindow):
         self.centralwidget = QWidget(self)
 
         # ToolBar
-        openFile = QAction(QIcon("icons/file.jpg"), "&Open deck...", self)  # Открытие существующей
-        openFile.setShortcut("Alt+Q")                                       # библиотеки карт
+        openFile = QAction(QIcon("icons/file.jpg"), "&Open library...", self)  # Открытие существующей
+        openFile.setShortcut("Alt+Q")  # библиотеки карт
         openFile.setStatusTip("Open card's library")
         openFile.triggered.connect(self.open)
 
@@ -39,23 +42,33 @@ class Editor(QMainWindow):
         login.setStatusTip("Login to HearthCards...")
         login.triggered.connect(func.login)
 
+        choose_deck = QAction(QIcon("icons/deck.jpg"), "&Open deck...", self)  # Открытие колоды
+        choose_deck.setShortcut("Alt+D")
+        choose_deck.setStatusTip("Open deck")
+        choose_deck.triggered.connect(self.openDeck)
+
         self.toolbar = self.addToolBar("Login")
         self.toolbar.addAction(openFile)
         self.toolbar.addAction(login)
+        self.toolbar.addAction(choose_deck)
 
         # Добавление Виджетов
 
-        self.hero_list = QComboBox()
+        self.hero_list = QComboBox()  # Выпадающий список для выбора героя
         self.hero_list.addItems(['Маг', 'Чернокнижник', 'Друид',
                                  'Палдин', 'Воин', 'Разбойник',
                                  'Жрец', 'Шаман', 'Охотник', 'Охитник на демонов'])
+        self.hero_list.currentIndexChanged.connect(self.hero_)
 
         # Создание layout и размещение виджетов
-        self.lo1 = QHBoxLayout(self.centralwidget)
-        self.lo1.addSpacing(1)
+        self.lo1 = QHBoxLayout()
+        self.lo1.addWidget(self.hero_list, 1, Qt.AlignLeft | Qt.AlignTop)
 
-        self.lo1.addWidget(self.hero_list)
+        self.lo2 = QVBoxLayout()
+        self.lo2.addStretch(0)
+        self.lo2.addLayout(self.lo1, Qt.AlignTop)
 
+        self.centralwidget.setLayout(self.lo2)
         self.setCentralWidget(self.centralwidget)
 
     def center(self):
@@ -63,6 +76,9 @@ class Editor(QMainWindow):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def hero_(self):
+        self.hero = self.hero_list.currentText()
 
     def open(self):
         self.library = QFileDialog.getOpenFileName(self, "Open file")[0]
@@ -80,11 +96,11 @@ class Editor(QMainWindow):
         except:
             QMessageBox.about(self, "Ошибка", "Не найдена папка с изображением карт")
 
-
-
-
-
-
+    def openDeck(self):
+        self.deck = QFileDialog.getOpenFileName(self, "Open file")[0]
+        print(self.deck)
+        if self.deck == '':
+            return
 
     def closeEvent(self, event):
 
