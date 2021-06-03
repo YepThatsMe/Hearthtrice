@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QDesktopWidget, QApplication, QAction,
                              QMessageBox, QFileDialog, QListWidget, QComboBox, QHBoxLayout,
-                             QVBoxLayout, QScrollArea, QLabel, QLineEdit, QCompleter, QGridLayout,
+                             QVBoxLayout, QLabel, QLineEdit, QCompleter, QGridLayout,
                              QTableWidget, QProgressBar)
 
 from PyQt5.QtGui import QIcon, QPixmap
@@ -9,6 +9,7 @@ import sys
 import os
 
 import func
+import ran
 
 
 class Editor(QMainWindow):
@@ -48,10 +49,14 @@ class Editor(QMainWindow):
         choose_deck.setStatusTip("Open deck")
         choose_deck.triggered.connect(self.openDeck)
 
+        ran_ = QAction(QIcon("icons/Jiraiya.jpg"), "&Hui...", self)
+        ran_.triggered.connect(self.hui)
+
         self.toolbar = self.addToolBar("Login")
         self.toolbar.addAction(openFile)
         self.toolbar.addAction(login)
         self.toolbar.addAction(choose_deck)
+        self.toolbar.addAction(ran_)
 
         # Добавление Виджетов
 
@@ -138,6 +143,9 @@ class Editor(QMainWindow):
         self.centralwidget.setLayout(self.gen_layout)
         self.setCentralWidget(self.centralwidget)
 
+    def hui(self):
+        win = ran.win()
+        win.show()
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
