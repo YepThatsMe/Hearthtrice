@@ -9,7 +9,7 @@ import Arena3_3
 import roll
 from functools import partial
 
-class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
+class ExampleApp(QtWidgets.QWidget, Arena3_3.Ui_MainWindow):
     def __init__(self):
         # Это здесь нужно для доступа к переменным, методам
         # и т.д. в файле design.py
@@ -21,7 +21,7 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
         self.row = self.tableWidget.rowCount()
         self.data_cnt = []
         self.path = rf'prog\\Cache\\'
-        self.path_std = r"data\\pics\\"
+        self.path_std = r"E:\\CockatricePortable\\data\\pics\\"
         self.k = roll.roll(self.esc)
         self.tableWidget.horizontalHeader().setDefaultSectionSize(55)
         self.tableWidget.horizontalHeader().setMinimumSectionSize(20)

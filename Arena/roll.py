@@ -1,6 +1,6 @@
 def read():
     import xml.etree.ElementTree as ET
-    path = r'data\customsets\customset_ht.xml'
+    path = 'E:\\CockatricePortable\\data\\customsets\\customset_ht.xml'
     hs = ET.parse(path)
     enter = hs.findall("cards/card[type = 'Minion']") + hs.findall("cards/card[type = 'Spell']") + hs.findall(
         "cards/card[type = 'Weapon']") + hs.findall("cards/card[type = 'Hero']")
@@ -20,7 +20,7 @@ def loadPic(esc):
     for i in esc.keys():
         a.append(i)
 
-    path = r"data\\pics\\downloadedPics\\HT\\"
+    path = "E:\\CockatricePortable\\data\\pics\\downloadedPics\\HT\\"
     l = os.listdir(path=path)
     if len(esc) == len(l):
         return
@@ -40,7 +40,7 @@ def loadPic(esc):
         diff = set(a).difference(set(l))
         diff = list(diff)
 
-        for j in diff:
+        for j in difE:
             if j in esc:
                 r = requests.get(esc[j])
                 im = Image.open(BytesIO(r.content))
@@ -58,7 +58,7 @@ def roll_std(Hero):
     heroes = {'Маг': 'Mage', 'Друид': "Druid", "Охотник": "Hunter", "Паладин": "Paladin",
              "Жрец": "Priest", "Разбойник": "Rogue", "Шаман": "Shaman",
               "Чернокнижник": "Warlock", "Воин": "Warrior"}
-    path = f"data\\pics\\{heroes[Hero]}"
+    path = f"E:\\CockatricePortable\\data\\pics\\{heroes[Hero]}"
     cards = os.listdir(path=path)
     roll_std_l = rnd.choice(cards, size=3, replace=False)
     return roll_std_l
@@ -82,4 +82,4 @@ def create(names, cnt, deck_name, custom):
 
     deck.append(main)
     deck = ET.ElementTree(deck)
-    deck.write(f'data\\decks\\{deck_name}.cod')
+    deck.write(f'E:\\CockatricePortable\\data\\decks\\{deck_name}.cod')
