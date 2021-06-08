@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QDesktopWidget, QApplication, QAction,
-                             QMessageBox, QFileDialog, QListWidget, QComboBox, QHBoxLayout,
+                             QMessageBox, QFileDialog, QStackedWidget, QComboBox, QHBoxLayout,
                              QVBoxLayout, QLabel, QLineEdit, QCompleter, QGridLayout,
                              QTableWidget, QProgressBar, QTableWidgetItem)
 
@@ -7,20 +7,21 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt
 import sys
 import os
+import pickle
 
 import func
 import ran
-
+import main_arena
 
 class Editor(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.iconPath = os.getcwd() + '/icons'
-        print(self.iconPath)
-        self.setupUI()
-
         self.hero = 'Маг'
+        self.win = main_arena.ExampleApp()
+
+        self.setupUI()
 
     def setupUI(self):
 
@@ -32,6 +33,7 @@ class Editor(QMainWindow):
         self.statusBar().showMessage("Ready")
 
         self.centralwidget = QWidget(self)
+        self.edit_widget = self.centralwidget
 
         # ToolBar
         openFile = QAction(QIcon("icons/file.jpg"), "&Open library...", self)  # Открытие существующей
@@ -49,14 +51,19 @@ class Editor(QMainWindow):
         choose_deck.setStatusTip("Open deck")
         choose_deck.triggered.connect(self.openDeck)
 
-        ran_ = QAction(QIcon("icons/Jiraiya.jpg"), "&Hui...", self)
-        ran_.triggered.connect(self.hui)
+        ran_ = QAction(QIcon("icons/Jiraiya.jpg"), "&Arena", self)
+        ran_.triggered.connect(self.Arena)
+
+        editor = QAction(QIcon("icons/icon.jpg"), "&Editor", self)
+        editor.setShortcut("Alt+E")
+        editor.triggered.connect(self.Editor_)
 
         self.toolbar = self.addToolBar("Login")
         self.toolbar.addAction(openFile)
         self.toolbar.addAction(login)
         self.toolbar.addAction(choose_deck)
         self.toolbar.addAction(ran_)
+        self.toolbar.addAction(editor)
 
         # Добавление Виджетов
 
@@ -70,7 +77,10 @@ class Editor(QMainWindow):
         # Список карт
         self.list_cards = QTableWidget()
         self.list_cards.setColumnCount(5)
+        self.list_cards.setSortingEnabled(True)
         self.list_cards.setHorizontalHeaderLabels(["Имя", "Тип", "Класс", "Редкость", "Стоимость"])
+
+
 
         # Картинка для текущей карты
         self.image = QPixmap("icons/start_card.png")
@@ -135,21 +145,27 @@ class Editor(QMainWindow):
         self.right.addLayout(self.grid2)
         self.right.addLayout(self.deckListlayout)
 
-
         self.gen_layout = QVBoxLayout()
 
         self.gen_layout.addLayout(self.lo1)
         self.gen_layout.addLayout(self.right)
 
 
-        self.centralwidget.setLayout(self.gen_layout)
-        self.setCentralWidget(self.centralwidget)
+        self.stack = QStackedWidget()
+        self.stack.addWidget(self.centralwidget)
+        self.stack.addWidget(self.win)
 
-    def hui(self):
-        self.win = ran.win()
-        self.setCentralWidget(self.win)
-        # self.win.buttom.clicked.connect(self.win.close)
-        # self.win.show()
+        self.centralwidget.setLayout(self.gen_layout)
+        self.setCentralWidget(self.stack)
+
+    def Arena(self):
+
+        self.stack.setCurrentWidget(self.win)
+
+    def Editor_(self):
+
+        self.stack.setCurrentWidget(self.centralwidget)
+
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
@@ -213,6 +229,8 @@ class Editor(QMainWindow):
             self.completer = QCompleter(self.cards)
             self.name.setCompleter(self.completer)
 
+
+
         elif self.set.currentText() == 'TK':
 
             self.esc_TK = func.read(self.library[:self.library.rfind('/')] + '/TK.xml')
@@ -252,13 +270,14 @@ class Editor(QMainWindow):
         else:
             QMessageBox.about(self, "Ошибка", "Не удалось подгрузить карты")
 
+
+        self.list_cards.setHorizontalHeaderLabels(["Имя", "Тип", "Класс", "Редкость", "Стоимость"])
+
     def openDeck(self):
         self.deck = QFileDialog.getOpenFileName(self, "Open file")[0]
         print(self.deck)
         if self.deck == '':
             return
-
-
 
     def closeEvent(self, event):
 

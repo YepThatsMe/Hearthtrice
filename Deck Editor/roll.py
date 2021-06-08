@@ -1,6 +1,6 @@
 def read(path):
     import xml.etree.ElementTree as ET
-    path = 'E:\\CockatricePortable\\data\\customsets\\customset_ht.xml'
+
     hs = ET.parse(path)
     enter = hs.findall("cards/card[type = 'Minion']") + hs.findall("cards/card[type = 'Spell']") + hs.findall(
         "cards/card[type = 'Weapon']") + hs.findall("cards/card[type = 'Hero']")
@@ -19,7 +19,9 @@ def loadPic(esc, path):
     for i in esc.keys():
         a.append(i)
 
-    path = "E:\\CockatricePortable\\data\\pics\\downloadedPics\\HT\\"
+    path = path[:path.rfind('/')]
+    os.chdir(path)
+    path = r"../pics/downloadedPics/HT/"
     l = os.listdir(path=path)
 
     if len(esc) == len(l):
@@ -40,7 +42,7 @@ def loadPic(esc, path):
         diff = set(a).difference(set(l))
         diff = list(diff)
 
-        for j in difE:
+        for j in diff:
             if j in esc:
                 r = requests.get(esc[j])
                 im = Image.open(BytesIO(r.content))
@@ -49,7 +51,6 @@ def loadPic(esc, path):
 
 def roll(esc):
     import numpy.random as rnd
-
     roll = rnd.choice(list(esc.keys()), size=3, replace=False)
     return roll
 
@@ -59,7 +60,7 @@ def roll_std(Hero, path_std):
     heroes = {'Маг': 'Mage', 'Друид': "Druid", "Охотник": "Hunter", "Паладин": "Paladin",
              "Жрец": "Priest", "Разбойник": "Rogue", "Шаман": "Shaman",
               "Чернокнижник": "Warlock", "Воин": "Warrior"}
-    path = f"E:\\CockatricePortable\\data\\pics\\{heroes[Hero]}"
+    path = f"{path_std}{heroes[Hero]}"
     cards = os.listdir(path=path)
     roll_std_l = rnd.choice(cards, size=3, replace=False)
     return roll_std_l
@@ -83,4 +84,4 @@ def create(names, cnt, deck_name, esc):
 
     deck.append(main)
     deck = ET.ElementTree(deck)
-    deck.write(f'E:\\CockatricePortable\\data\\decks\\{deck_name}.cod')
+    deck.write(f'{deck_name}.cod')
