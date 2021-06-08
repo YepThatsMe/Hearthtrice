@@ -1,6 +1,6 @@
-def read():
+def read(path):
     import xml.etree.ElementTree as ET
-    path = r'data\customsets\customset_ht.xml'
+
     hs = ET.parse(path)
     enter = hs.findall("cards/card[type = 'Minion']") + hs.findall("cards/card[type = 'Spell']") + hs.findall(
         "cards/card[type = 'Weapon']") + hs.findall("cards/card[type = 'Hero']")
@@ -9,9 +9,8 @@ def read():
     return esc
 
 
-esc = read()
 
-def loadPic(esc):
+def loadPic(esc, path):
     import requests
     import os
     from PIL import Image
@@ -20,8 +19,11 @@ def loadPic(esc):
     for i in esc.keys():
         a.append(i)
 
-    path = r"data\\pics\\downloadedPics\\HT\\"
+    path = path[:path.rfind('/')]
+    os.chdir(path)
+    path = r"../pics/downloadedPics/HT/"
     l = os.listdir(path=path)
+
     if len(esc) == len(l):
         return
     if len(a) < len(l):
@@ -52,19 +54,19 @@ def roll(esc):
     roll = rnd.choice(list(esc.keys()), size=3, replace=False)
     return roll
 
-def roll_std(Hero):
+def roll_std(Hero, path_std):
     import numpy.random as rnd
     import os
     heroes = {'Маг': 'Mage', 'Друид': "Druid", "Охотник": "Hunter", "Паладин": "Paladin",
              "Жрец": "Priest", "Разбойник": "Rogue", "Шаман": "Shaman",
               "Чернокнижник": "Warlock", "Воин": "Warrior"}
-    path = f"data\\pics\\{heroes[Hero]}"
+    path = f"{path_std}{heroes[Hero]}"
     cards = os.listdir(path=path)
     roll_std_l = rnd.choice(cards, size=3, replace=False)
     return roll_std_l
 
 
-def create(names, cnt, deck_name, custom):
+def create(names, cnt, deck_name, esc):
     import xml.etree.ElementTree as ET
     deck = ET.Element('cockatrice_deck')
     deck.set('version', '1')
@@ -72,7 +74,7 @@ def create(names, cnt, deck_name, custom):
     main.set('name', 'main')
 
     def add_card(names, cnt, ind):
-        global esc
+        # global esc
         if names[ind] in esc:
             ET.SubElement(main, 'card', attrib={'number': f'{cnt[ind]}', 'name': names[ind][:-4]})
         else:
@@ -82,4 +84,4 @@ def create(names, cnt, deck_name, custom):
 
     deck.append(main)
     deck = ET.ElementTree(deck)
-    deck.write(f'data\\decks\\{deck_name}.cod')
+    deck.write(f'{deck_name}.cod')

@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QDesktopWidget, QApplication, QAction,
                              QMessageBox, QFileDialog, QListWidget, QComboBox, QHBoxLayout,
                              QVBoxLayout, QLabel, QLineEdit, QCompleter, QGridLayout,
-                             QTableWidget, QProgressBar)
+                             QTableWidget, QProgressBar, QTableWidgetItem)
 
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt
@@ -68,8 +68,9 @@ class Editor(QMainWindow):
         self.hero_list.currentIndexChanged.connect(self.hero_)
 
         # Список карт
-        self.list_cards = QListWidget()
-        # self.list_cards.currentRowChanged.connect(self.print_card)
+        self.list_cards = QTableWidget()
+        self.list_cards.setColumnCount(5)
+        self.list_cards.setHorizontalHeaderLabels(["Имя", "Тип", "Класс", "Редкость", "Стоимость"])
 
         # Картинка для текущей карты
         self.image = QPixmap("icons/start_card.png")
@@ -98,6 +99,7 @@ class Editor(QMainWindow):
         self.set = QComboBox()  # Cет
         self.set.setFixedWidth(115)
         self.set.addItems(['HT', 'TK', 'Standart'])
+        self.set.currentIndexChanged.connect(self.relist)
 
         # Progressbar
         self.progress = QProgressBar()
@@ -164,16 +166,9 @@ class Editor(QMainWindow):
             return
 
         self.path = self.library[:self.library.rfind('/')]
-        print(self.path)
         os.chdir(self.path)
 
-        esc = func.read(self.library)
-        self.cards = list(map(lambda x: x[:x.rfind('.png')], list(esc.keys())))
-        self.list_cards.addItems(self.cards)
-
-        self.completer = QCompleter(self.cards)
-        self.name.setCompleter(self.completer)
-
+        self.relist()
 
         try:
             os.chdir('../pics/downloadedPics/')
@@ -181,6 +176,81 @@ class Editor(QMainWindow):
             self.pics_token = os.getcwd() + '/TK'
         except:
             QMessageBox.about(self, "Ошибка", "Не найдена папка с изображением карт")
+
+    def relist(self):
+
+        try:
+            print(self.library)
+            self.library is not None
+        except:
+            self.open()
+
+        print(self.library)
+        try:
+            self.library is not None
+        except:
+            return
+
+        self.list_cards.clear()
+        self.list_cards.setRowCount(0)
+        self.row = 0
+
+        if self.set.currentText() == 'HT':
+
+            self.esc = func.read(self.library)
+            self.cards = list(map(lambda x: x[:x.rfind('.png')], list(self.esc.keys())))
+
+            for i in self.cards:
+                self.row += 1
+                self.list_cards.setRowCount(self.row + 1)
+                self.list_cards.setItem(self.row - 1, 0, QTableWidgetItem(i))
+                self.list_cards.setItem(self.row - 1, 1, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 2, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 3, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 4, QTableWidgetItem('1'))
+            self.list_cards.setRowCount(self.row - 1)
+
+            self.completer = QCompleter(self.cards)
+            self.name.setCompleter(self.completer)
+
+        elif self.set.currentText() == 'TK':
+
+            self.esc_TK = func.read(self.library[:self.library.rfind('/')] + '/TK.xml')
+            self.TK = list(map(lambda x: x[:x.rfind('.png')], list(self.esc_TK.keys())))
+
+            for i in self.TK:
+                self.row += 1
+                self.list_cards.setRowCount(self.row + 1)
+                self.list_cards.setItem(self.row - 1, 0, QTableWidgetItem(i))
+                self.list_cards.setItem(self.row - 1, 1, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 2, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 3, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 4, QTableWidgetItem('1'))
+            self.list_cards.setRowCount(self.row - 1)
+
+            self.completer = QCompleter(self.TK)
+            self.name.setCompleter(self.completer)
+
+        elif self.set.currentText() == 'Standart':
+
+            self.esc_std = func.read(self.library[:self.library.rfind('/')] + '/StandardCards.xml')
+            self.std = list(map(lambda x: x[:x.rfind('.png')], list(self.esc_std.keys())))
+
+            for i in self.std:
+                self.row += 1
+                self.list_cards.setRowCount(self.row + 1)
+                self.list_cards.setItem(self.row - 1, 0, QTableWidgetItem(i))
+                self.list_cards.setItem(self.row - 1, 1, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 2, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 3, QTableWidgetItem('1'))
+                self.list_cards.setItem(self.row - 1, 4, QTableWidgetItem('1'))
+            self.list_cards.setRowCount(self.row - 1)
+
+            self.completer = QCompleter(self.std)
+            self.name.setCompleter(self.completer)
+
+        else:
+            QMessageBox.about(self, "Ошибка", "Не удалось подгрузить карты")
 
     def openDeck(self):
         self.deck = QFileDialog.getOpenFileName(self, "Open file")[0]

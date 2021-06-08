@@ -2,27 +2,43 @@ import sys
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QTableWidgetItem, QInputDialog, QDialog
-from PyQt5.QtGui import QImage, QPalette, QBrush, QPixmap
+from PyQt5.QtWidgets import QTableWidgetItem, QInputDialog, QDialog, QAction, QFileDialog, QMessageBox
 
 import Arena3_3
 import roll
 from functools import partial
+import os
+
 
 class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
     def __init__(self):
-        # Это здесь нужно для доступа к переменным, методам
-        # и т.д. в файле design.py
+
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна)
-        # self.centralwidgetsetStyleSheet(" backgrounsd-image: url(main_window.png);")
-        self.esc = roll.read()
+
+        self.esc = None
+
+        self.menu.setNativeMenuBar(True)
+        openlib = QAction('Open library...', self)
+        openlib.setShortcut("Alt+O")
+        openlib.triggered.connect(self.open_lib)
+
+        savedeck = QAction("Save as...")
+        savedeck.setShortcut("Ctrl+S")
+        # savedeck.triggered.connect(self.save_deck)
+
+        openlibrary = self.menu.addMenu("&File")
+        g = self.menu.addMenu("&Test")
+        openlibrary.addAction(openlib)
+        g.addAction(savedeck)
+
+
         self.data_name = []
         self.row = self.tableWidget.rowCount()
         self.data_cnt = []
-        self.path = rf'prog\\Cache\\'
-        self.path_std = r"data\\pics\\"
-        self.k = roll.roll(self.esc)
+        # self.path = rf'prog\\Cache\\'
+        # self.path_std = r"data\\pics\\"
+
         self.tableWidget.horizontalHeader().setDefaultSectionSize(55)
         self.tableWidget.horizontalHeader().setMinimumSectionSize(20)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, 1)
@@ -44,10 +60,20 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
         self.comboBox.currentIndexChanged.connect(self.hero_choice)
         self.setting_button.clicked.connect(self.ban)
         self.heroe_list = {'Маг': 'Mage', 'Друид': "Druid", "Охотник": "Hunter", "Паладин": "Paladin",
-             "Жрец": "Priest", "Разбойник": "Rogue", "Шаман": "Shaman",
-              "Чернокнижник": "Warlock", "Воин": "Warrior"}
+                           "Жрец": "Priest", "Разбойник": "Rogue", "Шаман": "Shaman",
+                           "Чернокнижник": "Warlock", "Воин": "Warrior"}
 
         self.horizontalSlider.setValue(20)
+
+    def open_lib(self):
+        self.path_l = QFileDialog.getOpenFileName(self, "Open library")[0]
+        self.esc = roll.read(self.path_l)
+        roll.loadPic(self.esc, self.path_l)
+        os.chdir(self.path_l[:self.path_l.rfind('/')])
+        self.path = '../pics/downloadedPics/HT/'
+        self.path_std = '../pics/'
+        self.k = roll.roll(self.esc)
+
 
     def get_data(self):
         self.data_name = []
@@ -56,7 +82,6 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
             self.data_name.append(self.tableWidget.item(i, 0).text())
         for j in range(self.tableWidget.rowCount()):
             self.data_cnt.append(int(self.tableWidget.item(j, 1).text()))
-
 
     def choice(self, n):
         self.row = self.tableWidget.rowCount()
@@ -67,8 +92,8 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
 
                 if self.k[n] not in self.data_name:
                     self.tableWidget.setRowCount(self.row + 1)
-                    self.tableWidget.setItem(self.tableWidget.rowCount()-1, 0, QTableWidgetItem(self.k[n]))
-                    self.tableWidget.setItem(self.tableWidget.rowCount()-1, 1, QTableWidgetItem('1'))
+                    self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0, QTableWidgetItem(self.k[n]))
+                    self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 1, QTableWidgetItem('1'))
                     self.get_data()
 
                 elif self.k[n] in self.data_name:
@@ -89,8 +114,8 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
                 if self.k[n] not in self.data_name:
 
                     self.tableWidget.setRowCount(self.row + 1)
-                    self.tableWidget.setItem(self.tableWidget.rowCount()-1, 0, QTableWidgetItem(self.k[n]))
-                    self.tableWidget.setItem(self.tableWidget.rowCount()-1, 1, QTableWidgetItem('1'))
+                    self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0, QTableWidgetItem(self.k[n]))
+                    self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 1, QTableWidgetItem('1'))
                     self.get_data()
 
                 elif self.k[n] in self.data_name:
@@ -98,22 +123,20 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
                     self.tableWidget.setItem(i, 1, QTableWidgetItem(str(self.data_cnt[i] + 1)))
                     self.get_data()
 
-                self.k = roll.roll_std(self.hero)
+                self.k = roll.roll_std(self.hero, self.path_std)
                 print(self.hero)
-                self.Card1.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}\\{self.k[0]}'))
+                self.Card1.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}/{self.k[0]}'))
                 self.Card1.setIconSize(QtCore.QSize(231, 311))
-                self.Card2.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}\\{self.k[1]}'))
+                self.Card2.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}/{self.k[1]}'))
                 self.Card2.setIconSize(QtCore.QSize(231, 311))
-                self.Card3.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}\\{self.k[2]}'))
+                self.Card3.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}/{self.k[2]}'))
                 self.Card3.setIconSize(QtCore.QSize(231, 311))
-
 
             if sum(self.data_cnt) == 30:
                 self.label_limit.setText('В вашей колоде уже 30 карт, вы не можете добавить больше')
 
         except Exception as e:
             print(e)
-
 
     def number_changed(self):
         new_value = self.horizontalSlider.value()
@@ -123,6 +146,11 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
         self.hero = self.comboBox.currentText()
 
     def ban(self):
+
+        if self.esc is None:
+            QMessageBox.about(self, "Ошибка", "Сначала выберите библиотеку карт")
+            return
+
         self.Dialog = QDialog()
         self.Dialog.setWindowTitle('Подтверждение')
         verticalLayout = QtWidgets.QVBoxLayout(self.Dialog)
@@ -147,6 +175,7 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
         self.Dialog.exec_()
 
     def accept(self):
+
         self.comboBox.setEnabled(False)
         self.horizontalSlider.setEnabled(False)
         self.Dialog.close()
@@ -163,10 +192,19 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
 
     def complete(self):
 
-            deck_name, ok = QInputDialog.getText(self, 'Ваша колода готова', 'Введите название колоды')
-            roll.create(self.data_name, self.data_cnt, deck_name, self.esc)
+        if self.esc is None:
+            QMessageBox.about(self, "Ошибка",
+                              "Библиотека карт недоступна, вы не можете сейчас сохранить")
+            return
 
-roll.loadPic(roll.esc)
+        deck_name, ok = QInputDialog.getText(self, 'Ваша колода готова', 'Введите название колоды')
+        deck_name = f"../decks/{deck_name}"
+
+
+        roll.create(self.data_name, self.data_cnt, deck_name, self.esc)
+
+
+# roll.loadPic(roll.esc)
 
 
 def main():
@@ -176,8 +214,5 @@ def main():
     app.exec()
 
 
-
 if __name__ == '__main__':  # Если мы запускаем файл напрямую, а не импортируем
     main()  # то запускаем функцию main()
-
-
