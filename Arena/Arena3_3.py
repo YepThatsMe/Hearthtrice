@@ -20,8 +20,7 @@ class Ui_MainWindow(object):
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-
-        self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
 
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
@@ -32,24 +31,21 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-
-        self.Card3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Card3 = QtWidgets.QPushButton(self)
         self.Card3.setMinimumSize(QtCore.QSize(231, 311))
         self.Card3.setAutoFillBackground(False)
         # self.Card3.setText("")
         self.Card3.setObjectName("Card3")
 
         self.horizontalLayout.addWidget(self.Card3)
-
-        self.Card2 = QtWidgets.QPushButton(self.centralwidget)
+        self.Card2 = QtWidgets.QPushButton(self)
         self.Card2.setMinimumSize(QtCore.QSize(231, 311))
         self.Card2.setAutoFillBackground(False)
         # self.Card2.setText("")
         self.Card2.setObjectName("Card2")
 
         self.horizontalLayout.addWidget(self.Card2)
-
-        self.Card1 = QtWidgets.QPushButton(self.centralwidget)
+        self.Card1 = QtWidgets.QPushButton(self)
         self.Card1.setEnabled(False)
         self.Card1.setMinimumSize(QtCore.QSize(231, 311))
         self.Card1.setAutoFillBackground(False)
@@ -59,8 +55,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.Card1)
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
-
-        self.label_limit = QtWidgets.QLabel(self.centralwidget)
+        self.label_limit = QtWidgets.QLabel(self)
         self.label_limit.setMaximumSize(QtCore.QSize(16777215, 30))
         font = QtGui.QFont()
         font.setPointSize(14)
@@ -72,8 +67,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-
-        self.horizontalSlider = QtWidgets.QSlider(self.centralwidget)
+        self.horizontalSlider = QtWidgets.QSlider(self)
         self.horizontalSlider.setMaximumSize(QtCore.QSize(250, 16777215))
         self.horizontalSlider.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.horizontalSlider.setInputMethodHints(QtCore.Qt.ImhPreferNumbers)
@@ -85,8 +79,7 @@ class Ui_MainWindow(object):
         self.horizontalSlider.setObjectName("horizontalSlider")
 
         self.horizontalLayout_2.addWidget(self.horizontalSlider)
-
-        self.card_cnt = QtWidgets.QLabel(self.centralwidget)
+        self.card_cnt = QtWidgets.QLabel(self)
         self.card_cnt.setMaximumSize(QtCore.QSize(200, 16777215))
         font = QtGui.QFont()
         font.setPointSize(11)
@@ -98,8 +91,7 @@ class Ui_MainWindow(object):
         self.card_cnt.setObjectName("card_cnt")
 
         self.horizontalLayout_2.addWidget(self.card_cnt)
-
-        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox = QtWidgets.QComboBox(self)
         self.comboBox.setEnabled(True)
         self.comboBox.setMinimumSize(QtCore.QSize(0, 0))
         self.comboBox.setMaximumSize(QtCore.QSize(150, 16777215))
@@ -133,16 +125,14 @@ class Ui_MainWindow(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.horizontalLayout_2.addWidget(self.comboBox)
-
-        self.setting_button = QtWidgets.QPushButton(self.centralwidget)
+        self.setting_button = QtWidgets.QPushButton(self)
         self.setting_button.setMaximumSize(QtCore.QSize(70, 16777215))
         self.setting_button.setObjectName("setting_button")
 
         self.horizontalLayout_2.addWidget(self.setting_button)
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
-
-        self.Enter = QtWidgets.QPushButton(self.centralwidget)
+        self.Enter = QtWidgets.QPushButton(self)
         self.Enter.setMinimumSize(QtCore.QSize(0, 31))
         self.Enter.setAutoFillBackground(True)
         self.Enter.setObjectName("Enter")
@@ -153,8 +143,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
-
-        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget = QtWidgets.QTableWidget(self)
         self.tableWidget.setMinimumSize(QtCore.QSize(291, 561))
         self.tableWidget.setAutoFillBackground(True)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -172,8 +161,7 @@ class Ui_MainWindow(object):
         self.tableWidget.verticalHeader().setHighlightSections(True)
 
         self.verticalLayout.addWidget(self.tableWidget)
-
-        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        self.progressBar = QtWidgets.QProgressBar(self)
         self.progressBar.setMinimumSize(QtCore.QSize(301, 31))
         self.progressBar.setAutoFillBackground(True)
         self.progressBar.setMaximum(30)
@@ -188,8 +176,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_3.addLayout(self.verticalLayout)
         self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
-
-        MainWindow.setCentralWidget(self.centralwidget)
+        #MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
         self.comboBox.setCurrentIndex(0)

@@ -10,7 +10,7 @@ from functools import partial
 import os
 
 
-class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
+class ExampleApp(QtWidgets.QWidget, Arena3_3.Ui_MainWindow):
     def __init__(self):
 
         super().__init__()
@@ -36,9 +36,9 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
         self.data_name = []
         self.row = self.tableWidget.rowCount()
         self.data_cnt = []
-        # self.path = rf'prog\\Cache\\'
-        # self.path_std = r"data\\pics\\"
-
+        self.path = rf'prog\\Cache\\'
+        self.path_std = r"E:\\CockatricePortable\\data\\pics\\"
+        self.k = roll.roll(self.esc)
         self.tableWidget.horizontalHeader().setDefaultSectionSize(55)
         self.tableWidget.horizontalHeader().setMinimumSectionSize(20)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, 1)
