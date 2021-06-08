@@ -51,7 +51,6 @@ def loadPic(esc, path):
 
 def roll(esc):
     import numpy.random as rnd
-
     roll = rnd.choice(list(esc.keys()), size=3, replace=False)
     return roll
 
