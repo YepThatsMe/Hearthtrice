@@ -100,7 +100,7 @@ class Editor(QMainWindow):
 
         self.class_ = QComboBox()   # Класс
         self.class_.setFixedWidth(130)
-        self.class_.addItems(['Жабы', 'Змеи', "Учиха", "Узумаки", "Джинчурики"])
+        self.class_.addItems(['Жабы', 'Змеи', "Учиха", "Узумаки", "Джинчурики"]) # Здесь нужно парсить все доступные типы из xml
 
         self.type = QComboBox()  # Тип
         self.type.setFixedWidth(130)
