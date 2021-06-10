@@ -78,9 +78,11 @@ class Editor(QMainWindow):
         self.list_cards = QTableWidget()
         self.list_cards.setColumnCount(5)
         self.list_cards.setSortingEnabled(True)
+        self.list_cards.setAutoFillBackground(True)
+        self.list_cards.horizontalHeader().setCascadingSectionResizes(False)
+
+        self.list_cards.horizontalHeader().setHighlightSections(True)
         self.list_cards.setHorizontalHeaderLabels(["Имя", "Тип", "Класс", "Редкость", "Стоимость"])
-
-
 
         # Картинка для текущей карты
         self.image = QPixmap("icons/start_card.png")
@@ -98,7 +100,7 @@ class Editor(QMainWindow):
         self.completer = QCompleter(self.cards)
         self.name.setCompleter(self.completer)
 
-        self.class_ = QComboBox()   # Класс
+        self.class_ = QComboBox()  # Класс
         self.class_.setFixedWidth(130)
         self.class_.addItems(['Жабы', 'Змеи', "Учиха", "Узумаки", "Джинчурики"])
 
@@ -130,7 +132,6 @@ class Editor(QMainWindow):
         self.lo1.addWidget(self.class_, 0, 3, Qt.AlignLeft)
         self.lo1.addWidget(self.type, 0, 4, Qt.AlignLeft)
 
-
         self.grid2 = QGridLayout()
 
         self.grid2.addWidget(self.list_cards, 0, 0)
@@ -140,7 +141,6 @@ class Editor(QMainWindow):
         self.deckListlayout.addWidget(self.deckList)
         self.deckListlayout.addWidget(self.progress, Qt.AlignBottom)
 
-
         self.right = QHBoxLayout()
         self.right.addLayout(self.grid2)
         self.right.addLayout(self.deckListlayout)
@@ -149,7 +149,6 @@ class Editor(QMainWindow):
 
         self.gen_layout.addLayout(self.lo1)
         self.gen_layout.addLayout(self.right)
-
 
         self.stack = QStackedWidget()
         self.stack.addWidget(self.centralwidget)
@@ -269,7 +268,6 @@ class Editor(QMainWindow):
 
         else:
             QMessageBox.about(self, "Ошибка", "Не удалось подгрузить карты")
-
 
         self.list_cards.setHorizontalHeaderLabels(["Имя", "Тип", "Класс", "Редкость", "Стоимость"])
 
