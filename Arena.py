@@ -4,11 +4,101 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QTableWidgetItem, QInputDialog, QDialog, QAction, QFileDialog, QMessageBox
 
-import roll
 from functools import partial
+import xml.etree.ElementTree as ET
 import os
 
 from Arena_UI import UI_MainWindow
+
+class Roll:
+
+    def read(path):
+
+        hs = ET.parse(path)
+        enter = hs.findall("cards/card[type = 'Minion']") + hs.findall("cards/card[type = 'Spell']") + hs.findall(
+            "cards/card[type = 'Weapon']") + hs.findall("cards/card[type = 'Hero']")
+        esc = {i[0].text + ".png": "".join(i[2].attrib.values()) for i in enter}
+        # count = int(input('Введите число карт:\n'))
+        return esc
+
+
+
+    def loadPic(esc, path):
+        import requests
+        import os
+        from PIL import Image
+        from io import BytesIO
+        a = []
+        for i in esc.keys():
+            a.append(i)
+
+        path = path[:path.rfind('/')]
+        os.chdir(path)
+        path = r"../pics/downloadedPics/HT/"
+        l = os.listdir(path=path)
+
+        if len(esc) == len(l):
+            return
+        if len(a) < len(l):
+            diff = set(l).difference(set(a))
+            diff = list(diff)
+
+            for j in diff:
+                print(j)
+                print(esc)
+                if j in esc:
+                    r = requests.get(esc[j])
+                    im = Image.open(BytesIO(r.content))
+                    im.save(f'{path}{j}.png')
+
+        if len(a) > len(l):
+            diff = set(a).difference(set(l))
+            diff = list(diff)
+
+            for j in diff:
+                if j in esc:
+                    r = requests.get(esc[j])
+                    im = Image.open(BytesIO(r.content))
+                    im.save(f'{path}{j}.png')
+
+
+    def roll(esc):
+        import numpy.random as rnd
+        roll = rnd.choice(list(esc.keys()), size=3, replace=False)
+        return roll
+
+    def roll_std(Hero, path_std):
+        import numpy.random as rnd
+        import os
+        heroes = {'Маг': 'Mage', 'Друид': "Druid", "Охотник": "Hunter", "Паладин": "Paladin",
+                "Жрец": "Priest", "Разбойник": "Rogue", "Шаман": "Shaman",
+                "Чернокнижник": "Warlock", "Воин": "Warrior"}
+        path = f"{path_std}{heroes[Hero]}"
+        cards = os.listdir(path=path)
+        roll_std_l = rnd.choice(cards, size=3, replace=False)
+        return roll_std_l
+
+
+    def create(names, cnt, deck_name, esc):
+        import xml.etree.ElementTree as ET
+        deck = ET.Element('cockatrice_deck')
+        deck.set('version', '1')
+        main = ET.Element('zone')
+        main.set('name', 'main')
+
+        def add_card(names, cnt, ind):
+            # global esc
+            if names[ind] in esc:
+                ET.SubElement(main, 'card', attrib={'number': f'{cnt[ind]}', 'name': names[ind][:-4]})
+            else:
+                ET.SubElement(main, 'card', attrib={'number': f'{cnt[ind]}', 'name': names[ind]})
+        for i in range(len(names)):
+            add_card(names, cnt, i)
+
+        deck.append(main)
+        deck = ET.ElementTree(deck)
+        deck.write(f'{deck_name}.cod')
+
 
 class Arena(QtWidgets.QMainWindow, UI_MainWindow):
     def __init__(self):
@@ -67,12 +157,12 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
 
     def open_lib(self):
         self.path_l = QFileDialog.getOpenFileName(self, "Open library")[0]
-        self.esc = roll.read(self.path_l)
-        roll.loadPic(self.esc, self.path_l)
+        self.esc = Roll.read(self.path_l)
+        Roll.loadPic(self.esc, self.path_l)
         os.chdir(self.path_l[:self.path_l.rfind('/')])
         self.path = '../pics/downloadedPics/HT/'
         self.path_std = '../pics/'
-        self.k = roll.roll(self.esc)
+        self.k = Roll.roll(self.esc)
 
 
     def get_data(self):
@@ -101,7 +191,7 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
                     self.tableWidget.setItem(i, 1, QTableWidgetItem(str(self.data_cnt[i] + 1)))
                     self.get_data()
 
-                self.k = roll.roll(self.esc)
+                self.k = Roll.roll(self.esc)
                 self.Card1.setIcon(QtGui.QIcon(rf'{self.path}{self.k[0]}'))
                 self.Card1.setIconSize(QtCore.QSize(231, 311))
                 self.Card2.setIcon(QtGui.QIcon(rf'{self.path}{self.k[1]}'))
@@ -123,7 +213,7 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
                     self.tableWidget.setItem(i, 1, QTableWidgetItem(str(self.data_cnt[i] + 1)))
                     self.get_data()
 
-                self.k = roll.roll_std(self.hero, self.path_std)
+                self.k = Roll.roll_std(self.hero, self.path_std)
                 print(self.hero)
                 self.Card1.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}/{self.k[0]}'))
                 self.Card1.setIconSize(QtCore.QSize(231, 311))
@@ -201,10 +291,10 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
         deck_name = f"../decks/{deck_name}"
 
 
-        roll.create(self.data_name, self.data_cnt, deck_name, self.esc)
+        Roll.create(self.data_name, self.data_cnt, deck_name, self.esc)
 
 
-# roll.loadPic(roll.esc)
+# Roll.loadPic(Roll.esc)
 
 
 def main():
