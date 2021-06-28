@@ -4,13 +4,13 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QTableWidgetItem, QInputDialog, QDialog, QAction, QFileDialog, QMessageBox
 
-import Arena3_3
 import roll
 from functools import partial
 import os
 
+from Arena_UI import UI_MainWindow
 
-class ExampleApp(QtWidgets.QWidget, Arena3_3.Ui_MainWindow):
+class Arena(QtWidgets.QMainWindow, UI_MainWindow):
     def __init__(self):
 
         super().__init__()
@@ -20,7 +20,7 @@ class ExampleApp(QtWidgets.QWidget, Arena3_3.Ui_MainWindow):
 
         self.menu.setNativeMenuBar(True)
         openlib = QAction('Open library...', self)
-        openlib.setShortcut("Alt+O")
+        openlib.setShortcut("Ctrl+O")
         openlib.triggered.connect(self.open_lib)
 
         savedeck = QAction("Save as...")
@@ -36,9 +36,9 @@ class ExampleApp(QtWidgets.QWidget, Arena3_3.Ui_MainWindow):
         self.data_name = []
         self.row = self.tableWidget.rowCount()
         self.data_cnt = []
-        self.path = rf'prog\\Cache\\'
-        self.path_std = r"E:\\CockatricePortable\\data\\pics\\"
-        self.k = roll.roll(self.esc)
+        # self.path = rf'prog\\Cache\\'
+        # self.path_std = r"data\\pics\\"
+
         self.tableWidget.horizontalHeader().setDefaultSectionSize(55)
         self.tableWidget.horizontalHeader().setMinimumSectionSize(20)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, 1)

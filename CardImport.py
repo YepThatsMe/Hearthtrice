@@ -1,9 +1,11 @@
-from HearthtriceUI import MainWindow
-from HearthtriceUI import resource_path
+from CardImport_UI import UI_MainWindow
+from CardImport_UI import resource_path
 
 import requests
 from bs4 import BeautifulSoup
 from functools import partial
+import webbrowser as wb
+
 
 import sys, os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
@@ -86,8 +88,6 @@ class Collector():
         f.write(a)
         f.close()
 
-
-
 class Card:
     def __init__(self, cardName, urlName, type, manacost, color, rarity, syspath, filename):
         if type == 'Token':
@@ -142,13 +142,14 @@ class Cacher(QObject):
 
 
 
-class IM(MainWindow, QMainWindow):
+class CardImport(UI_MainWindow, QMainWindow):
 
     def __init__(self):
         super().__init__()
         self.setupUI(self) 
 
         self.askhelp.triggered.connect(self.dialog)
+        self.login.triggered.connect(self.log_into_ht)
 
     @pyqtSlot(bytes)
     def on_cacheChanged(self, data_tuple):
@@ -422,6 +423,10 @@ class IM(MainWindow, QMainWindow):
             self.buttonAdd.setEnabled(True)
 
         
+
+    def log_into_ht(self):
+        wb.get().open("http://www.hearthcards.net/", new=2)
+
 
     def showdialog3(self):
         path = os.path.realpath(self.syspath)
