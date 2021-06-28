@@ -1,14 +1,8 @@
-from PyQt5.QtWidgets import (QMainWindow, QWidget, QDesktopWidget, QApplication, QAction,
-                             QMessageBox, QFileDialog, QStackedWidget, QComboBox, QHBoxLayout,
-                             QVBoxLayout, QLabel, QLineEdit, QCompleter, QGridLayout,
-                             QTableWidget, QProgressBar, QTableWidgetItem)
+from PyQt5.QtWidgets import (QMainWindow, QWidget, QApplication, QAction, QStackedWidget)
 
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt, QSize
-import xml.etree.ElementTree as ET
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize
 import sys
-import os
-import pickle
 
 from Arena import Arena
 from CardImport import CardImport
@@ -29,44 +23,33 @@ class HearthTrice_Main(QMainWindow):
 
 
         # ToolBar
-        openFile = QAction(QIcon("assets/icons/file.jpg"), "&Open library...", self)  # Открытие существующей
-        openFile.setShortcut("Ctrl+O")  # библиотеки карт
-        openFile.setStatusTip("Open card's library")
-        #openFile.triggered.connect(self.open)
 
-        # login = QAction(QIcon("assets/icons/naruto_min.png"), "&Login...", self)  # Открытие Hearthcards
-        # login.setShortcut("Alt+Shift+L")
-        # login.setStatusTip("Login to HearthCards...")
-        # login.triggered.connect(func.login)
+        tb_openLibrary = QAction(QIcon("assets/icons/file.jpg"), "&Open library...", self)
+        tb_openLibrary.setShortcut("Ctrl+O")
+        tb_openLibrary.setStatusTip("Open card's library")
+        #tb_openLibrary.triggered.connect(self.open) 
 
-        # choose_deck = QAction(QIcon("assets/icons/deck.jpg"), "&Open deck...", self)  # Открытие колоды
-        # choose_deck.setShortcut("Alt+D")
-        # choose_deck.setStatusTip("Open deck")
-        # choose_deck.triggered.connect(self.openDeck)
+        tb_arena = QAction(QIcon("assets/icons/Jiraiya.jpg"), "&Arena", self)
+        tb_arena.setShortcut("Ctrl+2")
+        tb_arena.setStatusTip("Open Arena")
+        tb_arena.triggered.connect(self.switch_Arena)
 
-        ran_ = QAction(QIcon("assets/icons/Jiraiya.jpg"), "&Arena", self)
-        ran_.setShortcut("Ctrl+2")
-        ran_.setStatusTip("Open Arena")
-        ran_.triggered.connect(self.Arena)
+        tb_deckEditor = QAction(QIcon("assets/icons/icon.jpg"), "&Editor", self)
+        tb_deckEditor.setShortcut("Ctrl+1")
+        tb_deckEditor.setStatusTip("Open Deck Editor")
+        tb_deckEditor.triggered.connect(self.switch_DeckEditor)
 
-        editor = QAction(QIcon("assets/icons/icon.jpg"), "&Editor", self)
-        editor.setShortcut("Ctrl+1")
-        editor.setStatusTip("Open Deck Editor")
-        editor.triggered.connect(self.Editor_)
-
-        import_module = QAction(QIcon("assets/icons/error2.png"), "&Import", self)
-        import_module.setStatusTip("Open Card Import")
-        import_module.setShortcut("Ctrl+3")
-        import_module.triggered.connect(self.ImportModule)
+        tb_importModule = QAction(QIcon("assets/icons/error2.png"), "&Import", self)
+        tb_importModule.setStatusTip("Open Card Import")
+        tb_importModule.setShortcut("Ctrl+3")
+        tb_importModule.triggered.connect(self.switch_ImportModule)
         
 
         self.toolbar = self.addToolBar("Login")
-        self.toolbar.addAction(openFile)
-        # self.toolbar.addAction(login)
-        # self.toolbar.addAction(choose_deck)
-        self.toolbar.addAction(ran_)
-        self.toolbar.addAction(editor)
-        self.toolbar.addAction(import_module)
+        self.toolbar.addAction(tb_openLibrary)
+        self.toolbar.addAction(tb_arena)
+        self.toolbar.addAction(tb_deckEditor)
+        self.toolbar.addAction(tb_importModule)
         self.toolbar.setIconSize(QSize(150,35))
         self.toolbar.setMovable(0)
 
@@ -74,28 +57,24 @@ class HearthTrice_Main(QMainWindow):
         self.centralwidget = QWidget()
         self.setCentralWidget(self.stack)
 
-        self.Editor_()
-
-        #self.setupUI()
+        self.switch_DeckEditor()
 
 
-    def Editor_(self):
+
+    def switch_DeckEditor(self):
         self.stack.setCurrentWidget(self.win1)
 
-    def Arena(self):
+    def switch_Arena(self):
         self.stack.setCurrentWidget(self.win2)
 
-    def ImportModule(self):
+    def switch_ImportModule(self):
         self.stack.setCurrentWidget(self.win3)
 
     
 
-def main():
+if __name__ == '__main__':
+
     app = QApplication(sys.argv)  # Новый экземпляр QApplication
     window = HearthTrice_Main()  # Создаем объект класса ExampleApp
     window.show()  # Показываем окно
     app.exec()
-
-
-if __name__ == '__main__':
-    main()
