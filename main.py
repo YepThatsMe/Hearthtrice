@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QMainWindow, QWidget, QApplication, QAction, QStackedWidget)
+from PyQt5.QtWidgets import (QMainWindow, QWidget, QApplication, QAction, QStackedWidget, QFileDialog)
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
@@ -7,6 +7,8 @@ import sys
 from Arena import Arena
 from CardImport import CardImport
 from DeckEditor import DeckEditor
+
+import config
 
 class HearthTrice_Main(QMainWindow):
     def __init__(self):
@@ -27,7 +29,7 @@ class HearthTrice_Main(QMainWindow):
         tb_openLibrary = QAction(QIcon("assets/icons/file.jpg"), "&Open library...", self)
         tb_openLibrary.setShortcut("Ctrl+O")
         tb_openLibrary.setStatusTip("Open card's library")
-        #tb_openLibrary.triggered.connect(self.open) 
+        tb_openLibrary.triggered.connect(self.open_Library) 
 
         tb_arena = QAction(QIcon("assets/icons/Jiraiya.jpg"), "&Arena", self)
         tb_arena.setShortcut("Ctrl+2")
@@ -60,6 +62,23 @@ class HearthTrice_Main(QMainWindow):
         self.switch_DeckEditor()
 
 
+
+    def open_Library(self):
+
+        fname = QFileDialog.getOpenFileName(self, 'Open XML library...')[0]
+        if fname == '' or not fname:
+            return
+        a = fname.split('/')
+        name = a[-1]
+
+        self.syspath = ''
+        for x in a[:-1]:
+            self.syspath += x + '/'
+        self.library = name
+
+        print(self.library, fname, config.LIBRARY_PATH)
+        config.set_path(fname)
+        print(self.library, fname, config.LIBRARY_PATH)
 
     def switch_DeckEditor(self):
         self.stack.setCurrentWidget(self.win1)

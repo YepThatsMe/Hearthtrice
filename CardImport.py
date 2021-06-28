@@ -7,6 +7,8 @@ from functools import partial
 import webbrowser as wb
 
 
+import config
+
 import sys, os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
 from PyQt5.QtGui import QPixmap, QIcon
@@ -441,6 +443,6 @@ class CardImport(UI_MainWindow, QMainWindow):
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
-    window = IM()
+    window = CardImport()
     window.show()
     sys.exit(app.exec_())
