@@ -80,7 +80,7 @@ class DeckEditor(QMainWindow, UI_MainWindow):
 
         if self.set.currentText() == 'HT':
 
-            self.esc = func_read(self.library)
+            self.esc = self.func_read(self.library)
             self.cards = list(map(lambda x: x[:x.rfind('.png')], list(self.esc.keys())))
 
             for i in self.cards:
@@ -100,7 +100,7 @@ class DeckEditor(QMainWindow, UI_MainWindow):
 
         elif self.set.currentText() == 'TK':
 
-            self.esc_TK = func.read(self.library[:self.library.rfind('/')] + '/TK.xml')
+            self.esc_TK = self.func_read(self.library[:self.library.rfind('/')] + '/TK.xml')
             self.TK = list(map(lambda x: x[:x.rfind('.png')], list(self.esc_TK.keys())))
 
             for i in self.TK:
@@ -118,7 +118,7 @@ class DeckEditor(QMainWindow, UI_MainWindow):
 
         elif self.set.currentText() == 'Standart':
 
-            self.esc_std = func.read(self.library[:self.library.rfind('/')] + '/StandardCards.xml')
+            self.esc_std = self.func_read(self.library[:self.library.rfind('/')] + '/StandardCards.xml')
             self.std = list(map(lambda x: x[:x.rfind('.png')], list(self.esc_std.keys())))
 
             for i in self.std:
@@ -160,6 +160,6 @@ class DeckEditor(QMainWindow, UI_MainWindow):
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
-    window = ExampleApp()
+    window = DeckEditor()
     window.show()
     sys.exit(app.exec_())
