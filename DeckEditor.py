@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QMainWindow, QWidget, QDesktopWidget, QApplication,
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 import xml.etree.ElementTree as ET
+from configparser import ConfigParser
 import sys
 import os
 import pickle
@@ -30,17 +31,36 @@ class DeckEditor(QMainWindow, UI_MainWindow):
     def hero_(self):
         self.hero = self.hero_list.currentText()
 
-    def open(self):
-        self.library = QFileDialog.getOpenFileName(self, "Open file")[0]
+    # def open(self):
+    #     self.library = QFileDialog.getOpenFileName(self, "Open file")[0]
 
-        if self.library == '':
-            return
+    #     if self.library == '':
+    #         return
 
+    #     self.path = self.library[:self.library.rfind('/')]
+    #     os.chdir(self.path)
+
+    #     self.relist()
+
+    #     try:
+    #         os.chdir('../pics/downloadedPics/')
+    #         self.pics_main = os.getcwd() + '/HT'
+    #         self.pics_token = os.getcwd() + '/TK'
+    #     except:
+    #         QMessageBox.about(self, "Ошибка", "Не найдена папка с изображением карт")
+
+    def config_update(self):
+
+        self.config = ConfigParser()
+        self.config.read('assets/config.ini')
+
+        # self.syspath = os.getcwd()
+        self.library = self.config.get('GENERAL', 'LIB_PATH')
         self.path = self.library[:self.library.rfind('/')]
         os.chdir(self.path)
-
         self.relist()
 
+        
         try:
             os.chdir('../pics/downloadedPics/')
             self.pics_main = os.getcwd() + '/HT'
@@ -62,11 +82,11 @@ class DeckEditor(QMainWindow, UI_MainWindow):
 
     def relist(self):
 
-        try:
-            print(self.library)
-            self.library is not None
-        except:
-            self.open()
+        # try:
+        #     print(self.library)
+        #     self.library is not None
+        # except:
+        #     self.open()
 
         print(self.library)
         try:

@@ -89,7 +89,7 @@ class Collector():
         f.close()
 
 class Card:
-    def __init__(self, cardName, urlName, type, manacost, color, rarity, syspath, filename):
+    def __init__(self, cardName, urlName, type, manacost, color, rarity, libpath, filename):
         if type == 'Token':
             self.urlName = '\t\t\t<set picURL="' + urlName + '">TK</set>\n'
             self.tk = '\t\t\t<token>1</token>\n'
@@ -109,10 +109,10 @@ class Card:
         self.color = '\t\t\t<color>' + color + '</color>\n' if color != 'None' else '\t\t\t<color></color>\n'
         self.ls = ['\t\t<card>\n', self.cardName, self.tk, self.type, self.manacost, self.color, self.rarity, self.urlName, '\t\t</card> \n']
         self.a = []
-        self.syspath = syspath
+        self.libpath = libpath
         self.path = filename
     def open(self):
-        f = open(self.syspath + self.path, 'r')
+        f = open(self.libpath + self.path, 'r')
         self.a = f.readlines()
         f.close()
         while '\n' in self.a:
@@ -122,7 +122,7 @@ class Card:
         self.a.pop(-1)
         self.a = self.a + self.ls+ ['\t</cards>\n', '</cockatrice_carddatabase>']
     def write(self):
-        f = open(self.syspath + self.path, 'w')
+        f = open(self.libpath + self.path, 'w')
         for i in self.a:
             f.write(i)
         f.close()
@@ -157,20 +157,18 @@ class CardImport(UI_MainWindow, QMainWindow):
         self.config = ConfigParser()
         self.config.read('assets/config.ini')
 
-        # self.syspath = os.getcwd()
+
         path1 = self.config.get('GENERAL', 'LIB_PATH')
         path1 = path1.split('/')
         name = path1[-1]
 
-        self.syspath = ''
+        self.LIB_PATH = ''
         for x in path1[:-1]:
-            self.syspath += x + '/'
-        self.filename = name
+            self.LIB_PATH += x + '/'
+        self.LIB_NAME = name
 
         self.DeckListRefresh()
-        print('i')
-        self.enableWidgets(allb=1)
-        print('ii')
+        self.enableWidgets()
 
     @pyqtSlot(bytes)
     def on_cacheChanged(self, data_tuple):
@@ -216,7 +214,7 @@ class CardImport(UI_MainWindow, QMainWindow):
         print(name)
 
         try:
-            file = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/HT/{name}.png'
+            file = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/HT/{name}.png'
 
             with open(file, 'rb') as c:
                 pic = c.read()
@@ -224,7 +222,7 @@ class CardImport(UI_MainWindow, QMainWindow):
                 self.widgetIMG.setPixmap(self.pixmap.scaledToHeight(380))
         except FileNotFoundError as e:
             try:
-                file = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/TK/{name}.png'
+                file = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/TK/{name}.png'
                 with open(file, 'rb') as c:
                     pic = c.read()
                 self.pixmap.loadFromData(pic)
@@ -302,8 +300,8 @@ class CardImport(UI_MainWindow, QMainWindow):
             color = self.colorline.text()
             rarity = self.cardrarity.currentText()
 
-            pathh = self.syspath
-            filenam = self.filename
+            pathh = self.LIB_PATH
+            filenam = self.LIB_NAME
 
             # удаление старой версии карты из коллекции.xml при дублировании
             print(f'scanning through {self.currentLibraryList.count()} cards')
@@ -313,7 +311,7 @@ class CardImport(UI_MainWindow, QMainWindow):
                 if self.currentLibraryList.item(x).text() == a:
 
                     print('Replacing old entry..')
-                    Collector.delete_entry(name, self.syspath, self.filename)
+                    Collector.delete_entry(name, self.LIB_PATH, self.LIB_NAME)
                     self.DeckListRefresh()
                     self.FilterLibraryList()
                     self.removeEntry(x)
@@ -335,7 +333,7 @@ class CardImport(UI_MainWindow, QMainWindow):
 
             try:
                 path_typo = 'TK' if typo == 'Token' else 'HT'
-                dlPath = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/{path_typo}'
+                dlPath = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/{path_typo}'
                 with open(f'{dlPath}/{name}.png', 'wb') as c:
                     c.write(pic)
             except FileNotFoundError:
@@ -355,7 +353,7 @@ class CardImport(UI_MainWindow, QMainWindow):
     def DeckListRefresh(self):
 
         self.currentLibraryList.clear()
-        self.opennamelist = Collector.scan_xml(self.syspath, self.filename)[0]
+        self.opennamelist = Collector.scan_xml(self.LIB_PATH, self.LIB_NAME)[0]
         self.currentLibraryList.addItems(self.opennamelist)
 
 
@@ -364,12 +362,12 @@ class CardImport(UI_MainWindow, QMainWindow):
             return
         # удаление кешированной картинки из pics
         try:
-            delPath = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/HT/{self.currentLibraryList.currentItem().text()}.png'
+            delPath = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/HT/{self.currentLibraryList.currentItem().text()}.png'
             os.remove(delPath)
             print('deleteing', delPath)
         except (OSError, AttributeError):
             try:
-                delPath = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/TK/{self.currentLibraryList.currentItem().text()}.png'
+                delPath = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/TK/{self.currentLibraryList.currentItem().text()}.png'
                 os.remove(delPath)
                 print('deleteing', delPath)
             except (OSError, AttributeError):
@@ -382,7 +380,7 @@ class CardImport(UI_MainWindow, QMainWindow):
         except AttributeError as e:
             print('removeEntry() exception AttributeError: ', e)
             return
-        Collector.delete_entry(name, self.syspath, self.filename)
+        Collector.delete_entry(name, self.LIB_PATH, self.LIB_NAME)
         self.currentLibraryList.takeItem(idx)
         self.DeckListRefresh()
         self.FilterLibraryList()
@@ -395,7 +393,7 @@ class CardImport(UI_MainWindow, QMainWindow):
     def showdialog2(self):
         dirbr = QFileDialog.getExistingDirectory(self, "Select Folder")
         path = str(dirbr)
-        name = self.filename
+        name = self.LIB_NAME
         if not path:
             return
         
@@ -409,18 +407,16 @@ class CardImport(UI_MainWindow, QMainWindow):
         b.write('<cockatrice_carddatabase version="3">\n\t<cards>\n\t</cards>\n</cockatrice_carddatabase>')
         b.close
 
-        self.syspath = path + '/'
-        self.filename = name
+        self.LIB_PATH = path + '/'
+        self.LIB_NAME = name
         self.enableWidgets()
 
     def enableWidgets(self, allb=0):
-        print('enablling')
         self.impblank.setEnabled(True)
         self.buttonImport.setEnabled(True)
         self.buttonRemove.setEnabled(True)
         self.openDirectory.setEnabled(True)
         self.serachLibraryField.setEnabled(True)
-        print('enabllingss')
         if allb:
             self.cardtype.setEnabled(True)
             self.cardrarity.setEnabled(True)
@@ -436,7 +432,7 @@ class CardImport(UI_MainWindow, QMainWindow):
 
 
     def showdialog3(self):
-        path = os.path.realpath(self.syspath)
+        path = os.path.realpath(self.LIB_PATH)
         os.startfile(path)
 
     def showdialog4(self):

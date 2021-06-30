@@ -65,7 +65,7 @@ class HearthTrice_Main(QMainWindow):
         self.switch_DeckEditor()
 
 
-        # Создать файл настроек
+        # Чтение файла настроек
         self.config = ConfigParser()
         self.config_path = 'assets/config.ini'
         self.LIB_PATH = ''
@@ -110,7 +110,8 @@ class HearthTrice_Main(QMainWindow):
         
         print(f'config update: {var}={value}')
 
-        #CardImport.config_update(CardImport)
+        CardImport.config_update(self.win3)
+        DeckEditor.config_update(self.win1)
 
 if __name__ == '__main__':
 
