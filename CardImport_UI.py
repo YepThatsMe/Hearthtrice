@@ -20,9 +20,7 @@ class UI_MainWindow(object):
 
     def setupUI(MW, self):
 
-        MW.setWindowTitle("Hearthtrice Manager")
-        MW.setFixedSize(520,650)
-        MW.setWindowIcon(QIcon(resource_path('assets/icons/icon.ico')))
+        # MW.setFixedSize(520,650)
         self.syspath = os.getcwd()
         self.filename = 'newcardset.xml'
         

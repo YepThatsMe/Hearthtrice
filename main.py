@@ -1,18 +1,21 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QApplication, QAction, QStackedWidget, QFileDialog)
-
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
-import sys
+
+from configparser import ConfigParser
+import sys, os
 
 from Arena import Arena
 from CardImport import CardImport
 from DeckEditor import DeckEditor
 
-import config
 
 class HearthTrice_Main(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.setWindowIcon(QIcon('assets/icons/icon.ico'))
+        self.setWindowTitle('HearthTrice Manager')
 
         self.win1 = DeckEditor()
         self.win2 = Arena()
@@ -41,17 +44,17 @@ class HearthTrice_Main(QMainWindow):
         tb_deckEditor.setStatusTip("Open Deck Editor")
         tb_deckEditor.triggered.connect(self.switch_DeckEditor)
 
-        tb_importModule = QAction(QIcon("assets/icons/error2.png"), "&Import", self)
-        tb_importModule.setStatusTip("Open Card Import")
-        tb_importModule.setShortcut("Ctrl+3")
-        tb_importModule.triggered.connect(self.switch_ImportModule)
+        tb_cardImport = QAction(QIcon("assets/icons/error2.png"), "&Import", self)
+        tb_cardImport.setStatusTip("Open Card Import")
+        tb_cardImport.setShortcut("Ctrl+3")
+        tb_cardImport.triggered.connect(self.switch_CardImport)
         
 
-        self.toolbar = self.addToolBar("Login")
+        self.toolbar = self.addToolBar('')
         self.toolbar.addAction(tb_openLibrary)
         self.toolbar.addAction(tb_arena)
         self.toolbar.addAction(tb_deckEditor)
-        self.toolbar.addAction(tb_importModule)
+        self.toolbar.addAction(tb_cardImport)
         self.toolbar.setIconSize(QSize(150,35))
         self.toolbar.setMovable(0)
 
@@ -62,23 +65,33 @@ class HearthTrice_Main(QMainWindow):
         self.switch_DeckEditor()
 
 
+        # Создать файл настроек
+        self.config = ConfigParser()
+        self.config_path = 'assets/config.ini'
+        self.LIB_PATH = ''
+
+        try:
+            self.config.read(self.config_path)
+            self.LIB_PATH = self.config.get('GENERAL', 'LIB_PATH')
+        except Exception as e:
+            print(e)
+            print('Creating config.ini file...')
+            self.config.read(self.config_path)
+            self.config.add_section('GENERAL')
+            self.config.set('GENERAL', 'LIB_PATH', '')
+            with open(self.config_path, 'w') as cfg:
+                self.config.write(cfg)
+
+
 
     def open_Library(self):
 
-        fname = QFileDialog.getOpenFileName(self, 'Open XML library...')[0]
-        if fname == '' or not fname:
+        path = QFileDialog.getOpenFileName(self, 'Open XML library...')[0]
+        if path == '' or not path:
             return
-        a = fname.split('/')
-        name = a[-1]
 
-        self.syspath = ''
-        for x in a[:-1]:
-            self.syspath += x + '/'
-        self.library = name
-
-        print(self.library, fname, config.LIBRARY_PATH)
-        config.set_path(fname)
-        print(self.library, fname, config.LIBRARY_PATH)
+        self.update_config('GENERAL', 'LIB_PATH', path)
+        print(f'config update: LIB_PATH={path}')
 
     def switch_DeckEditor(self):
         self.stack.setCurrentWidget(self.win1)
@@ -86,10 +99,14 @@ class HearthTrice_Main(QMainWindow):
     def switch_Arena(self):
         self.stack.setCurrentWidget(self.win2)
 
-    def switch_ImportModule(self):
+    def switch_CardImport(self):
         self.stack.setCurrentWidget(self.win3)
 
-    
+    def update_config(self, section, var, value):
+        self.config.read(self.config_path)
+        self.config.set(section, var, value)
+        with open(self.config_path, 'w') as cfg:
+            self.config.write(cfg)
 
 if __name__ == '__main__':
 

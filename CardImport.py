@@ -5,9 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from functools import partial
 import webbrowser as wb
-
-
-import config
+from configparser import ConfigParser
 
 import sys, os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
