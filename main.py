@@ -6,14 +6,14 @@ from configparser import ConfigParser
 import sys, os
 
 from Arena import Arena
-from CardImport import CardImport
+from CardImport import Card, CardImport
 from DeckEditor import DeckEditor
 
 
 class HearthTrice_Main(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        
         self.setWindowIcon(QIcon('assets/icons/icon.ico'))
         self.setWindowTitle('HearthTrice Manager')
 
@@ -81,17 +81,17 @@ class HearthTrice_Main(QMainWindow):
             self.config.set('GENERAL', 'LIB_PATH', '')
             with open(self.config_path, 'w') as cfg:
                 self.config.write(cfg)
+        
 
 
 
     def open_Library(self):
 
-        path = QFileDialog.getOpenFileName(self, 'Open XML library...')[0]
+        path = QFileDialog.getOpenFileName(self, 'Open XML library...', self.LIB_PATH)[0]
         if path == '' or not path:
             return
 
         self.update_config('GENERAL', 'LIB_PATH', path)
-        print(f'config update: LIB_PATH={path}')
 
     def switch_DeckEditor(self):
         self.stack.setCurrentWidget(self.win1)
@@ -107,6 +107,10 @@ class HearthTrice_Main(QMainWindow):
         self.config.set(section, var, value)
         with open(self.config_path, 'w') as cfg:
             self.config.write(cfg)
+        
+        print(f'config update: {var}={value}')
+
+        #CardImport.config_update(CardImport)
 
 if __name__ == '__main__':
 

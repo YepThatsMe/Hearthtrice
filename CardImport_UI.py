@@ -20,14 +20,6 @@ class UI_MainWindow(object):
 
     def setupUI(MW, self):
 
-        # MW.setFixedSize(520,650)
-        self.syspath = os.getcwd()
-        self.filename = 'newcardset.xml'
-        
-
-        openFile = QAction('Open...', MW)
-        openFile.setShortcut('Ctrl+O')
-        openFile.triggered.connect(self.showdialog)
 
         newFile = QAction('Create blank...', MW)
         newFile.setShortcut('Ctrl+N')
@@ -47,7 +39,6 @@ class UI_MainWindow(object):
         menu = MW.menuBar()
         fileMenu = menu.addMenu('&File')
         fileMenu.addAction(newFile)
-        fileMenu.addAction(openFile)
         fileMenu.addAction(self.openDirectory)
         menu.addAction(self.login)
         menu.addAction(self.askhelp)

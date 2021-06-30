@@ -148,8 +148,29 @@ class CardImport(UI_MainWindow, QMainWindow):
         super().__init__()
         self.setupUI(self) 
 
+
         self.askhelp.triggered.connect(self.dialog)
         self.login.triggered.connect(self.log_into_ht)
+    
+    def config_update(self):
+
+        self.config = ConfigParser()
+        self.config.read('assets/config.ini')
+
+        # self.syspath = os.getcwd()
+        path1 = self.config.get('GENERAL', 'LIB_PATH')
+        path1 = path1.split('/')
+        name = path1[-1]
+
+        self.syspath = ''
+        for x in path1[:-1]:
+            self.syspath += x + '/'
+        self.filename = name
+
+        self.DeckListRefresh()
+        print('i')
+        self.enableWidgets(allb=1)
+        print('ii')
 
     @pyqtSlot(bytes)
     def on_cacheChanged(self, data_tuple):
@@ -370,22 +391,6 @@ class CardImport(UI_MainWindow, QMainWindow):
         print(f'removing entry {name} by idx {idx}')
 
         
-
-    def showdialog(self):
-
-        fname = QFileDialog.getOpenFileName(self, 'Open XML')[0]
-        if fname == '':
-            return
-        a = fname.split('/')
-        name = a[-1]
-
-        self.syspath = ''
-        for x in a[:-1]:
-            self.syspath += x + '/'
-        self.filename = name
-
-        self.DeckListRefresh()
-        self.enableWidgets()
     
     def showdialog2(self):
         dirbr = QFileDialog.getExistingDirectory(self, "Select Folder")
@@ -409,11 +414,13 @@ class CardImport(UI_MainWindow, QMainWindow):
         self.enableWidgets()
 
     def enableWidgets(self, allb=0):
+        print('enablling')
         self.impblank.setEnabled(True)
         self.buttonImport.setEnabled(True)
         self.buttonRemove.setEnabled(True)
         self.openDirectory.setEnabled(True)
         self.serachLibraryField.setEnabled(True)
+        print('enabllingss')
         if allb:
             self.cardtype.setEnabled(True)
             self.cardrarity.setEnabled(True)
