@@ -68,7 +68,7 @@ class DeckEditor(QMainWindow, UI_MainWindow):
         except:
             QMessageBox.about(self, "Ошибка", "Не найдена папка с изображением карт")
 
-    def func_read(path):
+    def func_read(self, path):
         hs = ET.parse(path)
         enter = hs.findall("cards/card[type = 'Minion']") + hs.findall("cards/card[type = 'Spell']") + hs.findall(
             "cards/card[type = 'Weapon']") + hs.findall("cards/card[type = 'Hero']")
