@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QTableWidgetItem, QInputDialog, QDialog, QAction, QFileDialog, QMessageBox
 
 from functools import partial
+from configparser import ConfigParser
 import xml.etree.ElementTree as ET
 import os
 
@@ -32,9 +33,8 @@ class Roll:
         for i in esc.keys():
             a.append(i)
 
-        path = path[:path.rfind('/')]
-        os.chdir(path)
-        path = r"../pics/downloadedPics/HT/"
+        # ! Закоментил chdir потому что она меняет расположение программы и ломает остальные пути, надо как то пофиксить
+        # os.chdir(path)
         l = os.listdir(path=path)
 
         if len(esc) == len(l):
@@ -109,24 +109,24 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
         self.esc = None
 
         self.menu.setNativeMenuBar(True)
-        openlib = QAction('Open library...', self)
-        openlib.setShortcut("Ctrl+O")
-        openlib.triggered.connect(self.open_lib)
+        # openlib = QAction('Open library...', self)
+        # openlib.setShortcut("Ctrl+O")
+        # openlib.triggered.connect(self.open_lib)
 
         savedeck = QAction("Save as...")
         savedeck.setShortcut("Ctrl+S")
         # savedeck.triggered.connect(self.save_deck)
 
-        openlibrary = self.menu.addMenu("&File")
-        g = self.menu.addMenu("&Test")
-        openlibrary.addAction(openlib)
-        g.addAction(savedeck)
+        # openlibrary = self.menu.addMenu("&File")
+        # openlibrary.addAction(openlib)
 
+        g = self.menu.addMenu("&Test")
+        g.addAction(savedeck)
 
         self.data_name = []
         self.row = self.tableWidget.rowCount()
         self.data_cnt = []
-        # self.path = rf'prog\\Cache\\'
+        # self.path_HT = rf'prog\\Cache\\'
         # self.path_std = r"data\\pics\\"
 
         self.tableWidget.horizontalHeader().setDefaultSectionSize(55)
@@ -155,15 +155,28 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
 
         self.horizontalSlider.setValue(20)
 
-    def open_lib(self):
-        self.path_l = QFileDialog.getOpenFileName(self, "Open library")[0]
-        self.esc = Roll.read(self.path_l)
-        Roll.loadPic(self.esc, self.path_l)
-        os.chdir(self.path_l[:self.path_l.rfind('/')])
-        self.path = '../pics/downloadedPics/HT/'
-        self.path_std = '../pics/'
-        self.k = Roll.roll(self.esc)
+    # def open_lib(self):
+    #     self.path_l = QFileDialog.getOpenFileName(self, "Open library")[0]
+    #     self.esc = Roll.read(self.path_l)
+    #     Roll.loadPic(self.esc, self.path_l)
+    #     os.chdir(self.path_l[:self.path_l.rfind('/')])
+    #     self.path_HT = '../pics/downloadedPics/HT/'
+    #     self.path_std = '../pics/'
+    #     self.k = Roll.roll(self.esc)
 
+    def config_update(self):
+
+        self.config = ConfigParser()
+        self.config.read('assets/config.ini')
+        self.path_l = self.config.get('GENERAL', 'LIB_PATH')
+        self.path_std = self.config.get('GENERAL', 'PIC_PATH')
+        self.path_HT = self.path_std + '/downloadedPics/HT/'
+        self.path_deck = self.config.get('GENERAL', 'DECK_PATH')
+
+        self.esc = Roll.read(self.path_l)
+        Roll.loadPic(self.esc, self.path_HT)
+        # os.chdir(self.path_l[:self.path_l.rfind('/')])
+        self.k = Roll.roll(self.esc)
 
     def get_data(self):
         self.data_name = []
@@ -192,11 +205,11 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
                     self.get_data()
 
                 self.k = Roll.roll(self.esc)
-                self.Card1.setIcon(QtGui.QIcon(rf'{self.path}{self.k[0]}'))
+                self.Card1.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[0]}'))
                 self.Card1.setIconSize(QtCore.QSize(231, 311))
-                self.Card2.setIcon(QtGui.QIcon(rf'{self.path}{self.k[1]}'))
+                self.Card2.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[1]}'))
                 self.Card2.setIconSize(QtCore.QSize(231, 311))
-                self.Card3.setIcon(QtGui.QIcon(rf'{self.path}{self.k[2]}'))
+                self.Card3.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[2]}'))
                 self.Card3.setIconSize(QtCore.QSize(231, 311))
 
             elif int(self.card_cnt.text()) <= sum(self.data_cnt) + 1 <= 30:
@@ -270,11 +283,11 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
         self.horizontalSlider.setEnabled(False)
         self.Dialog.close()
         self.setting_button.setEnabled(False)
-        self.Card1.setIcon(QtGui.QIcon(rf'{self.path}{self.k[0]}'))
+        self.Card1.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[0]}'))
         self.Card1.setIconSize(QtCore.QSize(231, 311))
-        self.Card2.setIcon(QtGui.QIcon(rf'{self.path}{self.k[1]}'))
+        self.Card2.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[1]}'))
         self.Card2.setIconSize(QtCore.QSize(231, 311))
-        self.Card3.setIcon(QtGui.QIcon(rf'{self.path}{self.k[2]}'))
+        self.Card3.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[2]}'))
         self.Card3.setIconSize(QtCore.QSize(231, 311))
         self.Card1.setEnabled(True)
         self.Card2.setEnabled(True)
@@ -288,7 +301,7 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
             return
 
         deck_name, ok = QInputDialog.getText(self, 'Ваша колода готова', 'Введите название колоды')
-        deck_name = f"../decks/{deck_name}"
+        deck_name = self.path_deck + f"/{deck_name}"
 
 
         Roll.create(self.data_name, self.data_cnt, deck_name, self.esc)

@@ -54,17 +54,17 @@ class DeckEditor(QMainWindow, UI_MainWindow):
         self.config = ConfigParser()
         self.config.read('assets/config.ini')
 
-        # self.syspath = os.getcwd()
         self.library = self.config.get('GENERAL', 'LIB_PATH')
         self.path = self.library[:self.library.rfind('/')]
-        os.chdir(self.path)
+
+        self.pic_path = self.config.get('GENERAL', 'PIC_PATH')
         self.relist()
 
         
         try:
-            os.chdir('../pics/downloadedPics/')
-            self.pics_main = os.getcwd() + '/HT'
-            self.pics_token = os.getcwd() + '/TK'
+            #os.chdir('../pics/downloadedPics/')
+            self.pics_main = self.pic_path + '/HT'
+            self.pics_token = self.pic_path + '/TK'
         except:
             QMessageBox.about(self, "Ошибка", "Не найдена папка с изображением карт")
 

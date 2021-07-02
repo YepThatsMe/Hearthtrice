@@ -162,6 +162,10 @@ class CardImport(UI_MainWindow, QMainWindow):
         path1 = path1.split('/')
         name = path1[-1]
 
+        self.path_pics = self.config.get('GENERAL', 'PIC_PATH')
+        self.path_HT = self.path_pics + '/downloadedPics/HT/'
+        self.path_TK = self.path_pics + '/downloadedPics/TK/'
+
         self.LIB_PATH = ''
         for x in path1[:-1]:
             self.LIB_PATH += x + '/'
@@ -214,7 +218,7 @@ class CardImport(UI_MainWindow, QMainWindow):
         print(name)
 
         try:
-            file = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/HT/{name}.png'
+            file = self.path_HT + f'{name}.png'
 
             with open(file, 'rb') as c:
                 pic = c.read()
@@ -222,7 +226,7 @@ class CardImport(UI_MainWindow, QMainWindow):
                 self.widgetIMG.setPixmap(self.pixmap.scaledToHeight(380))
         except FileNotFoundError as e:
             try:
-                file = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/TK/{name}.png'
+                file = self.path_TK + f'{name}.png'
                 with open(file, 'rb') as c:
                     pic = c.read()
                 self.pixmap.loadFromData(pic)
@@ -333,7 +337,7 @@ class CardImport(UI_MainWindow, QMainWindow):
 
             try:
                 path_typo = 'TK' if typo == 'Token' else 'HT'
-                dlPath = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/{path_typo}'
+                dlPath = self.path_pics + f'downloadedPics/{path_typo}'
                 with open(f'{dlPath}/{name}.png', 'wb') as c:
                     c.write(pic)
             except FileNotFoundError:
@@ -346,8 +350,6 @@ class CardImport(UI_MainWindow, QMainWindow):
             self.DeckListRefresh()
             if index != indexmax:
                 self.widgetList.setCurrentIndex(index+1)
-            else:
-                pass
        
 
     def DeckListRefresh(self):
@@ -362,12 +364,12 @@ class CardImport(UI_MainWindow, QMainWindow):
             return
         # удаление кешированной картинки из pics
         try:
-            delPath = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/HT/{self.currentLibraryList.currentItem().text()}.png'
+            delPath = self.path_HT + f'{self.currentLibraryList.currentItem().text()}.png'
             os.remove(delPath)
             print('deleteing', delPath)
         except (OSError, AttributeError):
             try:
-                delPath = str(os.path.dirname(os.path.dirname(self.LIB_PATH))) + f'/pics/downloadedPics/TK/{self.currentLibraryList.currentItem().text()}.png'
+                delPath = self.path_TK + f'{self.currentLibraryList.currentItem().text()}.png'
                 os.remove(delPath)
                 print('deleteing', delPath)
             except (OSError, AttributeError):

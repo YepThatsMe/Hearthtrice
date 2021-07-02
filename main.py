@@ -34,15 +34,15 @@ class HearthTrice_Main(QMainWindow):
         tb_openLibrary.setStatusTip("Open card's library")
         tb_openLibrary.triggered.connect(self.open_Library) 
 
+        tb_deckEditor = QAction(QIcon("assets/icons/icon.jpg"), "&Deck Editor", self)
+        tb_deckEditor.setShortcut("Ctrl+1")
+        tb_deckEditor.setStatusTip("Open Deck Editor")
+        tb_deckEditor.triggered.connect(self.switch_DeckEditor)
+
         tb_arena = QAction(QIcon("assets/icons/Jiraiya.jpg"), "&Arena", self)
         tb_arena.setShortcut("Ctrl+2")
         tb_arena.setStatusTip("Open Arena")
         tb_arena.triggered.connect(self.switch_Arena)
-
-        tb_deckEditor = QAction(QIcon("assets/icons/icon.jpg"), "&Editor", self)
-        tb_deckEditor.setShortcut("Ctrl+1")
-        tb_deckEditor.setStatusTip("Open Deck Editor")
-        tb_deckEditor.triggered.connect(self.switch_DeckEditor)
 
         tb_cardImport = QAction(QIcon("assets/icons/error2.png"), "&Import", self)
         tb_cardImport.setStatusTip("Open Card Import")
@@ -52,8 +52,8 @@ class HearthTrice_Main(QMainWindow):
 
         self.toolbar = self.addToolBar('')
         self.toolbar.addAction(tb_openLibrary)
-        self.toolbar.addAction(tb_arena)
         self.toolbar.addAction(tb_deckEditor)
+        self.toolbar.addAction(tb_arena)
         self.toolbar.addAction(tb_cardImport)
         self.toolbar.setIconSize(QSize(150,35))
         self.toolbar.setMovable(0)
@@ -91,7 +91,20 @@ class HearthTrice_Main(QMainWindow):
         if path == '' or not path:
             return
 
-        self.update_config('GENERAL', 'LIB_PATH', path)
+        path_pic = path[:path.rfind('/')]
+        path_pic = path_pic[:path_pic.rfind('/')] + '/pics'
+
+        path_deck = path[:path.rfind('/')]
+        path_deck = path_deck[:path_deck.rfind('/')] + '/decks'
+
+
+        self.change_config('GENERAL', 'LIB_PATH', path)
+        self.change_config('GENERAL', 'PIC_PATH', path_pic)
+        self.change_config('GENERAL', 'DECK_PATH', path_deck)
+        
+        Arena.config_update(self.win2)
+        CardImport.config_update(self.win3)
+        DeckEditor.config_update(self.win1)
 
     def switch_DeckEditor(self):
         self.stack.setCurrentWidget(self.win1)
@@ -102,16 +115,14 @@ class HearthTrice_Main(QMainWindow):
     def switch_CardImport(self):
         self.stack.setCurrentWidget(self.win3)
 
-    def update_config(self, section, var, value):
+    def change_config(self, section, var, value):
         self.config.read(self.config_path)
         self.config.set(section, var, value)
         with open(self.config_path, 'w') as cfg:
             self.config.write(cfg)
         
-        print(f'config update: {var}={value}')
+        print(f'config changed: {var}={value}')
 
-        CardImport.config_update(self.win3)
-        DeckEditor.config_update(self.win1)
 
 if __name__ == '__main__':
 
