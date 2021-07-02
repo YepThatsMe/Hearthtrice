@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QDesktopWidget, QApplication, QAction,
                              QMessageBox, QFileDialog, QStackedWidget, QComboBox, QHBoxLayout,
                              QVBoxLayout, QLabel, QLineEdit, QCompleter, QGridLayout,
-                             QTableWidget, QProgressBar, QTableWidgetItem)
+                             QTableWidget, QProgressBar, QTableWidgetItem, QAbstractItemView)
 
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
@@ -41,6 +41,10 @@ class UI_MainWindow(object):
         self.list_cards.setColumnCount(5)
         self.list_cards.setSortingEnabled(True)
         self.list_cards.setHorizontalHeaderLabels(["Имя", "Тип", "Класс", "Редкость", "Стоимость"])
+        # self.list_cards.setShowGrid(1)
+        self.list_cards.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.list_cards.setSelectionMode(QAbstractItemView.NoSelection)
+        self.list_cards.setGridStyle(Qt.SolidLine)
 
 
 
