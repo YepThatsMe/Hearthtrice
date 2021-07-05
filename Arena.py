@@ -35,8 +35,14 @@ class Roll:
 
         # ! Закоментил chdir потому что она меняет расположение программы и ломает остальные пути, надо как то пофиксить
         # os.chdir(path)
-        l = os.listdir(path=path)
 
+        # Обрываю инициализацию арены, если не найден путь к картинкам. Надо как-то решить.
+        try:
+            l = os.listdir(path=path)
+        except FileNotFoundError as e:
+            print('Не найден путь к картинкам', path)
+            return
+        
         if len(esc) == len(l):
             return
         if len(a) < len(l):
@@ -174,7 +180,9 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
         self.path_deck = self.config.get('GENERAL', 'DECK_PATH')
 
         self.esc = Roll.read(self.path_l)
-        Roll.loadPic(self.esc, self.path_HT)
+        if not Roll.loadPic(self.esc, self.path_HT):
+            self.esc = 'NoPicPath'
+            return # Завершаем если loadPic завершился в except'е
         # os.chdir(self.path_l[:self.path_l.rfind('/')])
         self.k = Roll.roll(self.esc)
 
@@ -253,6 +261,10 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
         if self.esc is None:
             QMessageBox.about(self, "Ошибка", "Сначала выберите библиотеку карт")
             return
+        elif self.esc == 'NoPicPath':
+            QMessageBox.about(self, "Ошибка",
+                            "Не найден путь к изображениям карт")
+            return
 
         self.Dialog = QDialog()
         self.Dialog.setWindowTitle('Подтверждение')
@@ -298,6 +310,10 @@ class Arena(QtWidgets.QMainWindow, UI_MainWindow):
         if self.esc is None:
             QMessageBox.about(self, "Ошибка",
                               "Библиотека карт недоступна, вы не можете сейчас сохранить")
+            return
+        elif self.esc == 'NoPicPath':
+            QMessageBox.about(self, "Ошибка",
+                              "Не найден путь к изображениям карт")
             return
 
         deck_name, ok = QInputDialog.getText(self, 'Ваша колода готова', 'Введите название колоды')

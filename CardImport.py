@@ -395,7 +395,7 @@ class CardImport(UI_MainWindow, QMainWindow):
     def showdialog2(self):
         dirbr = QFileDialog.getExistingDirectory(self, "Select Folder")
         path = str(dirbr)
-        name = self.LIB_NAME
+        name = 'new_xml_library'
         if not path:
             return
         
