@@ -4,13 +4,109 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QTableWidgetItem, QInputDialog, QDialog, QAction, QFileDialog, QMessageBox
 
-import Arena3_3
-import roll
 from functools import partial
+from configparser import ConfigParser
+import xml.etree.ElementTree as ET
 import os
 
+from Arena_UI import UI_MainWindow
 
-class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
+class Roll:
+
+    def read(path):
+
+        hs = ET.parse(path)
+        enter = hs.findall("cards/card[type = 'Minion']") + hs.findall("cards/card[type = 'Spell']") + hs.findall(
+            "cards/card[type = 'Weapon']") + hs.findall("cards/card[type = 'Hero']")
+        esc = {i[0].text + ".png": "".join(i[2].attrib.values()) for i in enter}
+        # count = int(input('Введите число карт:\n'))
+        return esc
+
+
+
+    def loadPic(esc, path):
+        import requests
+        import os
+        from PIL import Image
+        from io import BytesIO
+        a = []
+        for i in esc.keys():
+            a.append(i)
+
+        # ! Закоментил chdir потому что она меняет расположение программы и ломает остальные пути, надо как то пофиксить
+        # os.chdir(path)
+
+        # Обрываю инициализацию арены, если не найден путь к картинкам. Надо как-то решить.
+        try:
+            l = os.listdir(path=path)
+        except FileNotFoundError as e:
+            print('Не найден путь к картинкам', path)
+            return
+        
+        if len(esc) == len(l):
+            return
+        if len(a) < len(l):
+            diff = set(l).difference(set(a))
+            diff = list(diff)
+
+            for j in diff:
+                print(j)
+                print(esc)
+                if j in esc:
+                    r = requests.get(esc[j])
+                    im = Image.open(BytesIO(r.content))
+                    im.save(f'{path}{j}.png')
+
+        if len(a) > len(l):
+            diff = set(a).difference(set(l))
+            diff = list(diff)
+
+            for j in diff:
+                if j in esc:
+                    r = requests.get(esc[j])
+                    im = Image.open(BytesIO(r.content))
+                    im.save(f'{path}{j}.png')
+
+
+    def roll(esc):
+        import numpy.random as rnd
+        roll = rnd.choice(list(esc.keys()), size=3, replace=False)
+        return roll
+
+    def roll_std(Hero, path_std):
+        import numpy.random as rnd
+        import os
+        heroes = {'Маг': 'Mage', 'Друид': "Druid", "Охотник": "Hunter", "Паладин": "Paladin",
+                "Жрец": "Priest", "Разбойник": "Rogue", "Шаман": "Shaman",
+                "Чернокнижник": "Warlock", "Воин": "Warrior"}
+        path = f"{path_std}{heroes[Hero]}"
+        cards = os.listdir(path=path)
+        roll_std_l = rnd.choice(cards, size=3, replace=False)
+        return roll_std_l
+
+
+    def create(names, cnt, deck_name, esc):
+        import xml.etree.ElementTree as ET
+        deck = ET.Element('cockatrice_deck')
+        deck.set('version', '1')
+        main = ET.Element('zone')
+        main.set('name', 'main')
+
+        def add_card(names, cnt, ind):
+            # global esc
+            if names[ind] in esc:
+                ET.SubElement(main, 'card', attrib={'number': f'{cnt[ind]}', 'name': names[ind][:-4]})
+            else:
+                ET.SubElement(main, 'card', attrib={'number': f'{cnt[ind]}', 'name': names[ind]})
+        for i in range(len(names)):
+            add_card(names, cnt, i)
+
+        deck.append(main)
+        deck = ET.ElementTree(deck)
+        deck.write(f'{deck_name}.cod')
+
+
+class Arena(QtWidgets.QMainWindow, UI_MainWindow):
     def __init__(self):
 
         super().__init__()
@@ -19,24 +115,24 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
         self.esc = None
 
         self.menu.setNativeMenuBar(True)
-        openlib = QAction('Open library...', self)
-        openlib.setShortcut("Alt+O")
-        openlib.triggered.connect(self.open_lib)
+        # openlib = QAction('Open library...', self)
+        # openlib.setShortcut("Ctrl+O")
+        # openlib.triggered.connect(self.open_lib)
 
         savedeck = QAction("Save as...")
         savedeck.setShortcut("Ctrl+S")
         # savedeck.triggered.connect(self.save_deck)
 
-        openlibrary = self.menu.addMenu("&File")
-        g = self.menu.addMenu("&Test")
-        openlibrary.addAction(openlib)
-        g.addAction(savedeck)
+        # openlibrary = self.menu.addMenu("&File")
+        # openlibrary.addAction(openlib)
 
+        g = self.menu.addMenu("&Test")
+        g.addAction(savedeck)
 
         self.data_name = []
         self.row = self.tableWidget.rowCount()
         self.data_cnt = []
-        # self.path = rf'prog\\Cache\\'
+        # self.path_HT = rf'prog\\Cache\\'
         # self.path_std = r"data\\pics\\"
 
         self.tableWidget.horizontalHeader().setDefaultSectionSize(55)
@@ -65,15 +161,30 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
 
         self.horizontalSlider.setValue(20)
 
-    def open_lib(self):
-        self.path_l = QFileDialog.getOpenFileName(self, "Open library")[0]
-        self.esc = roll.read(self.path_l)
-        roll.loadPic(self.esc, self.path_l)
-        os.chdir(self.path_l[:self.path_l.rfind('/')])
-        self.path = '../pics/downloadedPics/HT/'
-        self.path_std = '../pics/'
-        self.k = roll.roll(self.esc)
+    # def open_lib(self):
+    #     self.path_l = QFileDialog.getOpenFileName(self, "Open library")[0]
+    #     self.esc = Roll.read(self.path_l)
+    #     Roll.loadPic(self.esc, self.path_l)
+    #     os.chdir(self.path_l[:self.path_l.rfind('/')])
+    #     self.path_HT = '../pics/downloadedPics/HT/'
+    #     self.path_std = '../pics/'
+    #     self.k = Roll.roll(self.esc)
 
+    def config_update(self):
+
+        self.config = ConfigParser()
+        self.config.read('assets/config.ini')
+        self.path_l = self.config.get('GENERAL', 'LIB_PATH')
+        self.path_std = self.config.get('GENERAL', 'PIC_PATH')
+        self.path_HT = self.path_std + '/downloadedPics/HT/'
+        self.path_deck = self.config.get('GENERAL', 'DECK_PATH')
+
+        self.esc = Roll.read(self.path_l)
+        if not Roll.loadPic(self.esc, self.path_HT):
+            self.esc = 'NoPicPath'
+            return # Завершаем если loadPic завершился в except'е
+        # os.chdir(self.path_l[:self.path_l.rfind('/')])
+        self.k = Roll.roll(self.esc)
 
     def get_data(self):
         self.data_name = []
@@ -101,12 +212,12 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
                     self.tableWidget.setItem(i, 1, QTableWidgetItem(str(self.data_cnt[i] + 1)))
                     self.get_data()
 
-                self.k = roll.roll(self.esc)
-                self.Card1.setIcon(QtGui.QIcon(rf'{self.path}{self.k[0]}'))
+                self.k = Roll.roll(self.esc)
+                self.Card1.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[0]}'))
                 self.Card1.setIconSize(QtCore.QSize(231, 311))
-                self.Card2.setIcon(QtGui.QIcon(rf'{self.path}{self.k[1]}'))
+                self.Card2.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[1]}'))
                 self.Card2.setIconSize(QtCore.QSize(231, 311))
-                self.Card3.setIcon(QtGui.QIcon(rf'{self.path}{self.k[2]}'))
+                self.Card3.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[2]}'))
                 self.Card3.setIconSize(QtCore.QSize(231, 311))
 
             elif int(self.card_cnt.text()) <= sum(self.data_cnt) + 1 <= 30:
@@ -123,7 +234,7 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
                     self.tableWidget.setItem(i, 1, QTableWidgetItem(str(self.data_cnt[i] + 1)))
                     self.get_data()
 
-                self.k = roll.roll_std(self.hero, self.path_std)
+                self.k = Roll.roll_std(self.hero, self.path_std)
                 print(self.hero)
                 self.Card1.setIcon(QtGui.QIcon(rf'{self.path_std}{self.heroe_list[self.hero]}/{self.k[0]}'))
                 self.Card1.setIconSize(QtCore.QSize(231, 311))
@@ -149,6 +260,10 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
 
         if self.esc is None:
             QMessageBox.about(self, "Ошибка", "Сначала выберите библиотеку карт")
+            return
+        elif self.esc == 'NoPicPath':
+            QMessageBox.about(self, "Ошибка",
+                            "Не найден путь к изображениям карт")
             return
 
         self.Dialog = QDialog()
@@ -180,11 +295,11 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
         self.horizontalSlider.setEnabled(False)
         self.Dialog.close()
         self.setting_button.setEnabled(False)
-        self.Card1.setIcon(QtGui.QIcon(rf'{self.path}{self.k[0]}'))
+        self.Card1.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[0]}'))
         self.Card1.setIconSize(QtCore.QSize(231, 311))
-        self.Card2.setIcon(QtGui.QIcon(rf'{self.path}{self.k[1]}'))
+        self.Card2.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[1]}'))
         self.Card2.setIconSize(QtCore.QSize(231, 311))
-        self.Card3.setIcon(QtGui.QIcon(rf'{self.path}{self.k[2]}'))
+        self.Card3.setIcon(QtGui.QIcon(rf'{self.path_HT}{self.k[2]}'))
         self.Card3.setIconSize(QtCore.QSize(231, 311))
         self.Card1.setEnabled(True)
         self.Card2.setEnabled(True)
@@ -196,15 +311,19 @@ class ExampleApp(QtWidgets.QMainWindow, Arena3_3.Ui_MainWindow):
             QMessageBox.about(self, "Ошибка",
                               "Библиотека карт недоступна, вы не можете сейчас сохранить")
             return
+        elif self.esc == 'NoPicPath':
+            QMessageBox.about(self, "Ошибка",
+                              "Не найден путь к изображениям карт")
+            return
 
         deck_name, ok = QInputDialog.getText(self, 'Ваша колода готова', 'Введите название колоды')
-        deck_name = f"../decks/{deck_name}"
+        deck_name = self.path_deck + f"/{deck_name}"
 
 
-        roll.create(self.data_name, self.data_cnt, deck_name, self.esc)
+        Roll.create(self.data_name, self.data_cnt, deck_name, self.esc)
 
 
-# roll.loadPic(roll.esc)
+# Roll.loadPic(Roll.esc)
 
 
 def main():

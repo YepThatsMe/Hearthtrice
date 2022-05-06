@@ -1,9 +1,11 @@
-from HearthtriceUI import MainWindow
-from HearthtriceUI import resource_path
+from CardImport_UI import UI_MainWindow
+from CardImport_UI import resource_path
 
 import requests
 from bs4 import BeautifulSoup
 from functools import partial
+import webbrowser as wb
+from configparser import ConfigParser
 
 import sys, os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, Qt, QThread, QTimer
@@ -86,10 +88,8 @@ class Collector():
         f.write(a)
         f.close()
 
-
-
 class Card:
-    def __init__(self, cardName, urlName, type, manacost, color, rarity, syspath, filename):
+    def __init__(self, cardName, urlName, type, manacost, color, rarity, libpath, filename):
         if type == 'Token':
             self.urlName = '\t\t\t<set picURL="' + urlName + '">TK</set>\n'
             self.tk = '\t\t\t<token>1</token>\n'
@@ -109,10 +109,10 @@ class Card:
         self.color = '\t\t\t<color>' + color + '</color>\n' if color != 'None' else '\t\t\t<color></color>\n'
         self.ls = ['\t\t<card>\n', self.cardName, self.tk, self.type, self.manacost, self.color, self.rarity, self.urlName, '\t\t</card> \n']
         self.a = []
-        self.syspath = syspath
+        self.libpath = libpath
         self.path = filename
     def open(self):
-        f = open(self.syspath + self.path, 'r')
+        f = open(self.libpath + self.path, 'r')
         self.a = f.readlines()
         f.close()
         while '\n' in self.a:
@@ -122,7 +122,7 @@ class Card:
         self.a.pop(-1)
         self.a = self.a + self.ls+ ['\t</cards>\n', '</cockatrice_carddatabase>']
     def write(self):
-        f = open(self.syspath + self.path, 'w')
+        f = open(self.libpath + self.path, 'w')
         for i in self.a:
             f.write(i)
         f.close()
@@ -142,13 +142,37 @@ class Cacher(QObject):
 
 
 
-class IM(MainWindow, QMainWindow):
+class CardImport(UI_MainWindow, QMainWindow):
 
     def __init__(self):
         super().__init__()
         self.setupUI(self) 
 
+
         self.askhelp.triggered.connect(self.dialog)
+        self.login.triggered.connect(self.log_into_ht)
+    
+    def config_update(self):
+
+        self.config = ConfigParser()
+        self.config.read('assets/config.ini')
+
+
+        path1 = self.config.get('GENERAL', 'LIB_PATH')
+        path1 = path1.split('/')
+        name = path1[-1]
+
+        self.path_pics = self.config.get('GENERAL', 'PIC_PATH')
+        self.path_HT = self.path_pics + '/downloadedPics/HT/'
+        self.path_TK = self.path_pics + '/downloadedPics/TK/'
+
+        self.LIB_PATH = ''
+        for x in path1[:-1]:
+            self.LIB_PATH += x + '/'
+        self.LIB_NAME = name
+
+        self.DeckListRefresh()
+        self.enableWidgets()
 
     @pyqtSlot(bytes)
     def on_cacheChanged(self, data_tuple):
@@ -194,7 +218,7 @@ class IM(MainWindow, QMainWindow):
         print(name)
 
         try:
-            file = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/HT/{name}.png'
+            file = self.path_HT + f'{name}.png'
 
             with open(file, 'rb') as c:
                 pic = c.read()
@@ -202,7 +226,7 @@ class IM(MainWindow, QMainWindow):
                 self.widgetIMG.setPixmap(self.pixmap.scaledToHeight(380))
         except FileNotFoundError as e:
             try:
-                file = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/TK/{name}.png'
+                file = self.path_TK + f'{name}.png'
                 with open(file, 'rb') as c:
                     pic = c.read()
                 self.pixmap.loadFromData(pic)
@@ -280,8 +304,8 @@ class IM(MainWindow, QMainWindow):
             color = self.colorline.text()
             rarity = self.cardrarity.currentText()
 
-            pathh = self.syspath
-            filenam = self.filename
+            pathh = self.LIB_PATH
+            filenam = self.LIB_NAME
 
             # удаление старой версии карты из коллекции.xml при дублировании
             print(f'scanning through {self.currentLibraryList.count()} cards')
@@ -291,7 +315,7 @@ class IM(MainWindow, QMainWindow):
                 if self.currentLibraryList.item(x).text() == a:
 
                     print('Replacing old entry..')
-                    Collector.delete_entry(name, self.syspath, self.filename)
+                    Collector.delete_entry(name, self.LIB_PATH, self.LIB_NAME)
                     self.DeckListRefresh()
                     self.FilterLibraryList()
                     self.removeEntry(x)
@@ -313,7 +337,7 @@ class IM(MainWindow, QMainWindow):
 
             try:
                 path_typo = 'TK' if typo == 'Token' else 'HT'
-                dlPath = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/{path_typo}'
+                dlPath = self.path_pics + f'downloadedPics/{path_typo}'
                 with open(f'{dlPath}/{name}.png', 'wb') as c:
                     c.write(pic)
             except FileNotFoundError:
@@ -326,14 +350,12 @@ class IM(MainWindow, QMainWindow):
             self.DeckListRefresh()
             if index != indexmax:
                 self.widgetList.setCurrentIndex(index+1)
-            else:
-                pass
        
 
     def DeckListRefresh(self):
 
         self.currentLibraryList.clear()
-        self.opennamelist = Collector.scan_xml(self.syspath, self.filename)[0]
+        self.opennamelist = Collector.scan_xml(self.LIB_PATH, self.LIB_NAME)[0]
         self.currentLibraryList.addItems(self.opennamelist)
 
 
@@ -342,12 +364,12 @@ class IM(MainWindow, QMainWindow):
             return
         # удаление кешированной картинки из pics
         try:
-            delPath = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/HT/{self.currentLibraryList.currentItem().text()}.png'
+            delPath = self.path_HT + f'{self.currentLibraryList.currentItem().text()}.png'
             os.remove(delPath)
             print('deleteing', delPath)
         except (OSError, AttributeError):
             try:
-                delPath = str(os.path.dirname(os.path.dirname(self.syspath))) + f'/pics/downloadedPics/TK/{self.currentLibraryList.currentItem().text()}.png'
+                delPath = self.path_TK + f'{self.currentLibraryList.currentItem().text()}.png'
                 os.remove(delPath)
                 print('deleteing', delPath)
             except (OSError, AttributeError):
@@ -360,7 +382,7 @@ class IM(MainWindow, QMainWindow):
         except AttributeError as e:
             print('removeEntry() exception AttributeError: ', e)
             return
-        Collector.delete_entry(name, self.syspath, self.filename)
+        Collector.delete_entry(name, self.LIB_PATH, self.LIB_NAME)
         self.currentLibraryList.takeItem(idx)
         self.DeckListRefresh()
         self.FilterLibraryList()
@@ -369,27 +391,11 @@ class IM(MainWindow, QMainWindow):
         print(f'removing entry {name} by idx {idx}')
 
         
-
-    def showdialog(self):
-
-        fname = QFileDialog.getOpenFileName(self, 'Open XML')[0]
-        if fname == '':
-            return
-        a = fname.split('/')
-        name = a[-1]
-
-        self.syspath = ''
-        for x in a[:-1]:
-            self.syspath += x + '/'
-        self.filename = name
-
-        self.DeckListRefresh()
-        self.enableWidgets()
     
     def showdialog2(self):
         dirbr = QFileDialog.getExistingDirectory(self, "Select Folder")
         path = str(dirbr)
-        name = self.filename
+        name = 'new_xml_library'
         if not path:
             return
         
@@ -403,8 +409,8 @@ class IM(MainWindow, QMainWindow):
         b.write('<cockatrice_carddatabase version="3">\n\t<cards>\n\t</cards>\n</cockatrice_carddatabase>')
         b.close
 
-        self.syspath = path + '/'
-        self.filename = name
+        self.LIB_PATH = path + '/'
+        self.LIB_NAME = name
         self.enableWidgets()
 
     def enableWidgets(self, allb=0):
@@ -423,8 +429,12 @@ class IM(MainWindow, QMainWindow):
 
         
 
+    def log_into_ht(self):
+        wb.get().open("http://www.hearthcards.net/", new=2)
+
+
     def showdialog3(self):
-        path = os.path.realpath(self.syspath)
+        path = os.path.realpath(self.LIB_PATH)
         os.startfile(path)
 
     def showdialog4(self):
@@ -436,6 +446,6 @@ class IM(MainWindow, QMainWindow):
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
-    window = IM()
+    window = CardImport()
     window.show()
     sys.exit(app.exec_())

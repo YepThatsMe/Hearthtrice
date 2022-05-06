@@ -16,36 +16,10 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-class MainWindow(object):
+class UI_MainWindow(object):
 
     def setupUI(MW, self):
 
-        MW.setWindowTitle("Hearthtrice Manager")
-        MW.setFixedSize(520,650)
-        MW.setWindowIcon(QIcon(resource_path('assets/icon.ico')))
-        self.syspath = os.getcwd()
-        self.filename = 'newcardset.xml'
-        
-
-        # Initialize tab screen
-        self.tabs = QTabWidget()
-        self.tab1 = QWidget()
-        self.tab2 = QWidget()
-        self.tabs.resize(300,200)
-        
-        # Add tabs
-        self.tabs.addTab(self.tab1,"Tab 1")
-        self.tabs.addTab(self.tab2,"Tab 2")
-
-        ## Create second tab
-        self.tab2.layout = QVBoxLayout()
-        self.pushButton1 = QPushButton("PyQt5 button")
-        self.tab2.layout.addWidget(self.pushButton1)
-        self.tab2.setLayout(self.tab2.layout)
-
-        openFile = QAction('Open...', MW)
-        openFile.setShortcut('Ctrl+O')
-        openFile.triggered.connect(self.showdialog)
 
         newFile = QAction('Create blank...', MW)
         newFile.setShortcut('Ctrl+N')
@@ -59,13 +33,15 @@ class MainWindow(object):
         self.askhelp = QAction('How to use', MW)
         self.askhelp.setShortcut('Ctrl+H')
 
+        self.login = QAction('Log into Hearthcards.net', MW)
+        self.login.setShortcut('Ctrl+L')
+
         menu = MW.menuBar()
         fileMenu = menu.addMenu('&File')
         fileMenu.addAction(newFile)
-        fileMenu.addAction(openFile)
         fileMenu.addAction(self.openDirectory)
-        helpMenu = menu.addMenu('&Help')
-        helpMenu.addAction(self.askhelp)
+        menu.addAction(self.login)
+        menu.addAction(self.askhelp)
 
         #--
         self.picByteDict = {}
@@ -189,9 +165,9 @@ class MainWindow(object):
 
         gen1st_layout.addLayout(mid_layout)
 
-        self.tab1.setLayout(gen1st_layout)
-
-        self.setCentralWidget(self.tabs)
+        widget = QWidget()
+        widget.setLayout(gen1st_layout)
+        self.setCentralWidget(widget)
     
 
 
