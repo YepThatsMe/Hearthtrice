@@ -1,0 +1,10 @@
+**/__pycache__/
+__pycache__
+test.py
+compiler.cmd
+.vscode
+.idea
+CardImport.py
+CardImport_UI.py
+sqlncli.msi
+CHANGELOG.md
