@@ -6,7 +6,6 @@ import base64
 from enum import IntEnum, auto
 
 from Arena import Arena
-from CardImport import Card
 from DeckEditor import DeckEditor
 from Widgets.LibraryView import LibraryView
 from Widgets.Thread import Thread
