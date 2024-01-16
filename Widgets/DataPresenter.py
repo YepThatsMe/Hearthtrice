@@ -6,7 +6,7 @@ import hashlib
 
 from Widgets.Communication import Communication
 from Widgets.components.BytesEncoder import BytesEncoder, base64_to_bytes, hash_library
-from Widgets.components.DataTypes import CardMetadata
+from Widgets.components.DataTypes import CardMetadata, Response
 
 
 class DataPresenter(QObject):
@@ -20,9 +20,12 @@ class DataPresenter(QObject):
     #     self.comm.set_connection(server, login, password)
 
     def get_library(self) -> List[CardMetadata]:
+        if not self.comm.is_connected:
+            print("Connection is not established")
+            return 
         card_raw_data = self.comm.fetch_all_cards()
         if not card_raw_data:
-            print("Could not fetch cards from the database")
+            print("Fetch error: empty list")
             return
         library = []
         for params_list in card_raw_data:
@@ -48,14 +51,14 @@ class DataPresenter(QObject):
 
 
 
-    def upload_card(self, metadata: CardMetadata) -> Communication.Response:
+    def upload_card(self, metadata: CardMetadata) -> Response:
         return self.comm.upload_card(metadata)
 
-    def upload_edit_card(self, metadata: CardMetadata) -> Communication.Response:
+    def upload_edit_card(self, metadata: CardMetadata) -> Response:
         return self.comm.upload_edit_card(metadata)
         
 
-    def delete_card(self, metadata: CardMetadata) -> Communication.Response:
+    def delete_card(self, metadata: CardMetadata) -> Response:
         return self.comm.delete_card(metadata)
 
 

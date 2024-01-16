@@ -1,17 +1,14 @@
 import pyodbc
 from typing import List
-from Widgets.components.DataTypes import CardMetadata
+from Widgets.components.DataTypes import CardMetadata, Response
 
 class Communication:
-    
-    class Response:
-        def __init__(self, ok: bool, msg: str = ""):
-            self.ok = ok
-            self.msg = msg
-
-
     def __init__(self) -> None:
-        self.driver = "SQL Server Native Client 11.0"
+        self.driver = ""
+        for driver in pyodbc.drivers():
+            if driver == 'SQL Server Native Client 11.0':
+                self.driver = driver
+                break
         self.database = "hearth_db"
         self.server = ""
         self.port = "1433"
@@ -20,7 +17,7 @@ class Communication:
 
         self.connection = None
         self.cursor = None
-        self.status = Communication.Response(False)
+        self.is_connected = False
 
 
     def set_connection(self, server: str, login: str, password: str) -> Response:
@@ -36,12 +33,24 @@ class Communication:
 
             self.cursor = self.connection.cursor()
             print("Connection established")
-            self.status =  Communication.Response(True)
-            return self.status
+            self.is_connected = True
+            return Response(True)
         except pyodbc.Error as e:
-            print("Failed to connect")
-            self.status =  Communication.Response(False, e)
-            return self.status
+            msg = ''
+            if e.args and len(e.args) > 0:
+                error_info = e.args[0]
+                if error_info == 'IM002':
+                    msg = "Отсутствует драйвер SQL Server Native Client 11.0"
+                elif error_info == '28000':
+                    msg = "Некорректные данные подключения."
+                else:
+                    msg = str(e)
+            print(msg)
+            self.is_connected = False
+            if self.connection:
+                self.connection.close()
+            self.connection = None
+            return Response(False, msg)
 
     def get_card_by_name(self, name: str):
         try:
@@ -52,9 +61,9 @@ class Communication:
             print("Fetch error:", e)
     
     def upload_card(self, metadata: CardMetadata) -> Response:
-        if not self.status.ok:
+        if not self.is_connected:
             print('Connection is not established.')
-            return
+            return Response(False, "Подключение не установлено.")
         query = """
         INSERT INTO Cards (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, comment, picture, move_x, move_y, zoom, card_image)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
@@ -81,15 +90,15 @@ class Communication:
             self.cursor.execute(query, params)
             self.connection.commit()
             print(f"Card {metadata.name} has been added to the database.")
-            return Communication.Response(True)
+            return Response(True)
         except pyodbc.Error as e:
             print(f"Insert error: {e}")
-            return Communication.Response(False, e)
+            return Response(False, e)
 
     def upload_edit_card(self, metadata: CardMetadata) -> Response:
-        if not self.status.ok:
+        if not self.is_connected:
             print('Connection is not established.')
-            return
+            return Response(False, "Подключение не установлено.")
         # Параметризованный SQL запрос
         query = f"""
             UPDATE Cards
@@ -130,12 +139,16 @@ class Communication:
             self.cursor.execute(query, params)
             self.connection.commit()
             print(f"Card {metadata.name} has been updated.")
-            return Communication.Response(True)
+            return Response(True)
         except pyodbc.Error as e:
             print(f"Update error: {e}")
-            return Communication.Response(False, e)
+            return Response(False, e)
 
     def delete_card(self, metadata: CardMetadata) -> Response:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return Response(False, "Подключение не установлено.")
+        
         sql_query = f"""
             DELETE FROM Cards
             WHERE id = ?
@@ -145,13 +158,13 @@ class Communication:
             self.cursor.execute(sql_query, metadata.id)
             self.connection.commit()
             print(f"Card {metadata.name} has been deleted.")
-            return Communication.Response(True)
+            return Response(True)
         except pyodbc.Error as e:
             print(f"Deletion error: {e}")
-            return Communication.Response(False, e)
+            return Response(False, e)
 
     def fetch_all_cards(self) -> List[tuple]:
-        if not self.status.ok:
+        if not self.is_connected:
             print('Connection is not established.')
             return
         query = """
@@ -165,8 +178,3 @@ class Communication:
         except pyodbc.Error as e:
             print(f"Fetch all error: {e}")
             return None
-
-    def update_file(self, file_id, new_file, new_name = None):
-        if not self.status.ok:
-            print('Connection is not established.')
-            return
