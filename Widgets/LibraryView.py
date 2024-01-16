@@ -1,6 +1,7 @@
 
 import os
 from typing import List, Union
+
 from PyQt5.QtWidgets import QFrame, QGridLayout, QSpacerItem, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QMovie
@@ -8,6 +9,7 @@ from PyQt5.QtGui import QMovie
 from Widgets.components.BytesEncoder import base64_to_bytes, bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
 from Widgets.components.DataTypes import CardMetadata
+from Widgets.components.XMLGenerator import XMLGenerator
 
 class LibraryView(QFrame):
 
@@ -17,6 +19,7 @@ class LibraryView(QFrame):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.xml_generator = XMLGenerator()
         self.set_up_ui()
 
     def set_up_ui(self):
@@ -119,6 +122,14 @@ class LibraryView(QFrame):
                     img.save(os.path.join(directory_path, card.metadata.name + ".png"))
                 # Windows only
                 os.startfile(directory_path)
+        
+        meta_list = []
+        for card_widget in card_widgets:
+            meta = card_widget.metadata
+            meta.card_image = None
+            meta.picture = None
+            meta_list.append(meta)
+        self.xml_generator.generate_xml_library(meta_list)
 
     def resizeEvent(self, a0) -> None:
         self.scrollable_widget.resize(self.scroll_area.size())
