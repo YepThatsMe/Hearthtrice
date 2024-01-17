@@ -26,8 +26,6 @@ class MainMediator(QMainWindow):
         self.set_up_ui()
         self.set_up_connections()
 
-        self.library_view.update()
-
     def set_up_connections(self):
         self.card_builder_view.upload_requested.connect(self.upload_card)
             #lambda n: send_to_thread(self, self.upload_card, args=(n,), kwargs=()))

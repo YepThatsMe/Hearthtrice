@@ -1,6 +1,13 @@
 from enum import IntEnum, auto
 import json
 
+
+class Response:
+    def __init__(self, ok: bool, msg: str = ""):
+        self.ok = ok
+        self.msg = msg
+
+
 class ClassType(IntEnum):
     NEUTRAL: int = auto()
     MAGE: int = auto()
@@ -67,21 +74,3 @@ class CardMetadata:
     
     def __getattr__(self, __name: str):
         return self.__getitem__(__name)
-
-class A:
-    def __init__(self, library) -> None:
-        self.library = library
-
-class Main:
-    def __init__(self) -> None:
-        self.lib = {}
-
-        self.A = A(self.lib)
-
-        print(self.A.library)
-
-        self.lib.clear()
-        self.lib.update({"1":1})
-
-        print(self.lib)
-        print(self.A.library)

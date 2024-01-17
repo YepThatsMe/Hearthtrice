@@ -3,9 +3,10 @@ from PyQt5.QtCore import QSettings, pyqtSignal
 from Widgets.DataPresenter import DataPresenter
 from Widgets.Thread import send_to_thread
 from Widgets.components.SettingsButton import SettingsButton
+from Widgets.components.DataTypes import Response
 
 class ConnectionSettingsDialog(QDialog):
-    connection_response_received = pyqtSignal(bool)
+    connection_response_received = pyqtSignal()
     def __init__(self, data_presenter: DataPresenter, parent=None):
         super(ConnectionSettingsDialog, self).__init__(parent)
         self.data_presenter = data_presenter
@@ -48,14 +49,15 @@ class ConnectionSettingsDialog(QDialog):
         self.setLayout(layout)
     
     def on_button_clicked(self):
-
-        if(self.connect_action()):
+        response = self.connect_action()
+        if(response.ok):
             QMessageBox.information(self, "Подключено", "Соединение установлено.")
+            self.close()
         else:
-            QMessageBox.warning(self, "Ошибка", "Ошибка подключения.")
+            QMessageBox.warning(self, "Ошибка", "Ошибка подключения: " + response.msg)
 
 
-    def connect_action(self) -> bool:
+    def connect_action(self) -> Response:
         server = self.server_edit.text()
         login = self.login_edit.text()
         password = self.password_edit.text()
@@ -64,13 +66,12 @@ class ConnectionSettingsDialog(QDialog):
             self.settings.setValue("server", server)
             self.settings.setValue("login", login)
             self.settings.setValue("password", password)
-            status = self.data_presenter.comm.set_connection(server, login, password)
-            if status.ok:
-                self.set_connected(True)
-                return True
+            response = self.data_presenter.comm.set_connection(server, login, password)
+            self.set_connected(response.ok)
+            return response
             
         self.set_connected(False)
-        return False
+        return Response(False, "Данные не предоставлены")
     
     def set_connected(self, is_connected: bool):
         self.setEnabled(True)
