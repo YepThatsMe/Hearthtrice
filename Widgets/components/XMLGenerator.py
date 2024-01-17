@@ -37,7 +37,7 @@ class XMLGenerator:
             prop_manacost = ET.SubElement(prop_element, "manacost")
             prop_manacost.text = str(card.manacost)
             prop_colors = ET.SubElement(prop_element, "colors")
-            prop_colors.text = card.cardtype
+            prop_colors.text = str(card.cardtype)
 
             if card.cardtype == CardType.MINION:# or card.cardtype == CardType.WEAPON:
                 prop_pt = ET.SubElement(prop_element, "pt")
