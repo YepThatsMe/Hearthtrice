@@ -202,8 +202,8 @@ class CardImageGenerator:
         if not text:
             return descrtiption_banner
 
-        font = ImageFont.truetype(self.RESOURCE_FONT_DESCR_PATH, 53)
-        font_bold = ImageFont.truetype(self.RESOURCE_FONT_DESCR_BOLD_PATH, 53)
+        font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, 53)
+        font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, 53)
 
         lines_of_text = self.text_wrap(text, font_bold, BANNER_WIDTH)
 
@@ -242,8 +242,8 @@ class CardImageGenerator:
         if len(lines_of_text) > 8:
             raise RuntimeError("Card description is too long (max 8 lines)")
 
-        font = ImageFont.truetype(self.RESOURCE_FONT_DESCR_PATH, FONT_SIZE)
-        font_bold = ImageFont.truetype(self.RESOURCE_FONT_DESCR_BOLD_PATH, FONT_SIZE)
+        font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, FONT_SIZE)
+        font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, FONT_SIZE)
 
         W, H = (BANNER_WIDTH, BANNER_HEIGHT)
         image = Image.new('RGBA', (W, H))
@@ -311,11 +311,11 @@ class CardImageGenerator:
         draw = ImageDraw.Draw(managem)
         
         if manacost is not None and manacost < 100 and manacost > -1:
-            font= ImageFont.truetype(self.RESOURCE_FONT_PATH, 200)
+            font= self.get_font(self.RESOURCE_FONT_PATH, 200)
             w, h = 35, -45
             if manacost >= 10:
                 w, h = -8, -35
-                font= ImageFont.truetype(self.RESOURCE_FONT_PATH, 180)
+                font= self.get_font(self.RESOURCE_FONT_PATH, 180)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(manacost), font=font, fill='black')
@@ -329,11 +329,11 @@ class CardImageGenerator:
         draw = ImageDraw.Draw(attack_gem)
         
         if attack is not None and attack < 100:
-            font= ImageFont.truetype(self.RESOURCE_FONT_PATH, 170)
+            font= self.get_font(self.RESOURCE_FONT_PATH, 170)
             w, h = 90, 20
             if attack >= 10 or attack < 0:
                 w, h = 55, 30
-                font= ImageFont.truetype(self.RESOURCE_FONT_PATH, 150)
+                font= self.get_font(self.RESOURCE_FONT_PATH, 150)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(attack), font=font, fill='black')
@@ -347,11 +347,11 @@ class CardImageGenerator:
         draw = ImageDraw.Draw(health_gem)
         
         if health is not None and health < 100:
-            font= ImageFont.truetype(self.RESOURCE_FONT_PATH, 170)
+            font= self.get_font(self.RESOURCE_FONT_PATH, 170)
             w, h = 55, 10
             if health >= 10 or health < 0:
                 w, h = 21, 20
-                font= ImageFont.truetype(self.RESOURCE_FONT_PATH, 150)
+                font= self.get_font(self.RESOURCE_FONT_PATH, 150)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(health), font=font, fill='black')
@@ -369,9 +369,9 @@ class CardImageGenerator:
 
         draw = ImageDraw.Draw(tribe)
 
-        font = ImageFont.truetype(self.RESOURCE_FONT_PATH, 44)
+        font = self.get_font(self.RESOURCE_FONT_PATH, 44)
         if Validate.has_cyrillic(text):
-            font = ImageFont.truetype(self.RESOURCE_FONT_C_PATH, 44)
+            font = self.get_font(self.RESOURCE_FONT_C_PATH, 44)
 
         w, h = 245 + 13.5, 32
         w-=len(text) * 13.5
@@ -436,7 +436,7 @@ class CardImageGenerator:
         return lines
 
     def get_text_size_for_12px_font(self, font_path: str, text: str) -> int:
-        font = ImageFont.truetype(font_path, 12)
+        font = self.get_font(font_path, 12)
         size = font.getlength(text)
         return size
         
@@ -444,6 +444,12 @@ class CardImageGenerator:
         return  int(self.get_font_size(text_size_px)),    \
                 int(self.get_curve_degree(text_size_px)), \
                 int(self.get_offset(text_size_px))
+
+    def get_font(self, font_path: str, size: int):
+        try:
+            return ImageFont.truetype(font_path, size)
+        except OSError as e:
+            raise GenerationError("Отсутствует шрифт " + font_path)
 
     def get_font_size(self, text_size_px: int) -> float:
         x = text_size_px

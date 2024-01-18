@@ -15,6 +15,7 @@ from Widgets.components.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixma
 from Widgets.components.DataTypes import CardMetadata, CardType, ClassType
 from Widgets.FormView import FormView
 from Widgets.components.CardPreview import CardPreview
+from Widgets.components.ImageGenerator.CardImageGenerator import GenerationError
 from Widgets.components.ImageGenerator.MinionImageGenerator import MinionImageGenerator
 from Widgets.components.ImageGenerator.SpellImageGenerator import SpellImageGenerator
 from PIL import Image
@@ -127,11 +128,15 @@ class CardBuilder(QFrame):
         self.card_metadata.move_x = self.card_preview.move_x
         self.card_metadata.move_y = self.card_preview.move_y
         self.card_metadata.zoom = self.card_preview.zoom
-        
-        if self.card_metadata.cardtype == CardType.MINION:
-            card_image = self.card_image_generator.generate(self.card_metadata)
-        elif self.card_metadata.cardtype == CardType.SPELL:
-            card_image = self.card_image_generator_spell.generate(self.card_metadata)
+        try:
+            if self.card_metadata.cardtype == CardType.MINION:
+                card_image = self.card_image_generator.generate(self.card_metadata)
+            elif self.card_metadata.cardtype == CardType.SPELL:
+                card_image = self.card_image_generator_spell.generate(self.card_metadata)
+        except GenerationError as e:
+            QMessageBox.warning(None, "Ошибка генерации", str(e))
+            return
+
 
         self.card_metadata.card_image = pil_to_bytes(card_image)
 
