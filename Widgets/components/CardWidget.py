@@ -1,14 +1,15 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QMenu, QAction
 from PyQt5.QtCore import QTimer, Qt, QRect
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QPainter
+from PyQt5.QtGui import QIcon, QMouseEvent, QPixmap, QColor, QPainter
 from PyQt5.QtCore import pyqtSignal
 from Widgets.components.BytesEncoder import bytes_to_pixmap
 
 from Widgets.components.DataTypes import CardMetadata
 
 class CardWidget(QWidget):
-    edit_card_requested = pyqtSignal(object)
-    delete_card_requested = pyqtSignal(object)
+    card_clicked_event = pyqtSignal(CardMetadata)
+    edit_card_requested = pyqtSignal(CardMetadata)
+    delete_card_requested = pyqtSignal(CardMetadata)
 
     def __init__(self, metadata: CardMetadata, parent: QWidget = None):
         super().__init__(parent)
@@ -64,6 +65,19 @@ class CardWidget(QWidget):
             self.card_label.setPixmap(highlight_pixmap)
         else:
             self.card_label.setPixmap(self.pixmap)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.pressPos = event.pos()
+
+    def mouseReleaseEvent(self, event):
+        # ensure that the left button was pressed *and* released within the
+        # geometry of the widget; if so, emit the signal;
+        if (self.pressPos is not None and 
+            event.button() == Qt.LeftButton and 
+            event.pos() in self.rect()):
+                self.card_clicked_event.emit(self.metadata)
+        self.pressPos = None
 
     def addHighlightRectangle(self, pixmap):
         # Метод для добавления прозрачного белого прямоугольника

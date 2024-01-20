@@ -1,5 +1,6 @@
 from enum import IntEnum, auto
 import json
+from typing import List
 
 
 class Response:
@@ -7,6 +8,29 @@ class Response:
         self.ok = ok
         self.msg = msg
 
+
+class DeckCard:
+    class Side(IntEnum):
+        MAINDECK = auto()
+        SIDEBOARD = auto()
+
+    def __init__(self):
+        self.id: int
+        self.count: int
+        self.side: DeckCard.Side
+
+        # optional
+        self.manacost: int
+        self.name: str
+
+
+class Deck:
+    def __init__(self):
+        self.id: int
+        self.name: str
+        self.cards: List[DeckCard]
+        self.owner: str
+    
 
 class ClassType(IntEnum):
     NEUTRAL: int = auto()

@@ -10,7 +10,7 @@ from Widgets.Thread import Thread, send_to_thread
 from Widgets.DataPresenter import DataPresenter
 from Widgets.CardBuilder import CardBuilder
 
-from Widgets.components.DataTypes import CardMetadata
+from Widgets.components.DataTypes import CardMetadata, Deck
 from Widgets.components.ConnectionSettings import ConnectionSettingsDialog
 
 class MainMediator(QMainWindow):
@@ -31,6 +31,9 @@ class MainMediator(QMainWindow):
             #lambda n: send_to_thread(self, self.upload_card, args=(n,), kwargs=()))
         self.card_builder_view.upload_edit_requested.connect(self.upload_edit_card)
 
+        self.library_view.get_decks_requsted.connect(
+            lambda: send_to_thread(self, self.data_presenter.get_decks, self.update_decks))
+        
         self.library_view.update_library_requested.connect(
             lambda: send_to_thread(self, self.data_presenter.get_library, self.update_library))
         self.library_view.edit_card_requested.connect(self.on_edit_card_requested)
@@ -76,10 +79,15 @@ class MainMediator(QMainWindow):
     def on_settings_clicked(self):
         self.connection_settings.show()
 
+    def update_decks(self, decks: List[Deck]):
+        if not decks:
+            return
+        self.library_view.set_updated_decks(decks)
+
     def update_library(self, cards: List[CardMetadata]):
         if not cards:
             return
-        self.library_view.set_updated_data(cards)
+        self.library_view.set_updated_library(cards)
 
     def upload_card(self, metadata: CardMetadata):
         response = self.data_presenter.upload_card(metadata)

@@ -176,5 +176,23 @@ class Communication:
             print(f"Library has been loaded from the database.")
             return rows
         except pyodbc.Error as e:
-            print(f"Fetch all error: {e}")
+            print(f"Fetch cards error: {e}")
+            return None
+
+    def fetch_all_decks(self) -> List[tuple]:
+        if not self.is_connected:
+            print('Connection is not established.')
+            return
+        
+        query = """
+        SELECT * FROM DECKS;        
+        """
+
+        try:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            print(f"Decks have been loaded from the database.")
+            return rows
+        except pyodbc.Error as e:
+            print(f"Fetch decks error: {e}")
             return None
