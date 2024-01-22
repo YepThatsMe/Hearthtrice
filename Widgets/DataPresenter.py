@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from PyQt5.QtCore import QObject
 import io
 import json
@@ -13,11 +13,7 @@ class DataPresenter(QObject):
     def __init__(self) -> None:
         super().__init__()
         self.login = ""
-        self.password = ""
         self.comm = Communication()
-
-    # def set_connection(self, server: str, login: str, password: str):
-    #     self.comm.set_connection(server, login, password)
 
     def get_library(self) -> List[CardMetadata]:
         if not self.comm.is_connected:
@@ -40,15 +36,29 @@ class DataPresenter(QObject):
             meta.attack = params_list[7]
             meta.health = params_list[8]
             meta.tribe = params_list[9]
-            meta.comment = params_list[10]
-            meta.picture = params_list[11]
-            meta.move_x = params_list[12]
-            meta.move_y = params_list[13]
-            meta.zoom = params_list[14]
-            meta.card_image = params_list[15]
+            meta.istoken = params_list[10]
+            meta.tokens = params_list[11]
+            meta.comment = params_list[12]
+            meta.picture = params_list[13]
+            meta.move_x = params_list[14]
+            meta.move_y = params_list[15]
+            meta.zoom = params_list[16]
+            meta.card_image = params_list[17]
+            meta.hash = params_list[18]
             library.append(meta)
         return library
     
+    def create_new_deck(self, deck_name: str) -> Tuple:
+        if not self.comm.is_connected:
+            print("Connection is not established")
+            return
+        deck_id = self.comm.create_new_deck(deck_name, self.login)
+        if not deck_id:
+            print("Failed to create new deck")
+            return
+        
+        return (deck_id, deck_name, self.login)
+
     def get_decks(self) -> List[Deck]:
         if not self.comm.is_connected:
             print("Connection is not established")

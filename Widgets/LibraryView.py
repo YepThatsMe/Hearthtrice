@@ -17,6 +17,7 @@ class LibraryView(QFrame):
     edit_card_requested = pyqtSignal(object)
     delete_card_requested = pyqtSignal(object)
     get_decks_requsted = pyqtSignal(str)
+    create_new_deck_requested = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -31,6 +32,7 @@ class LibraryView(QFrame):
 
         self.refresh_button.clicked.connect(self.update)
         self.export_button.clicked.connect(self.on_export_clicked)
+        self.deck_view.create_new_deck_requested.connect(self.create_new_deck_requested)
 
     def set_up_ui(self):
         self.setEnabled(False)

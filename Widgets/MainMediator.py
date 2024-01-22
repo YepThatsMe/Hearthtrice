@@ -31,9 +31,10 @@ class MainMediator(QMainWindow):
             #lambda n: send_to_thread(self, self.upload_card, args=(n,), kwargs=()))
         self.card_builder_view.upload_edit_requested.connect(self.upload_edit_card)
 
+        self.library_view.create_new_deck_requested.connect(
+            lambda name: send_to_thread(self, self.data_presenter.create_new_deck, self.on_deck_created, args=(name,)))
         self.library_view.get_decks_requsted.connect(
             lambda: send_to_thread(self, self.data_presenter.get_decks, self.update_decks))
-        
         self.library_view.update_library_requested.connect(
             lambda: send_to_thread(self, self.data_presenter.get_library, self.update_library))
         self.library_view.edit_card_requested.connect(self.on_edit_card_requested)
@@ -75,6 +76,11 @@ class MainMediator(QMainWindow):
 
         self.central_widget.setLayout(self.gen_layout)
         self.setCentralWidget(self.central_widget)
+
+    def on_deck_created(self, new_deck_data: tuple):
+        if not new_deck_data:
+            return
+        self.library_view.deck_view.on_new_deck_data_received(new_deck_data)
 
     def on_settings_clicked(self):
         self.connection_settings.show()

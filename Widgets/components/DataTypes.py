@@ -68,6 +68,9 @@ class CardMetadata:
     health: int
     tribe: str
 
+    istoken: bool
+    tokens: str
+
     comment: str
     picture: bytes
     move_x: int    
@@ -75,6 +78,7 @@ class CardMetadata:
     zoom: int
 
     card_image: bytes
+    hash: str
 
     def __init__(self, json_meta: dict = None) -> None:
         if not json_meta:

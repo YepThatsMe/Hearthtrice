@@ -67,6 +67,7 @@ class ConnectionSettingsDialog(QDialog):
             self.settings.setValue("login", login)
             self.settings.setValue("password", password)
             response = self.data_presenter.comm.set_connection(server, login, password)
+            self.data_presenter.login = login
             self.set_connected(response.ok)
             return response
             

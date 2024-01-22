@@ -1,5 +1,5 @@
 import pyodbc
-from typing import List
+from typing import List, Tuple
 from Widgets.components.DataTypes import CardMetadata, Response
 
 class Communication:
@@ -177,6 +177,26 @@ class Communication:
             return rows
         except pyodbc.Error as e:
             print(f"Fetch cards error: {e}")
+            return None
+
+    def create_new_deck(self, deck_name: str, owner: str) -> int:
+        if not self.is_connected:
+            print('Connection is not established.')
+            return
+        
+        query = """
+            INSERT INTO Decks (name, cards, owner)
+            OUTPUT INSERTED.id VALUES (?, ?, ?)
+            """
+
+        try:
+            self.cursor.execute(query, (deck_name, "", owner))
+            deck_id = self.cursor.fetchone()[0]
+            self.connection.commit()
+            print(f"Deck {deck_name.upper()} has been created.")
+            return int(deck_id)
+        except pyodbc.Error as e:
+            print(f"Fetch decks error: {e}")
             return None
 
     def fetch_all_decks(self) -> List[tuple]:

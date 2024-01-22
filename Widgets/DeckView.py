@@ -1,6 +1,6 @@
 from modulefinder import ReplacePackage
 import sys
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
+from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
     QPushButton, QComboBox
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import QSettings, pyqtSignal
@@ -133,6 +133,7 @@ class MyTreeWidget(QTreeWidget):
 
 class DeckView(QWidget):
     get_decks_requested = pyqtSignal(str)
+    create_new_deck_requested = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -190,10 +191,38 @@ class DeckView(QWidget):
         pass
 
     def new_deck(self):
-        pass
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Создание колоды")
 
-    def load_deck(self):
-        pass
+        label = QLabel("Название:")
+        line_edit = QLineEdit(dialog)
+        line_edit.setMaxLength(35)
+
+        ok_button = QPushButton("ОК", dialog)
+        ok_button.clicked.connect(dialog.accept)
+
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(label)
+        layout.addWidget(line_edit)
+        layout.addWidget(ok_button)
+
+        dialog.setLayout(layout)
+
+        result = dialog.exec_()
+
+        if result == QDialog.Accepted:
+            deck_name = line_edit.text()
+            self.create_new_deck_requested.emit(deck_name)
+
+    def on_new_deck_data_received(self, new_deck_data: tuple):
+        deck_id, deck_name, owner = new_deck_data
+        new_deck = Deck()
+        new_deck.id = deck_id
+        new_deck.name = deck_name
+        new_deck.owner = owner
+
+        self.current_deck = new_deck
+        self.current_deck_label.setText(f"ID: {deck_id}\t {deck_name}\t[{owner}]")
 
     def set_updated_decks(self, decks: List[Deck]):
         self.deck_list_dialog.populate_list(decks)
