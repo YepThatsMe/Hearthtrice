@@ -19,6 +19,7 @@ class DeckListDialog(QDialog):
         self.loading_animation.start()
 
         self.list_widget = QListWidget(self)
+        self.list_widget.itemDoubleClicked.connect(self.select_deck)
 
         self.select_btn = QPushButton("Выбрать", self)
         self.select_btn.setEnabled(False)

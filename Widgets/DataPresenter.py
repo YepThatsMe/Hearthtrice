@@ -72,14 +72,19 @@ class DataPresenter(QObject):
             deck = Deck()
             deck.id = row[0]
             deck.name = row[1]
+            deck.owner = row[3]
 
-            cards = self.str_to_cards(row[2])
+            cards_raw_str = row[2]
+            if not cards_raw_str:
+                decks.append(deck)
+                continue
+            
+            cards = self.str_to_cards(cards_raw_str)
             if not cards:
                 print("Error parsing card data")
-                return
+                continue
             
             deck.cards = cards
-            deck.owner = row[3]
             decks.append(deck)
         return decks
     

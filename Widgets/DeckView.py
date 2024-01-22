@@ -161,6 +161,7 @@ class DeckView(QWidget):
         load_deck_button.clicked.connect(lambda: self.get_decks_requested.emit(self.login))
 
         self.current_deck_label = QLabel("", self)
+        self.current_deck_label.setStyleSheet("font-size: 10pt; font-weight: bold")
 
         save_button = QPushButton("Сохранить")
         save_button.clicked.connect(self.save_deck)

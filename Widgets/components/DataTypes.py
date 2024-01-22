@@ -28,7 +28,7 @@ class Deck:
     def __init__(self):
         self.id: int
         self.name: str
-        self.cards: List[DeckCard]
+        self.cards: List[DeckCard] = []
         self.owner: str
     
 
