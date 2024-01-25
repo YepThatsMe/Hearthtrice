@@ -7,7 +7,7 @@
 Для связи с сервером необходим установленный драйвер SQL Server Native Client 11.0.
 
 
-#### Генерация ресурсов
+## Генерация ресурсов
 
 ```sh
 pyrcc5 src\assets\resource_list.qrc -o src\resources.py
