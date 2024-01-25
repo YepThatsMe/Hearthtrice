@@ -1,11 +1,18 @@
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 
 import sys
 
-from Widgets.MainMediator import MainMediator
 
 def main():
+    
     app = QApplication(sys.argv)
+
+    try:
+        from Widgets.MainMediator import MainMediator
+    except ImportError as e:
+        QMessageBox.warning(None, "Ошибка импорта", str(e))
+        return
+    
     window = MainMediator()
     window.show()
     app.exec()

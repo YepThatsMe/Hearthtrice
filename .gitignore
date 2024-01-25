@@ -2,7 +2,9 @@
 __pycache__
 .vscode
 .idea
+build/
+dist/
+*.spec
 test.py
-sqlncli.msi
 CHANGELOG.md
 src/resources.py
