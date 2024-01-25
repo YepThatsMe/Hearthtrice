@@ -2,8 +2,8 @@ import os
 from typing import List, Tuple, Union
 
 from PyQt5.QtWidgets import QFrame, QGridLayout, QMessageBox, QDialog, QSpacerItem, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QMovie
+from PyQt5.QtCore import pyqtSignal, QSize
+from PyQt5.QtGui import QMovie, QResizeEvent
 from Widgets.DeckView import DeckView
 
 from utils.BytesEncoder import base64_to_bytes, bytes_to_pixmap
@@ -139,6 +139,7 @@ class LibraryView(QFrame):
         self.scrollable_widget.setMinimumHeight(self.scroll_area.height())
         print("Library view updated")
         self.set_loading(False)
+        self.resizeEvent(QResizeEvent(QSize(0,0), QSize(0,0)))
 
     def clear_grid(self):
         while self.grid_layout.count():
