@@ -5,3 +5,4 @@ __pycache__
 test.py
 sqlncli.msi
 CHANGELOG.md
+src/resources.py
