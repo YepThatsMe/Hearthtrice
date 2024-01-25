@@ -18,6 +18,7 @@ class LibraryView(QFrame):
     delete_card_requested = pyqtSignal(object)
     get_decks_requsted = pyqtSignal(str)
     create_new_deck_requested = pyqtSignal(str)
+    update_deck_requested = pyqtSignal(tuple)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -33,6 +34,7 @@ class LibraryView(QFrame):
         self.refresh_button.clicked.connect(self.update)
         self.export_button.clicked.connect(self.on_export_clicked)
         self.deck_view.create_new_deck_requested.connect(self.create_new_deck_requested)
+        self.deck_view.update_deck_requested.connect(self.update_deck_requested)
 
     def set_up_ui(self):
         self.setEnabled(False)
@@ -173,15 +175,9 @@ class LibraryView(QFrame):
         return None
 
     def open_deck_view(self):
-        # Создаем QDialog для отдельного окна
         dialog = QDialog(self)
-        dialog.setWindowTitle("Боковой виджет")
-
-        # Устанавливаем боковой виджет как дочерний для QDialog
         self.deck_view.setParent(dialog)
         self.deck_view.show()
-        # Показываем QDialog
-
         geometry = self.geometry()
         dialog.setGeometry(geometry.right(), geometry.top(), 200, self.height())
         dialog.exec_()

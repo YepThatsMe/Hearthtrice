@@ -1,6 +1,6 @@
 import pyodbc
 from typing import List, Tuple
-from Widgets.components.DataTypes import CardMetadata, Response
+from Widgets.components.DataTypes import CardMetadata, Deck, Response
 
 class Communication:
     def __init__(self) -> None:
@@ -216,3 +216,26 @@ class Communication:
         except pyodbc.Error as e:
             print(f"Fetch decks error: {e}")
             return None
+        
+    def upload_edit_deck(self, id: int, cards_string: str) -> Response:
+        if not self.is_connected:
+            print('Connection is not established.')
+            return Response(False, "Подключение не установлено.")
+    
+        # Параметризованный SQL запрос
+        query = f"""
+            UPDATE Decks
+            SET cards = ?
+            WHERE id = ?
+        """
+        params = (  cards_string,
+                    id )
+        
+        try:
+            self.cursor.execute(query, params)
+            self.connection.commit()
+            print(f"Deck {id} has been updated.")
+            return Response(True)
+        except pyodbc.Error as e:
+            print(f"Update error: {e}")
+            return Response(False, e)

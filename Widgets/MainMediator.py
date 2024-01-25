@@ -10,7 +10,7 @@ from Widgets.Thread import Thread, send_to_thread
 from Widgets.DataPresenter import DataPresenter
 from Widgets.CardBuilder import CardBuilder
 
-from Widgets.components.DataTypes import CardMetadata, Deck
+from Widgets.components.DataTypes import CardMetadata, Deck, Response
 from Widgets.components.ConnectionSettings import ConnectionSettingsDialog
 
 class MainMediator(QMainWindow):
@@ -33,6 +33,8 @@ class MainMediator(QMainWindow):
 
         self.library_view.create_new_deck_requested.connect(
             lambda name: send_to_thread(self, self.data_presenter.create_new_deck, self.on_deck_created, args=(name,)))
+        self.library_view.update_deck_requested.connect(
+            lambda deckdata: send_to_thread(self, self.data_presenter.update_deck, self.on_deck_updated, args=(deckdata[0],deckdata[1],)))
         self.library_view.get_decks_requsted.connect(
             lambda: send_to_thread(self, self.data_presenter.get_decks, self.update_decks))
         self.library_view.update_library_requested.connect(
@@ -81,6 +83,13 @@ class MainMediator(QMainWindow):
         if not new_deck_data:
             return
         self.library_view.deck_view.on_new_deck_data_received(new_deck_data)
+
+    def on_deck_updated(self, response: Response):
+        if response.ok:
+            QMessageBox.information(None, "Сохранено", "Колода успешно обновлена.")
+        else:
+            QMessageBox.warning(None, "Ошибка", "Не удалось обновить колоду: " + response.msg)
+
 
     def on_settings_clicked(self):
         self.connection_settings.show()

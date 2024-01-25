@@ -1,6 +1,6 @@
 from modulefinder import ReplacePackage
 import sys
-from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
+from PyQt5.QtWidgets import QApplication, QMessageBox, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
     QPushButton, QComboBox
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import QSettings, pyqtSignal
@@ -130,10 +130,22 @@ class MyTreeWidget(QTreeWidget):
             return item.text(2)
         return ""
 
+    def current_decktree_to_str(self) -> str:
+        string_deck = ""
+        for id_value, item in self.items_by_id.items():
+            count = int(item.text(0))
+            side = DeckCard.Side.MAINDECK
+            if item.parent() == self.parent_item2:
+                side = DeckCard.Side.SIDEBOARD
+                
+            string_deck+= f"{id_value},{count},{side};"
+        return string_deck
+
 
 class DeckView(QWidget):
     get_decks_requested = pyqtSignal(str)
     create_new_deck_requested = pyqtSignal(str)
+    update_deck_requested = pyqtSignal(tuple)
 
     def __init__(self):
         super().__init__()
@@ -164,7 +176,7 @@ class DeckView(QWidget):
         self.current_deck_label.setStyleSheet("font-size: 10pt; font-weight: bold")
 
         save_button = QPushButton("Сохранить")
-        save_button.clicked.connect(self.save_deck)
+        save_button.clicked.connect(self.update_deck)
 
         export_button = QPushButton("Экспорт")
         export_button.clicked.connect(self.export_items)
@@ -188,8 +200,15 @@ class DeckView(QWidget):
 
         return Response(True)
 
-    def save_deck(self):
-        pass
+    def update_deck(self):
+        string_deck = self.tree_widget.current_decktree_to_str()
+        if(QMessageBox.question(self, "Сохранение", f"Колода {self.current_deck.id}: '{self.current_deck.name.upper()}' будет перезаписана. Сохранить?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes):
+            return
+        if not string_deck:
+            if(QMessageBox.warning(self, "Сохранение", f"Обновленная колода не имеет карт. Сохранить пустую колоду?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes):
+                return
+        self.update_deck_requested.emit((self.current_deck.id, string_deck))
+        #current_deck.cards update
 
     def new_deck(self):
         dialog = QDialog(self)
@@ -237,7 +256,8 @@ class DeckView(QWidget):
         self.current_deck_label.setText(current_deck_label)
         self.tree_widget.clear()
         for card in self.current_deck.cards:
-            self.add_item(card.id, card.name, card.manacost)
+            for _ in range(card.count):
+                self.add_item(card.id, card.name, card.manacost)
 
     def export_items(self):
         export_list = []
