@@ -5,23 +5,22 @@ from PyQt5.QtCore import Qt, QEvent, QBuffer, QIODevice, pyqtSignal
 import base64
 from enum import IntEnum, auto
 
-from Arena import Arena
-from DeckEditor import DeckEditor
+from Widgets.Arena import Arena
 from Widgets.LibraryView import LibraryView
-from Widgets.Thread import Thread
-from Widgets.DataPresenter import DataPresenter
+from utils.Thread import Thread
+from DataPresenter import DataPresenter
 from Widgets.components.ButtonGroup import ExclusiveButtonGroup
-from Widgets.components.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes
-from Widgets.components.DataTypes import CardMetadata, CardType, ClassType
+from utils.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes
+from DataTypes import CardMetadata, CardType, ClassType
 from Widgets.FormView import FormView
 from Widgets.components.CardPreview import CardPreview
-from Widgets.components.ImageGenerator.CardImageGenerator import GenerationError
-from Widgets.components.ImageGenerator.MinionImageGenerator import MinionImageGenerator
-from Widgets.components.ImageGenerator.SpellImageGenerator import SpellImageGenerator
+from ImageGenerator.CardImageGenerator import GenerationError
+from ImageGenerator.MinionImageGenerator import MinionImageGenerator
+from ImageGenerator.SpellImageGenerator import SpellImageGenerator
 from PIL import Image
 
 
-class CardBuilder(QFrame):
+class CardBuilderView(QFrame):
     class UploadMode(IntEnum):
         NEW: int = auto()
         EDIT: int = auto()
@@ -32,7 +31,7 @@ class CardBuilder(QFrame):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.upload_mode = CardBuilder.UploadMode.NEW
+        self.upload_mode = CardBuilderView.UploadMode.NEW
         
         self.picture = QPixmap()
         self.card_metadata = CardMetadata()
@@ -150,9 +149,9 @@ class CardBuilder(QFrame):
             QMessageBox.warning(self, "Ошибка", "Имя карты не может быть пустым.")
             return
         
-        if self.upload_mode == CardBuilder.UploadMode.NEW:
+        if self.upload_mode == CardBuilderView.UploadMode.NEW:
             self.upload_requested.emit(self.card_metadata)
-        elif self.upload_mode == CardBuilder.UploadMode.EDIT:
+        elif self.upload_mode == CardBuilderView.UploadMode.EDIT:
             if(QMessageBox.question(self, "Редактирование", f"Карта ID:{self.card_metadata.id} '{self.card_metadata.name}' будет изменена. Перезаписать?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes):
                 self.upload_edit_requested.emit(self.card_metadata)
     
@@ -179,7 +178,7 @@ class CardBuilder(QFrame):
         return True
 
     def on_edit_card_requested(self, metadata: CardMetadata):
-        self.upload_mode = CardBuilder.UploadMode.EDIT
+        self.upload_mode = CardBuilderView.UploadMode.EDIT
         self.card_metadata = metadata
         self.upload_button.setText("Изменить")
         self.upload_button.setStyleSheet('QPushButton{background-color: #FFF68F;}')
@@ -201,12 +200,12 @@ class CardBuilder(QFrame):
     def reset(self):
         self.form.reset()
 
-        self.upload_mode = CardBuilder.UploadMode.NEW
+        self.upload_mode = CardBuilderView.UploadMode.NEW
         self.upload_button.setText("Загрузить")
         self.upload_button.setStyleSheet('')
         self.card_preview.move_x = 0
         self.card_preview.move_y = 0
         self.card_preview.zoom = 0
-        self.update_card_preview(QPixmap(r"assets\start_card.png"))
+        self.update_card_preview(QPixmap(r":start_card.png"))
         self.picture = QPixmap()
         self.card_metadata = CardMetadata()

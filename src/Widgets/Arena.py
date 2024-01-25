@@ -9,7 +9,7 @@ from configparser import ConfigParser
 import xml.etree.ElementTree as ET
 import os
 
-from Arena_UI import UI_MainWindow
+from Widgets.Arena_UI import UI_MainWindow
 
 class Roll:
 

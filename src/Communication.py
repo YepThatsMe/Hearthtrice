@@ -1,6 +1,6 @@
 import pyodbc
 from typing import List, Tuple
-from Widgets.components.DataTypes import CardMetadata, Deck, Response
+from DataTypes import CardMetadata, Deck, Response
 
 class Communication:
     def __init__(self) -> None:

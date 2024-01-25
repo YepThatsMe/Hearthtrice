@@ -2,7 +2,7 @@ from typing import List
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QListWidgetItem, QListWidget, QLabel, QPushButton
 from PyQt5.QtGui import QMovie
 
-from Widgets.components.DataTypes import Deck
+from DataTypes import Deck
 
 class DeckListDialog(QDialog):
     def __init__(self, parent=None):
@@ -14,7 +14,7 @@ class DeckListDialog(QDialog):
         self.setWindowTitle("Выбор колоды")
         self.gen_layout = QVBoxLayout(self)
         self.loading_label = QLabel(self)
-        self.loading_animation = QMovie(r"assets/loading_animation.gif")
+        self.loading_animation = QMovie(r":loading_animation.gif")
         self.loading_label.setMovie(self.loading_animation)
         self.loading_animation.start()
 

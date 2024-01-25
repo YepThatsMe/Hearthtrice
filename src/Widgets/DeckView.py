@@ -6,7 +6,7 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtCore import QSettings, pyqtSignal
 from typing import List
 
-from Widgets.components.DataTypes import Deck, DeckCard, Response
+from DataTypes import Deck, DeckCard, Response
 from Widgets.components.DeckListDialog import DeckListDialog
 
 

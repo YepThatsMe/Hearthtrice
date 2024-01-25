@@ -1,5 +1,5 @@
-from Widgets.components.DataTypes import CardMetadata, CardType, Rarity
-from Widgets.components.ImageGenerator.CardImageGenerator import CardImageGenerator
+from DataTypes import CardMetadata, CardType, Rarity
+from ImageGenerator.CardImageGenerator import CardImageGenerator
 
 
 class MinionImageGenerator(CardImageGenerator):

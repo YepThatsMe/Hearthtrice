@@ -3,20 +3,20 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QLineEdit, QL
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import QSize
 
-from Arena import Arena
-from DeckEditor import DeckEditor
+import resources
+from Widgets.Arena import Arena
 from Widgets.LibraryView import LibraryView
-from Widgets.Thread import Thread, send_to_thread
-from Widgets.DataPresenter import DataPresenter
-from Widgets.CardBuilder import CardBuilder
+from utils.Thread import Thread, send_to_thread
+from DataPresenter import DataPresenter
+from Widgets.CardBuilderView import CardBuilderView
 
-from Widgets.components.DataTypes import CardMetadata, Deck, Response
+from DataTypes import CardMetadata, Deck, Response
 from Widgets.components.ConnectionSettings import ConnectionSettingsDialog
 
 class MainMediator(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon('assets/icons/icon.ico'))
+        self.setWindowIcon(QIcon(':icons/icon.ico'))
         self.setWindowTitle('HearthTrice Manager')
 
         self.data_presenter = DataPresenter()
@@ -48,7 +48,7 @@ class MainMediator(QMainWindow):
     def set_up_ui(self):
         self.connection_settings = ConnectionSettingsDialog(self.data_presenter, self)
 
-        self.card_builder_view = CardBuilder(self)
+        self.card_builder_view = CardBuilderView(self)
         self.library_view = LibraryView(self)
         self.arena_view = Arena()
 

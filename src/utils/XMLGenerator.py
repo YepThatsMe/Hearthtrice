@@ -3,7 +3,7 @@ from xml.dom import minidom
 
 import xml.etree.ElementTree as ET
 
-from Widgets.components.DataTypes import CardMetadata, CardType, ClassType, Rarity
+from DataTypes import CardMetadata, CardType, ClassType, Rarity
 
 class XMLGenerator:
     def __init__(self) -> None:

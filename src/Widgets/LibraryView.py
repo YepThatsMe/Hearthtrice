@@ -6,10 +6,10 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QMovie
 from Widgets.DeckView import DeckView
 
-from Widgets.components.BytesEncoder import base64_to_bytes, bytes_to_pixmap
+from utils.BytesEncoder import base64_to_bytes, bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
-from Widgets.components.DataTypes import CardMetadata, Deck
-from Widgets.components.XMLGenerator import XMLGenerator
+from DataTypes import CardMetadata, Deck
+from utils.XMLGenerator import XMLGenerator
 
 class LibraryView(QFrame):
 
@@ -55,7 +55,7 @@ class LibraryView(QFrame):
         self.scroll_area.setMinimumWidth(CardWidget.minimumWidth(self) * 6)
         
         self.loading_label = QLabel(self)
-        self.loading_animation = QMovie(r"assets/loading_animation.gif")
+        self.loading_animation = QMovie(r":loading_animation.gif")
         self.loading_label.setMovie(self.loading_animation)
 
         self.scroll_stack.addWidget(self.scroll_area)

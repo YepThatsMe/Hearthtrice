@@ -1,0 +1,106 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>error_card.png</file>
+    <file>icons/classicons/icon_0.png</file>
+    <file>icons/classicons/icon_1.png</file>
+    <file>icons/classicons/icon_10.png</file>
+    <file>icons/classicons/icon_2.png</file>
+    <file>icons/classicons/icon_3.png</file>
+    <file>icons/classicons/icon_4.png</file>
+    <file>icons/classicons/icon_5.png</file>
+    <file>icons/classicons/icon_6.png</file>
+    <file>icons/classicons/icon_7.png</file>
+    <file>icons/classicons/icon_8.png</file>
+    <file>icons/classicons/icon_9.png</file>
+    <file>icons/classicons/icon_deathknight.png</file>
+    <file>icons/icon.ico</file>
+    <file>icons/settings_icon.png</file>
+    <file>icons/start_card.png</file>
+    <file>icons/typeicons/icon_0.png</file>
+    <file>icons/typeicons/icon_1.png</file>
+    <file>icons/typeicons/icon_2.png</file>
+    <file>icons/typeicons/icon_3.png</file>
+    <file>loading_animation.gif</file>
+    <file>start_card.png</file>
+	<file>fonts/Arial.ttf</file>
+	<file>fonts/Belwe Bd BT Bold.ttf</file>
+	<file>fonts/FRADMCN.ttf</file>	
+    <file>Cardbuilder/card_scheme.png</file>
+    <file>Cardbuilder/custom classes/card_minion_archmage.png</file>
+    <file>Cardbuilder/custom classes/card_minion_bard.png</file>
+    <file>Cardbuilder/custom classes/card_minion_berserk.png</file>
+    <file>Cardbuilder/custom classes/card_minion_bloodmage.png</file>
+    <file>Cardbuilder/custom classes/card_minion_chronomancer.png</file>
+    <file>Cardbuilder/custom classes/card_minion_corrupted.png</file>
+    <file>Cardbuilder/custom classes/card_minion_deathknight.png</file>
+    <file>Cardbuilder/custom classes/card_minion_demonhunter.png</file>
+    <file>Cardbuilder/custom classes/card_minion_dh.png</file>
+    <file>Cardbuilder/custom classes/card_minion_dragonsworn.png</file>
+    <file>Cardbuilder/custom classes/card_minion_exemplar.png</file>
+    <file>Cardbuilder/custom classes/card_minion_lich.png</file>
+    <file>Cardbuilder/custom classes/card_minion_monk.png</file>
+    <file>Cardbuilder/custom classes/card_minion_murloc.png</file>
+    <file>Cardbuilder/custom classes/card_minion_naga.png</file>
+    <file>Cardbuilder/custom classes/card_minion_pirate.png</file>
+    <file>Cardbuilder/custom classes/card_minion_scales.png</file>
+    <file>Cardbuilder/custom classes/card_minion_sorcererking.png</file>
+    <file>Cardbuilder/custom classes/card_minion_spiritwalker.png</file>
+    <file>Cardbuilder/custom classes/card_minion_swarmlord.png</file>
+    <file>Cardbuilder/custom classes/card_minion_swordsandthrones.png</file>
+    <file>Cardbuilder/custom classes/card_minion_tinker.png</file>
+    <file>Cardbuilder/custom classes/card_minion_warden.png</file>
+    <file>Cardbuilder/custom classes/card_minion_weaver.png</file>
+    <file>Cardbuilder/custom classes/card_minion_witchdoctor.png</file>
+    <file>Cardbuilder/custom classes/card_minion_worgen.png</file>
+    <file>Cardbuilder/mask.png</file>
+    <file>Cardbuilder/mask2.png</file>
+    <file>Cardbuilder/MINION/attacktexture.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_DEATHKNIGHT.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_DEMONHUNTER.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_DRUID.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_HUNTER.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_MAGE.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_NEUTRAL.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_PALADIN.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_PRIEST.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_ROGUE.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_SHAMAN.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_WARLOCK.png</file>
+    <file>Cardbuilder/MINION/BASECARDS/Card_Inhand_MINION_WARRIOR.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_BannerAtlas_MINION_Text.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_BannerAtlas_MINION_Title.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_BannerAtlas_MINION_TribePlaque.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_MINION_DropShadow.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_MINION_Gem_Common.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_MINION_Gem_Epic.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_MINION_Gem_Legendary.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_MINION_Gem_Rare.png</file>
+    <file>Cardbuilder/MINION/Card_Inhand_MINION_LegendaryDragon.png</file>
+    <file>Cardbuilder/MINION/healthtexture.png</file>
+    <file>Cardbuilder/MINION/manatexture.png</file>
+    <file>Cardbuilder/MINION/mask3.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_DEATHKNIGHT.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_DEMONHUNTER.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_DRUID.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_HUNTER.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_MAGE.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_NEUTRAL.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_PALADIN.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_PRIEST.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_ROGUE.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_SHAMAN.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_WARLOCK.png</file>
+    <file>Cardbuilder/SPELL/BASECARDS/Card_Inhand_SPELL_WARRIOR.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_BannerAtlas_SPELL_Text.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_BannerAtlas_SPELL_Title.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_BannerAtlas_SPELL_TribePlaque.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_SPELL_DropShadow.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_SPELL_Gem_Common.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_SPELL_Gem_Epic.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_SPELL_Gem_Legendary.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_SPELL_Gem_Rare.png</file>
+    <file>Cardbuilder/SPELL/Card_Inhand_SPELL_LegendaryDragon.png</file>
+    <file>Cardbuilder/SPELL/manatexture.png</file>
+    <file>Cardbuilder/SPELL/mask3.png</file>
+</qresource>
+</RCC>

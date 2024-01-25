@@ -5,8 +5,11 @@ from wand.drawing import Drawing
 
 from PIL import Image, ImageFont, ImageDraw
 import re
-from Widgets.components.DataTypes import CardMetadata, CardType, ClassType, Rarity
+from DataTypes import CardMetadata, CardType, ClassType, Rarity
 
+from PIL import Image
+from io import BytesIO
+from PyQt5.QtCore import QFile
 
 class Validate:
 
@@ -22,11 +25,11 @@ class VirtualException(BaseException):
 class CardImageGenerator:
     CARDTYPE = 0
     
-    RESOURCE_FONT_PATH = r"C:\Windows\Fonts\belwe bold bt.ttf"
-    RESOURCE_FONT_C_PATH = r"C:\Windows\Fonts\Arial.ttf"
+    RESOURCE_FONT_PATH = r":fonts\Belwe Bd BT Bold.ttf"
+    RESOURCE_FONT_C_PATH = r":fonts\Arial.ttf"
 
-    RESOURCE_FONT_DESCR_PATH = r"C:\Windows\Fonts\FRAMDCN.TTF"
-    RESOURCE_FONT_DESCR_BOLD_PATH = r"C:\Windows\Fonts\FRADMCN.TTF"
+    RESOURCE_FONT_DESCR_PATH = r":fonts\FRADMCN.ttf"
+    RESOURCE_FONT_DESCR_BOLD_PATH = r":fonts\FRADMCN.ttf"
 
     BASE_CARD_RESOLUTION = (600,154)
     MAX_NAME_SIZE = 30
@@ -36,7 +39,7 @@ class CardImageGenerator:
 
     def __init__(self) -> None:
         cardtype = CardType(self.CARDTYPE).name
-        base_path = f"assets\\Cardbuilder\\{cardtype}\\"
+        base_path = f":Cardbuilder\\{cardtype}\\"
         self.RESOURCE_BASECARD_PATH = base_path + f"BASECARDS\\Card_Inhand_{cardtype}_"
         self.RESOURCE_MINION_DROPSHADOW = base_path + f"Card_Inhand_{cardtype}_DropShadow.png"
         self.RESOURCE_MINION_FRAME_MASK = base_path + "mask3.png"
@@ -63,7 +66,7 @@ class CardImageGenerator:
         else:
             path = self.RESOURCE_BASECARD_PATH + ClassType(class_type).name + ".png"
         
-        self.base_card = Image.open(path, 'r').convert('RGBA')
+        self.base_card = self.ImageFromRes(path).convert('RGBA')
         
         self.foundation = Image.new('RGBA', size=(self.base_card.width + self.FOUNDATION_PADDING_W,
                                                     self.base_card.height+ self.FOUNDATION_PADDING_H))
@@ -73,8 +76,8 @@ class CardImageGenerator:
             picture = Image.new('RGBA', (1,1))
         else:
             picture = Image.open(BytesIO(picture_bytes))
-        frame = Image.open(self.RESOURCE_MINION_FRAME_MASK).convert('RGBA')
-        shadow = Image.open(self.RESOURCE_MINION_DROPSHADOW).convert('RGBA')
+        frame = self.ImageFromRes(self.RESOURCE_MINION_FRAME_MASK).convert('RGBA')
+        shadow = self.ImageFromRes(self.RESOURCE_MINION_DROPSHADOW).convert('RGBA')
 
         p_x, p_y = picture.size
         s_x, s_y = frame.size
@@ -133,7 +136,7 @@ class CardImageGenerator:
         return self.foundation
 
     def generate_name_banner(self, text: str) -> Image:
-        background = Image.open(self.RESOURCE_NAME_BANNER_PATH).convert('RGBA')
+        background = self.ImageFromRes(self.RESOURCE_NAME_BANNER_PATH).convert('RGBA')
 
         if not text:
             return background
@@ -197,13 +200,13 @@ class CardImageGenerator:
         BANNER_WIDTH = 580
         BANNER_HEIGHT = 300
 
-        descrtiption_banner = Image.open(self.RESOURCE_DESCRIPTION_BANNER_PATH).convert('RGBA')
+        descrtiption_banner = self.ImageFromRes(self.RESOURCE_DESCRIPTION_BANNER_PATH).convert('RGBA')
 
         if not text:
             return descrtiption_banner
 
-        font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, 53)
-        font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, 53)
+        font = self.ImageFontFromRes(self.RESOURCE_FONT_DESCR_PATH, 53)
+        font_bold = self.ImageFontFromRes(self.RESOURCE_FONT_DESCR_BOLD_PATH, 53)
 
         lines_of_text = self.text_wrap(text, font_bold, BANNER_WIDTH)
 
@@ -242,8 +245,8 @@ class CardImageGenerator:
         if len(lines_of_text) > 8:
             raise RuntimeError("Card description is too long (max 8 lines)")
 
-        font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, FONT_SIZE)
-        font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, FONT_SIZE)
+        font = self.ImageFontFromRes(self.RESOURCE_FONT_DESCR_PATH, FONT_SIZE)
+        font_bold = self.ImageFontFromRes(self.RESOURCE_FONT_DESCR_BOLD_PATH, FONT_SIZE)
 
         W, H = (BANNER_WIDTH, BANNER_HEIGHT)
         image = Image.new('RGBA', (W, H))
@@ -297,13 +300,13 @@ class CardImageGenerator:
         elif rarity == Rarity.NONE:
             return Image.new('RGBA', (0,0))
 
-        return Image.open(path, 'r').convert('RGBA')
+        return self.ImageFromRes(path, 'r').convert('RGBA')
 
     def generate_legendary_dragon(self):
-        return Image.open(self.RESOURCE_LEGENDARY_DRAGON_PATH, 'r').convert('RGBA')
+        return self.ImageFromRes(self.RESOURCE_LEGENDARY_DRAGON_PATH, 'r').convert('RGBA')
 
     def generate_managem(self, manacost: int = None) -> Image:
-        managem = Image.open(self.RESOURCE_MANATEXTURE_PATH, 'r').convert('RGBA')
+        managem = self.ImageFromRes(self.RESOURCE_MANATEXTURE_PATH, 'r').convert('RGBA')
 
         if manacost is None:
             return managem
@@ -311,11 +314,11 @@ class CardImageGenerator:
         draw = ImageDraw.Draw(managem)
         
         if manacost is not None and manacost < 100 and manacost > -1:
-            font= self.get_font(self.RESOURCE_FONT_PATH, 200)
+            font= self.ImageFontFromRes(self.RESOURCE_FONT_PATH, 200)
             w, h = 35, -45
             if manacost >= 10:
                 w, h = -8, -35
-                font= self.get_font(self.RESOURCE_FONT_PATH, 180)
+                font= self.ImageFontFromRes(self.RESOURCE_FONT_PATH, 180)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(manacost), font=font, fill='black')
@@ -324,16 +327,16 @@ class CardImageGenerator:
         return managem
 
     def generate_attack(self, attack: int = None) -> Image:
-        attack_gem = Image.open(self.RESOURCE_ATTACKTEXTURE_PATH, 'r').convert('RGBA')
+        attack_gem = self.ImageFromRes(self.RESOURCE_ATTACKTEXTURE_PATH, 'r').convert('RGBA')
         
         draw = ImageDraw.Draw(attack_gem)
         
         if attack is not None and attack < 100:
-            font= self.get_font(self.RESOURCE_FONT_PATH, 170)
+            font= self.ImageFontFromRes(self.RESOURCE_FONT_PATH, 170)
             w, h = 90, 20
             if attack >= 10 or attack < 0:
                 w, h = 55, 30
-                font= self.get_font(self.RESOURCE_FONT_PATH, 150)
+                font= self.ImageFontFromRes(self.RESOURCE_FONT_PATH, 150)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(attack), font=font, fill='black')
@@ -342,16 +345,16 @@ class CardImageGenerator:
         return attack_gem
 
     def generate_health(self, health: int = None) -> Image:
-        health_gem = Image.open(self.RESOURCE_HEALTHTEXTURE_PATH, 'r').convert('RGBA')
+        health_gem = self.ImageFromRes(self.RESOURCE_HEALTHTEXTURE_PATH, 'r').convert('RGBA')
         
         draw = ImageDraw.Draw(health_gem)
         
         if health is not None and health < 100:
-            font= self.get_font(self.RESOURCE_FONT_PATH, 170)
+            font= self.ImageFontFromRes(self.RESOURCE_FONT_PATH, 170)
             w, h = 55, 10
             if health >= 10 or health < 0:
                 w, h = 21, 20
-                font= self.get_font(self.RESOURCE_FONT_PATH, 150)
+                font= self.ImageFontFromRes(self.RESOURCE_FONT_PATH, 150)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(health), font=font, fill='black')
@@ -360,7 +363,7 @@ class CardImageGenerator:
         return health_gem
     
     def generate_tribe(self, text: str = None) -> Image:
-        tribe = Image.open(self.RESOURCE_TRIBE_PLAQUE_PATH, 'r').convert('RGBA')
+        tribe = self.ImageFromRes(self.RESOURCE_TRIBE_PLAQUE_PATH, 'r').convert('RGBA')
 
         if not text:
             return tribe
@@ -369,9 +372,9 @@ class CardImageGenerator:
 
         draw = ImageDraw.Draw(tribe)
 
-        font = self.get_font(self.RESOURCE_FONT_PATH, 44)
+        font = self.ImageFontFromRes(self.RESOURCE_FONT_PATH, 44)
         if Validate.has_cyrillic(text):
-            font = self.get_font(self.RESOURCE_FONT_C_PATH, 44)
+            font = self.ImageFontFromRes(self.RESOURCE_FONT_C_PATH, 44)
 
         w, h = 245 + 13.5, 32
         w-=len(text) * 13.5
@@ -384,9 +387,9 @@ class CardImageGenerator:
 
     def combine_images(self, background, image, t_offset=None) -> Image:
         if isinstance(background, str):
-            background = Image.open(background).convert('RGBA')
+            background = self.ImageFromRes(background).convert('RGBA')
         if isinstance(image, str):
-            image = Image.open(image).convert('RGBA')
+            image = self.ImageFromRes(image).convert('RGBA')
 
         if not t_offset:
             bg_w, bg_h = background.size
@@ -436,7 +439,7 @@ class CardImageGenerator:
         return lines
 
     def get_text_size_for_12px_font(self, font_path: str, text: str) -> int:
-        font = self.get_font(font_path, 12)
+        font = self.ImageFontFromRes(font_path, 12)
         size = font.getlength(text)
         return size
         
@@ -444,12 +447,6 @@ class CardImageGenerator:
         return  int(self.get_font_size(text_size_px)),    \
                 int(self.get_curve_degree(text_size_px)), \
                 int(self.get_offset(text_size_px))
-
-    def get_font(self, font_path: str, size: int):
-        try:
-            return ImageFont.truetype(font_path, size)
-        except OSError as e:
-            raise GenerationError("Отсутствует шрифт " + font_path)
 
     def get_font_size(self, text_size_px: int) -> float:
         x = text_size_px
@@ -466,4 +463,24 @@ class CardImageGenerator:
         -0.000000170873051*(x**5)+0.000036060789004*(x**4)-0.003637973111197*(x**3) \
         +0.180793592168535*(x**2)-4.461212339169927*x+140.206273116060634
 
+
+    def ImageFromRes(self, path: str, mode = 'r') -> Image:
+        file = QFile(path)
+        if not file.open(QFile.ReadOnly):
+            raise GenerationError("Unable to open resource file")
+
+        data = file.readAll()
+        file.close()
+
+        return Image.open(BytesIO(data), mode)
+
+    def ImageFontFromRes(self, path: str, size: int) -> ImageFont:
+        file = QFile(path)
+        if not file.open(QFile.ReadOnly):
+            raise GenerationError("Unable to open resource file")
+
+        data = file.readAll()
+        file.close()
+
+        return ImageFont.truetype(BytesIO(data), size)
 

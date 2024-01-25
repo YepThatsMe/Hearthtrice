@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QLineEdit, QLabel, QApplication, QTextEdit, QVBoxLayout, QComboBox, QFrame, QHBoxLayout, QPushButton, QSpinBox, QFormLayout, QSizePolicy
 from PyQt5.QtCore import pyqtSignal
 
-from Widgets.components.DataTypes import CardMetadata, CardType, ClassType, Rarity
+from DataTypes import CardMetadata, CardType, ClassType, Rarity
 from Widgets.components.ButtonGroup import ExclusiveButtonGroup
 from Widgets.components.FormLabel import FormLabel
 
@@ -24,13 +24,13 @@ class FormView(QFrame):
         self.layout_inlay_health = QVBoxLayout()
         
 
-        self.cardtype_button_group = ExclusiveButtonGroup(4, r"assets\icons\typeicons", 0, 0, self)
+        self.cardtype_button_group = ExclusiveButtonGroup(4, r":icons\typeicons", 0, 0, self)
         self.cardtype_button_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         # TODO: implement weapon and hero generator
         self.cardtype_button_group.buttons[2].setEnabled(False)
         self.cardtype_button_group.buttons[3].setEnabled(False)
 
-        self.class_button_group = ExclusiveButtonGroup(10, r"assets\icons\classicons", 0, 1, self)
+        self.class_button_group = ExclusiveButtonGroup(10, r":icons\classicons", 0, 1, self)
 
         self.name_label = FormLabel("Название карты", self)
         self.name_form = QLineEdit(self)

@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
 from PyQt5.QtCore import QSettings, pyqtSignal
-from Widgets.DataPresenter import DataPresenter
-from Widgets.Thread import send_to_thread
+from DataPresenter import DataPresenter
+from utils.Thread import send_to_thread
 from Widgets.components.SettingsButton import SettingsButton
-from Widgets.components.DataTypes import Response
+from DataTypes import Response
 
 class ConnectionSettingsDialog(QDialog):
     connection_response_received = pyqtSignal()

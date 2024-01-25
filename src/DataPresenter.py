@@ -4,9 +4,9 @@ import io
 import json
 import hashlib
 
-from Widgets.Communication import Communication
-from Widgets.components.BytesEncoder import BytesEncoder, base64_to_bytes, hash_library
-from Widgets.components.DataTypes import CardMetadata, Deck, DeckCard, Response
+from Communication import Communication
+from utils.BytesEncoder import BytesEncoder, base64_to_bytes, hash_library
+from DataTypes import CardMetadata, Deck, DeckCard, Response
 
 
 class DataPresenter(QObject):

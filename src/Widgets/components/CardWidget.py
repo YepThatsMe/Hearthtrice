@@ -2,9 +2,9 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QMenu, QAction
 from PyQt5.QtCore import QTimer, Qt, QRect
 from PyQt5.QtGui import QIcon, QMouseEvent, QPixmap, QColor, QPainter
 from PyQt5.QtCore import pyqtSignal
-from Widgets.components.BytesEncoder import bytes_to_pixmap
+from utils.BytesEncoder import bytes_to_pixmap
 
-from Widgets.components.DataTypes import CardMetadata
+from DataTypes import CardMetadata
 
 class CardWidget(QWidget):
     card_clicked_event = pyqtSignal(CardMetadata)

@@ -13,7 +13,7 @@ class SettingsButton(QWidget):
         self.button = QPushButton(self)
         self.button.setFixedSize(48,48)
         # Устанавливаем иконку и делаем ее масштабируемой
-        pixmap = QPixmap(r"assets/icons/settings_icon.png")
+        pixmap = QPixmap(r":icons/settings_icon.png")
         pixmap = pixmap.scaled(32, 32)
         self.button.setIcon(QIcon(pixmap))
         self.button.setIconSize(pixmap.size())
