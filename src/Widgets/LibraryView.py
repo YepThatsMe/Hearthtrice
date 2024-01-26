@@ -62,11 +62,10 @@ class LibraryView(QFrame):
         self.scroll_stack.setCurrentIndex(0)
 
         self.scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #self.scroll_area.setStyleSheet("background-color: yellow")
         self.scrollable_widget = QWidget(self.scroll_area)
-        #self.scrollable_widget.setStyleSheet("background-color: green")
         self.grid_layout = QGridLayout(self.scrollable_widget)
         self.scroll_area.setWidget(self.scrollable_widget)
+        self.scroll_area.setWidgetResizable(True)
 
         self.sub_gen_layout.addLayout(self.control_layout)
         self.sub_gen_layout.addWidget(self.scroll_stack)
