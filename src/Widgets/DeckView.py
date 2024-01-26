@@ -7,6 +7,7 @@ from PyQt5.QtCore import QSettings, pyqtSignal
 from typing import List
 
 from DataTypes import Deck, DeckCard, Response
+from utils.XMLGenerator import XMLGenerator
 from Widgets.components.DeckListDialog import DeckListDialog
 
 
@@ -140,6 +141,24 @@ class MyTreeWidget(QTreeWidget):
                 
             string_deck+= f"{id_value},{count},{side};"
         return string_deck
+    
+    def current_decktree_to_rich_cardslist(self) -> List[DeckCard]:
+        cards = []
+        for id_value, item in self.items_by_id.items():
+            card = DeckCard()
+            card.id = id_value
+            card.count = int(item.text(0))
+            card.side = DeckCard.Side.MAINDECK
+            if item.parent() == self.parent_item2:
+                card.side = DeckCard.Side.SIDEBOARD
+                
+            card.name = item.text(2)
+            card.manacost = int(item.text(3))
+            cards.append(card)
+        return cards
+        
+
+
 
 
 class DeckView(QWidget):
@@ -258,19 +277,18 @@ class DeckView(QWidget):
         for card in self.current_deck.cards:
             for _ in range(card.count):
                 self.add_item(card.id, card.name, card.manacost)
-
+    
+    def get_current_rich_deck(self) -> Deck:
+        deck = Deck()
+        deck.id = self.current_deck.id
+        deck.name = self.current_deck.name
+        deck.owner = self.current_deck.owner
+        deck.cards = self.tree_widget.current_decktree_to_rich_cardslist()
+        return deck
+    
     def export_items(self):
-        export_list = []
-        for id_value, item in self.tree_widget.items_by_id.items():
-            quantity = int(item.text(0))
-            #price = int(self.tree_widget.get_price_by_id(id_value))
-            #export_list.append((id_value, quantity, self.tree_widget.get_name_by_id(id_value), price))
-
-        print("Exported items:")
-        for item in export_list:
-            print(item)
-
-        return export_list
+        deck = self.get_current_rich_deck()
+        XMLGenerator.generate_xml_deck(deck)
 
 from PyQt5.QtGui import QColor, QFont
 if __name__ == '__main__':

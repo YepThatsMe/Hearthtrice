@@ -3,13 +3,10 @@ from xml.dom import minidom
 
 import xml.etree.ElementTree as ET
 
-from DataTypes import CardMetadata, CardType, ClassType, Rarity
+from DataTypes import CardMetadata, CardType, ClassType, Rarity, Deck, DeckCard
 
 class XMLGenerator:
-    def __init__(self) -> None:
-        pass
-
-    def generate_xml_library(self, cards: List[CardMetadata]):
+    def generate_xml_library(cards: List[CardMetadata]):
         card_database = ET.Element("cockatrice_carddatabase", version="3")
 
         set_element = ET.SubElement(card_database, "set")
@@ -54,3 +51,27 @@ class XMLGenerator:
         pretty_string = reparsed.toprettyxml(indent="\t")
         with open("example.xml", "w", encoding="utf-8") as file:
             file.write(pretty_string) 
+
+    def generate_xml_deck(deck: Deck):
+        root = ET.Element("cockatrice_deck", version="1")
+        ET.SubElement(root, "deckname").text = deck.name
+
+        zones = {"main": [], "side": []}
+        for card in deck.cards:
+            if card.side == DeckCard.Side.MAINDECK:
+                zone = "main"
+            else:
+                zone = "side"
+            zones[zone].append((card.name, card.count))
+
+        for zone_name, zone_cards in zones.items():
+            zone_element = ET.SubElement(root, "zone", name=zone_name)
+            for name, count in zone_cards:
+                card_element = ET.SubElement(zone_element, "card", number=str(count), name=name)
+
+        rough_string = ET.tostring(root, 'utf-8')
+        reparsed = minidom.parseString(rough_string)
+        pretty_xml = reparsed.toprettyxml(indent="\t")
+
+        with open("example.xml", "w", encoding="utf-8") as file:
+            file.write(pretty_xml) 

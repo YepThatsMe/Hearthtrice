@@ -23,7 +23,6 @@ class LibraryView(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.card_widgets: List[CardWidget] = []
-        self.xml_generator = XMLGenerator()
         self.deck_view = DeckView()
         self.set_up_ui()
         self.set_up_connections()
@@ -167,7 +166,7 @@ class LibraryView(QFrame):
             #meta.card_image = None
             #meta.picture = None
             meta_list.append(meta)
-        self.xml_generator.generate_xml_library(meta_list)
+        XMLGenerator.generate_xml_library(meta_list)
 
     def get_card_meta_by_id(self, id: int) -> CardMetadata:
         for i in self.card_widgets:
