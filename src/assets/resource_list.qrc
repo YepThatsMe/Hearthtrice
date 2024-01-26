@@ -22,9 +22,6 @@
     <file>icons/typeicons/icon_3.png</file>
     <file>loading_animation.gif</file>
     <file>start_card.png</file>
-	<file>fonts/Arial.ttf</file>
-	<file>fonts/Belwe Bd BT Bold.ttf</file>
-	<file>fonts/FRADMCN.ttf</file>	
     <file>Cardbuilder/card_scheme.png</file>
     <file>Cardbuilder/custom classes/card_minion_archmage.png</file>
     <file>Cardbuilder/custom classes/card_minion_bard.png</file>
