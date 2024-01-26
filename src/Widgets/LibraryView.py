@@ -1,12 +1,12 @@
 import os
-from typing import List, Tuple, Union
+from typing import List
 
-from PyQt5.QtWidgets import QFrame, QGridLayout, QMessageBox, QDialog, QSpacerItem, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QFrame, QGridLayout, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
 from PyQt5.QtCore import pyqtSignal, QSize
 from PyQt5.QtGui import QMovie, QResizeEvent
 from Widgets.DeckView import DeckView
 
-from utils.BytesEncoder import base64_to_bytes, bytes_to_pixmap
+from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
 from DataTypes import CardMetadata, Deck
 from utils.XMLGenerator import XMLGenerator
@@ -100,18 +100,28 @@ class LibraryView(QFrame):
         # TODO: switch to map
         for deck in decks:
             for card in deck.cards:
-                name, manacost, istoken = self.get_additional_metadata(card.id)
-                card.name = name
-                card.manacost = manacost
-                card.istoken = istoken
-                
+                partial_meta = self.get_card_metadata_by_id(card.id, deck_fields_only=True)
+                if partial_meta:
+                    card.name = partial_meta.name
+                    card.manacost = partial_meta.manacost
+                    card.istoken = partial_meta.istoken
+                else:
+                    card.name = "|Not Found|"
+                    card.manacost = -1
+                    card.istoken = 0
         self.deck_view.set_updated_decks(decks)
             
-    def get_additional_metadata(self, id: int) -> Tuple[str, int, bool]:
+    def get_card_metadata_by_id(self, id: int, deck_fields_only: bool = False) -> CardMetadata:
         for card_widget in self.card_widgets:
             if card_widget.metadata.id == id:
-                return (card_widget.metadata.name, card_widget.metadata.manacost, card_widget.metadata.istoken)
-        return ("|Not Found|", -1, 0)
+                if not deck_fields_only:
+                    return card_widget.metadata
+                partial_meta = CardMetadata()
+                partial_meta.name = card_widget.metadata.name
+                partial_meta.manacost = card_widget.metadata.manacost
+                partial_meta.istoken = card_widget.metadata.istoken
+                return partial_meta
+        return None
         
     def set_updated_library(self, cards: List[CardMetadata]):
         if not cards:
@@ -168,12 +178,6 @@ class LibraryView(QFrame):
             meta_list.append(meta)
         XMLGenerator.generate_xml_library(meta_list)
 
-    def get_card_meta_by_id(self, id: int) -> CardMetadata:
-        for i in self.card_widgets:
-            if i.metadata.id == id:
-                return i.metadata
-        return None
-
     def open_deck_view(self):
         dialog = QDialog(self)
         self.deck_view.setParent(dialog)
@@ -184,9 +188,17 @@ class LibraryView(QFrame):
 
     def on_card_clicked(self, metadata: CardMetadata):
         response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost, metadata.istoken)
-
         if not response.ok:
             QMessageBox.warning(self, "Ошибка", response.msg)
+            return
+        
+        if metadata.tokens:
+            token_card_ids = list(map(int, metadata.tokens.split(',')))
+            for card_id in token_card_ids:
+                token_meta = self.get_card_metadata_by_id(card_id, deck_fields_only=True)
+                if not token_meta:
+                    continue
+                self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, token_meta.istoken)
 
     def resizeEvent(self, a0) -> None:
         self.scrollable_widget.resize(self.scroll_area.size())
