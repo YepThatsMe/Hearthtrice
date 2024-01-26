@@ -289,11 +289,11 @@ class DeckView(QWidget):
         layout.addWidget(export_button)
         #layout.addWidget(graph)
 
-    def add_item(self, id: int, name: str, manacost: int) -> Response:
+    def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0) -> Response:
         if not self.current_deck:
             return Response(False, "Колода не выбрана")
      
-        self.tree_widget.add_item(id, name, manacost)
+        self.tree_widget.add_item(id, name, manacost, istoken)
 
         return Response(True)
 
@@ -344,17 +344,17 @@ class DeckView(QWidget):
     def set_updated_decks(self, decks: List[Deck]):
         self.deck_list_dialog.populate_list(decks)
         self.deck_list_dialog.exec()
-        deck_id = self.deck_list_dialog.selected_row
+        selected_deck_id = self.deck_list_dialog.selected_row
         current_deck_label = self.deck_list_dialog.selected_label
-        if deck_id == -1:
+        if selected_deck_id == -1:
             return
         
-        self.current_deck = decks[deck_id]
+        self.current_deck = decks[selected_deck_id]
         self.current_deck_label.setText(current_deck_label)
         self.tree_widget.clear()
         for card in self.current_deck.cards:
             for _ in range(card.count):
-                self.add_item(card.id, card.name, card.manacost)
+                self.add_item(card.id, card.name, card.manacost, card.istoken)
     
     def get_current_rich_deck(self) -> Deck:
         deck = Deck()

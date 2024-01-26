@@ -22,6 +22,7 @@ class DeckCard:
         # optional
         self.manacost: int
         self.name: str
+        self.istoken: bool
 
 
 class Deck:

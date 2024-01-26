@@ -100,17 +100,18 @@ class LibraryView(QFrame):
         # TODO: switch to map
         for deck in decks:
             for card in deck.cards:
-                name, manacost = self.get_additional_metadata(card.id)
+                name, manacost, istoken = self.get_additional_metadata(card.id)
                 card.name = name
                 card.manacost = manacost
+                card.istoken = istoken
                 
         self.deck_view.set_updated_decks(decks)
             
-    def get_additional_metadata(self, id: int) -> Tuple[str, int]:
+    def get_additional_metadata(self, id: int) -> Tuple[str, int, bool]:
         for card_widget in self.card_widgets:
             if card_widget.metadata.id == id:
-                return (card_widget.metadata.name, card_widget.metadata.manacost)
-        return ("|Not Found|", -1)
+                return (card_widget.metadata.name, card_widget.metadata.manacost, card_widget.metadata.istoken)
+        return ("|Not Found|", -1, 0)
         
     def set_updated_library(self, cards: List[CardMetadata]):
         if not cards:
@@ -182,7 +183,7 @@ class LibraryView(QFrame):
         dialog.exec_()
 
     def on_card_clicked(self, metadata: CardMetadata):
-        response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost)
+        response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost, metadata.istoken)
 
         if not response.ok:
             QMessageBox.warning(self, "Ошибка", response.msg)
