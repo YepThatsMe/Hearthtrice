@@ -1,9 +1,9 @@
 from modulefinder import ReplacePackage
 import sys
-from PyQt5.QtWidgets import QApplication, QMessageBox, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
+from PyQt5.QtWidgets import QApplication, QMenu, QMessageBox, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
     QPushButton, QComboBox
 from PyQt5.QtGui import QColor
-from PyQt5.QtCore import QSettings, pyqtSignal
+from PyQt5.QtCore import QSettings, pyqtSignal, Qt
 from typing import List
 
 from DataTypes import Deck, DeckCard, Response
@@ -11,7 +11,11 @@ from utils.XMLGenerator import XMLGenerator
 from Widgets.components.DeckListDialog import DeckListDialog
 
 
-class MyTreeWidgetItem(QTreeWidgetItem):
+class MyTreeWidgetItem(QTreeWidgetItem):    
+    def __init__(self, *args):
+        super(MyTreeWidgetItem, self).__init__(*args)
+        self._sortData = {}
+
     def __lt__(self, other):
         if not isinstance(other, MyTreeWidgetItem):
             return super(MyTreeWidgetItem, self).__lt__(other)
@@ -24,20 +28,15 @@ class MyTreeWidgetItem(QTreeWidgetItem):
 
         return self.sortData(column) < other.sortData(column)
 
-    def __init__(self, *args):
-        super(MyTreeWidgetItem, self).__init__(*args)
-        self._sortData = {}
-
     def sortData(self, column):
         return self._sortData.get(column, self.text(column))
 
     def setSortData(self, column, data):
         self._sortData[column] = data
 
-
 class MyTreeWidget(QTreeWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
             
         self.header().setStyleSheet("QHeaderView::section {\
                                                         color: black;\
@@ -52,22 +51,27 @@ class MyTreeWidget(QTreeWidget):
         self.setColumnCount(4)
         self.setHeaderLabels(["Count", "ID", "Name", "Manacost"])
         self.header().setSortIndicator(3, 0)
-        
-        width = self.width()
+        self.setColumnWidth(0, 65)
+        self.setColumnWidth(1, 40)
+        self.setColumnWidth(2, 160)
+        self.setColumnWidth(3, 50)
 
-        self.setColumnWidth(0, width/12)
-        self.setColumnWidth(1, width/12)
-        self.setColumnWidth(2, width/5)
-        self.setColumnWidth(3, width/12)
+        self.setDragEnabled(True)   # Разрешить перетаскивание элементов
+        self.setAcceptDrops(True)   # Разрешить сбрасывать элементы
+        self.setDragDropMode(QTreeWidget.InternalMove)  # Режим внутреннего перемещения
+
 
         self.bfont = self.font()
-        self.bfont.setBold(1)
+        self.bfont.setBold(True)
 
         # level: item
         self.levels = {}
 
         # id: item
         self.items_by_id = {}
+
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.show_context_menu)
 
         self.itemDoubleClicked.connect(self.on_item_double_clicked)
 
@@ -76,33 +80,45 @@ class MyTreeWidget(QTreeWidget):
     def clear(self):
         super().clear()
 
-        self.parent_item1 = MyTreeWidgetItem(["", "Deck", "", ""])
+        self.parent_item1 = MyTreeWidgetItem(["", "", "Deck", ""])
         self.addTopLevelItem(self.parent_item1)
 
-        self.parent_item2 = MyTreeWidgetItem(["", "Sideboard", "", ""])
+        self.parent_item2 = MyTreeWidgetItem(["", "", "Sideboard", ""])
         self.addTopLevelItem(self.parent_item2)
+
+        self.parent_item3 = MyTreeWidgetItem(["", "", "Tokens", ""])
+        self.addTopLevelItem(self.parent_item3)
+
+        self.expandItem(self.parent_item1)
+        self.expandItem(self.parent_item2)
+        self.expandItem(self.parent_item3)
 
         for i in range(4):
             self.parent_item1.setBackground(i, QColor("#bfffbf"))
             self.parent_item2.setBackground(i, QColor("#bfffbf"))
+            self.parent_item3.setBackground(i, QColor("#bfffbf"))
             self.parent_item1.setFont(i, self.bfont)
             self.parent_item2.setFont(i, self.bfont)
+            self.parent_item3.setFont(i, self.bfont)
         
         
         # level: item
-        self.levels = {self.parent_item1.text(1): self.parent_item1,
-                       self.parent_item2.text(1): self.parent_item2}
+        self.levels = {self.parent_item1.text(2): self.parent_item1,
+                       self.parent_item2.text(2): self.parent_item2,
+                       self.parent_item3.text(2): self.parent_item3}
 
         # id: item
         self.items_by_id = {}
 
 
-    def add_item(self, id: int, name: str, manacost: int):
+    def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0):
         level = "Deck"
+        if istoken:
+            level = "Tokens"
 
         existing_item: MyTreeWidgetItem = self.items_by_id.get(id)
 
-        if existing_item and level == existing_item.parent().text(1):
+        if existing_item and level == existing_item.parent().text(2):
             quantity = int(existing_item.text(0)) + 1
             existing_item.setText(0, str(quantity))
             existing_item.setSortData(3, existing_item.text(3))
@@ -112,18 +128,13 @@ class MyTreeWidget(QTreeWidget):
             new_item.setFont(0, self.bfont)
             new_item.setFont(2, self.bfont)
             new_item.setFont(3, self.bfont)
-            new_item.setForeground(1, QColor("#f9f9f9"))
+            new_item.setForeground(1, QColor("#e0e0e0"))
             new_item.setForeground(3, QColor("#4b00b3"))
             new_item.setBackground(3, QColor("#e6e6e6"))
             self.items_by_id[id] = new_item
             self.levels[level].addChild(new_item)
 
-        self.expandItem(self.levels[level])
         self.sortItems(3, 0)
-
-    def on_item_double_clicked(self, item, column):
-        if item is not None:
-            print(f"Double clicked on item: {item.text(column)}")
 
     def get_name_by_id(self, id_value):
         item = self.items_by_id.get(id_value)
@@ -156,8 +167,75 @@ class MyTreeWidget(QTreeWidget):
             card.manacost = int(item.text(3))
             cards.append(card)
         return cards
-        
 
+    def show_context_menu(self, position):
+        item = self.itemAt(position)
+        if item is not None:
+            menu = QMenu(self)
+
+            increase_action = menu.addAction("+1")
+            decrease_action = menu.addAction("-1")
+            delete_action = menu.addAction("Удалить")
+
+            action = menu.exec_(self.viewport().mapToGlobal(position))
+            if action == increase_action:
+                self.modify_count(item, 1)
+            elif action == decrease_action:
+                self.modify_count(item, -1)
+            elif action == delete_action:
+                self.delete_item(item)
+
+    def modify_count(self, item, amount):
+        current_count = int(item.text(0))
+        new_count = current_count + amount
+        if new_count <= 0:
+            self.delete_item(item)
+        else:
+            item.setText(0, str(new_count))
+        self.sortItems(3, 0)
+
+    def delete_item(self, item):
+        index = self.indexOfTopLevelItem(item)
+        if index != -1:
+            self.takeTopLevelItem(index)
+        else:
+            parent = item.parent()
+            parent.takeChild(parent.indexOfChild(item))
+        self.sortItems(3, 0)
+
+
+    def on_item_double_clicked(self, item, column):
+        if item in [self.parent_item1, self.parent_item2, self.parent_item3]:
+            return
+        if item.parent() == self.parent_item3:
+            return
+        
+        current_parent = item.parent()
+        new_parent = self.parent_item2
+        if current_parent == self.parent_item2:
+            new_parent = self.parent_item1
+            
+        index = current_parent.indexOfChild(item)
+        current_parent.takeChild(index)
+        new_parent.addChild(item)
+        self.sortItems(3, 0)
+
+    def startDrag(self, supportedActions):
+        item = self.currentItem()
+        if item:
+            text = item.text(2)
+            if text  == "Deck" or text == "Sideboard" or text == "Tokens":
+                return
+            super().startDrag(supportedActions)
+
+    def dropEvent(self, event):
+        target_item = self.itemAt(event.pos())
+        if target_item:
+            text = target_item.text(2)
+            if text  == "Deck" or text == "Sideboard" or text == "Tokens":
+                super().dropEvent(event)
+                return
+        event.ignore()  # Игнорируем сброс в неподходящий элемент
 
 
 
@@ -183,7 +261,7 @@ class DeckView(QWidget):
         control_layout = QVBoxLayout()
         control_layout_inlay1 = QHBoxLayout()
 
-        self.tree_widget = MyTreeWidget()
+        self.tree_widget = MyTreeWidget(self)
 
         new_deck_button = QPushButton("Новая колода", self)
         new_deck_button.clicked.connect(self.new_deck)
