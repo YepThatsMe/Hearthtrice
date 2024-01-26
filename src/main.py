@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 
 import sys
 
+VERSION_MAJOR = 3
+VERSION_MINOR = 0
 
 def main():
     
