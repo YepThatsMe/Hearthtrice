@@ -1,9 +1,10 @@
-from PyQt5.QtWidgets import QLineEdit, QLabel, QApplication, QTextEdit, QVBoxLayout, QComboBox, QFrame, QHBoxLayout, QPushButton, QSpinBox, QFormLayout, QSizePolicy
+from PyQt5.QtWidgets import QLineEdit, QLabel, QTableWidget, QCheckBox, QApplication, QTextEdit, QVBoxLayout, QComboBox, QFrame, QHBoxLayout, QPushButton, QSpinBox, QFormLayout, QSizePolicy
 from PyQt5.QtCore import pyqtSignal
 
 from DataTypes import CardMetadata, CardType, ClassType, Rarity
 from Widgets.components.ButtonGroup import ExclusiveButtonGroup
 from Widgets.components.FormLabel import FormLabel
+from Widgets.components.TokensTable import TokensTable
 
 class FormView(QFrame):
     
@@ -17,6 +18,10 @@ class FormView(QFrame):
 
     def set_up_ui(self):
         self.gen_layout = QVBoxLayout()
+        self.subgen_layout = QVBoxLayout()
+        self.form_layout = QHBoxLayout()
+        self.form_layout1 = QVBoxLayout()
+        self.form_layout2 = QVBoxLayout()
         self.layout_inlay1 = QHBoxLayout()
 
         self.layout_inlay_mana = QVBoxLayout()
@@ -61,18 +66,25 @@ class FormView(QFrame):
         self.tribe_form = QLineEdit(self)
         self.tribe_form.setPlaceholderText("Раса")
 
+        self.comment_label = FormLabel("Заметка", self)
+        self.comment_form = QTextEdit(self)
+        self.comment_form.setPlaceholderText('Техническая заметка')
+        self.comment_form.setMaximumHeight(200)
+
+        self.istoken_label = FormLabel("Является токеном", self)
+        self.istoken_form = QCheckBox(self)
+
+        self.tokenstable_label = FormLabel("Токены", self)
+        self.tokenstable_form = TokensTable(self)
+
         ###
+        self.form_layout1.addWidget(self.name_label)
+        self.form_layout1.addWidget(self.name_form)
+        self.form_layout1.addSpacing(15)
 
-        self.gen_layout.addWidget(self.cardtype_button_group)
-        self.gen_layout.addWidget(self.class_button_group)
-
-        self.gen_layout.addWidget(self.name_label)
-        self.gen_layout.addWidget(self.name_form)
-        self.gen_layout.addSpacing(15)
-
-        self.gen_layout.addWidget(self.description_label)
-        self.gen_layout.addWidget(self.description_form)
-        self.gen_layout.addSpacing(15)
+        self.form_layout1.addWidget(self.description_label)
+        self.form_layout1.addWidget(self.description_form)
+        self.form_layout1.addSpacing(15)
 
         self.layout_inlay_mana.addWidget(self.mana_label)
         self.layout_inlay_mana.addWidget(self.mana_form)
@@ -83,21 +95,38 @@ class FormView(QFrame):
         self.layout_inlay_health.addWidget(self.health_label)
         self.layout_inlay_health.addWidget(self.health_form)
 
-        self.gen_layout.addWidget(self.rarity_label)
-        self.gen_layout.addWidget(self.rarity_form)
-        self.gen_layout.addSpacing(15)
+        self.form_layout1.addWidget(self.rarity_label)
+        self.form_layout1.addWidget(self.rarity_form)
+        self.form_layout1.addSpacing(15)
 
         self.layout_inlay1.addLayout(self.layout_inlay_mana)
         self.layout_inlay1.addLayout(self.layout_inlay_attack)
         self.layout_inlay1.addLayout(self.layout_inlay_health)
-        self.gen_layout.addLayout(self.layout_inlay1)
-        self.gen_layout.addSpacing(15)
+        self.form_layout1.addLayout(self.layout_inlay1)
+        self.form_layout1.addSpacing(15)
         
-        self.gen_layout.addWidget(self.tribe_label)
-        self.gen_layout.addWidget(self.tribe_form)
+        self.form_layout1.addWidget(self.tribe_label)
+        self.form_layout1.addWidget(self.tribe_form)
 
-        self.gen_layout.addStretch()
+        self.form_layout1.addStretch()
 
+        self.form_layout2.addWidget(self.comment_label)
+        self.form_layout2.addWidget(self.comment_form)
+
+        self.form_layout2.addWidget(self.istoken_label)
+        self.form_layout2.addWidget(self.istoken_form)
+
+        self.form_layout2.addWidget(self.tokenstable_label)
+        self.form_layout2.addWidget(self.tokenstable_form)
+
+        self.form_layout.addLayout(self.form_layout1)
+        self.form_layout.addLayout(self.form_layout2)
+
+        self.subgen_layout.addWidget(self.cardtype_button_group)
+        self.subgen_layout.addWidget(self.class_button_group)
+        self.subgen_layout.addLayout(self.form_layout)
+
+        self.gen_layout.addLayout(self.subgen_layout)
 
         self.setLayout(self.gen_layout)
 
@@ -112,6 +141,9 @@ class FormView(QFrame):
             "attack": self.attack_form.value(),
             "health": self.health_form.value(),
             "tribe": self.tribe_form.text(),
+            "comment": self.comment_form.toPlainText(),
+            "istoken": self.istoken_form.isChecked(),
+            "tokens": self.tokenstable_form.get_tokens_string()
         }
 
         return data

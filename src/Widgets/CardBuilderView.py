@@ -195,6 +195,9 @@ class CardBuilderView(QFrame):
         self.form.mana_form.setValue(metadata.manacost)
         self.form.rarity_form.setCurrentIndex(metadata.rarity-1)
         self.form.tribe_form.setText(metadata.tribe)
+        self.form.comment_form.setText(metadata.comment)
+        self.form.istoken_form.setChecked(metadata.istoken)
+        self.form.tokenstable_form.populate_table(metadata.tokens)
         self.generate()
     
     def reset(self):

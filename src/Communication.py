@@ -65,8 +65,8 @@ class Communication:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
         query = """
-        INSERT INTO Cards (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, comment, picture, move_x, move_y, zoom, card_image)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO Cards (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, picture, move_x, move_y, zoom, card_image, hash)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
         # Параметры (кроме id) передаются в execute в виде кортежа
         params = (  metadata.name,
@@ -78,12 +78,15 @@ class Communication:
                     metadata.attack, 
                     metadata.health, 
                     metadata.tribe,
+                    metadata.istoken,
+                    metadata.tokens,
                     metadata.comment,
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,
                     metadata.zoom, 
-                    metadata.card_image)
+                    metadata.card_image,
+                    metadata.hash)
 
         try:
 
@@ -111,12 +114,15 @@ class Communication:
                 attack = ?,
                 health = ?,
                 tribe = ?,
+                istoken = ?,
+                tokens = ?,
                 comment = ?,
                 picture = ?,
                 move_x = ?,
                 move_y = ?,
                 zoom = ?,
-                card_image = ?
+                card_image = ?,
+                hash = ?
             WHERE id = ?
         """
         params = (  metadata.name,
@@ -128,12 +134,15 @@ class Communication:
                     metadata.attack, 
                     metadata.health, 
                     metadata.tribe,
+                    metadata.istoken,
+                    metadata.tokens,
                     metadata.comment,
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,
                     metadata.zoom, 
                     metadata.card_image,
+                    metadata.hash,
                     metadata.id)
         try:
             self.cursor.execute(query, params)
