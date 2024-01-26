@@ -13,6 +13,7 @@ class CardWidget(QWidget):
 
     def __init__(self, metadata: CardMetadata, parent: QWidget = None):
         super().__init__(parent)
+        self.pressPos = None
         self.metadata = metadata
 
         self.set_up_ui()
