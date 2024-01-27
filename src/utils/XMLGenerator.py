@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 from DataTypes import CardMetadata, CardType, ClassType, Rarity, Deck, DeckCard
 
 class XMLGenerator:
-    def generate_xml_library(cards: List[CardMetadata]):
+    def generate_xml_library(full_xml_path: str, cards: List[CardMetadata]):
         card_database = ET.Element("cockatrice_carddatabase", version="3")
 
         set_element = ET.SubElement(card_database, "set")
@@ -49,10 +49,10 @@ class XMLGenerator:
         rough_string = ET.tostring(card_database, 'utf-8')
         reparsed = minidom.parseString(rough_string)
         pretty_string = reparsed.toprettyxml(indent="\t")
-        with open("example.xml", "w", encoding="utf-8") as file:
+        with open(full_xml_path, "w", encoding="utf-8") as file:
             file.write(pretty_string) 
 
-    def generate_xml_deck(deck: Deck):
+    def generate_xml_deck(full_xml_path: str, deck: Deck):
         root = ET.Element("cockatrice_deck", version="1")
         ET.SubElement(root, "deckname").text = deck.name
 
@@ -75,5 +75,5 @@ class XMLGenerator:
         reparsed = minidom.parseString(rough_string)
         pretty_xml = reparsed.toprettyxml(indent="\t")
 
-        with open("example.xml", "w", encoding="utf-8") as file:
+        with open(full_xml_path, "w", encoding="utf-8") as file:
             file.write(pretty_xml) 

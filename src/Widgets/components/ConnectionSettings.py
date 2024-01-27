@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
-from PyQt5.QtCore import QSettings, pyqtSignal
+from PyQt5.QtWidgets import QDialog, QFileDialog, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt5.QtCore import QSettings, pyqtSignal, Qt
 from DataPresenter import DataPresenter
 from utils.Thread import send_to_thread
 from Widgets.components.SettingsButton import SettingsButton
@@ -18,6 +18,7 @@ class ConnectionSettingsDialog(QDialog):
         send_to_thread(self, self.connect_action, self.connection_response_received.emit)
 
     def set_up_ui(self):
+        self.setWindowFlags(self.windowFlags()^ Qt.WindowContextHelpButtonHint)
         self.setWindowTitle("Настройки")
         self.server_label = QLabel("Сервер:")
         self.server_edit = QLineEdit()
@@ -30,13 +31,25 @@ class ConnectionSettingsDialog(QDialog):
         self.password_label = QLabel("Пароль:")
         self.password_edit = QLineEdit()
         self.password_edit.setText(self.settings.value("password"))
-        self.password_edit.setEchoMode(QLineEdit.Password)  # Скрываем ввод пароля
+        self.password_edit.setEchoMode(QLineEdit.Password)
 
         self.connect_button = QPushButton("Подключиться")
-        self.connect_button.clicked.connect(self.on_button_clicked)
+        self.connect_button.clicked.connect(self.on_connect_clicked)
 
-        # Размещение виджетов на вертикальной компоновке
+        self.game_path_label = QLabel("Директория игры")
+        path_lo = QHBoxLayout()
+        self.game_path_edit = QLineEdit()
+        self.game_path_edit.setReadOnly(True)
+        self.game_path_edit.setText(self.settings.value("path"))
+        self.game_path_edit.textChanged.connect(self.on_game_path_changed)
+        self.game_path_browse = QPushButton("Обзор")
+        self.game_path_browse.clicked.connect(self.on_browse_clicked)
+        path_lo.addWidget(self.game_path_edit)
+        path_lo.addWidget(self.game_path_browse)
+
         layout = QVBoxLayout()
+        layout.addWidget(self.game_path_label)
+        layout.addLayout(path_lo)
         layout.addWidget(self.server_label)
         layout.addWidget(self.server_edit)
         layout.addWidget(self.login_label)
@@ -45,10 +58,17 @@ class ConnectionSettingsDialog(QDialog):
         layout.addWidget(self.password_edit)
         layout.addWidget(self.connect_button)
 
-        # Установка компоновки для диалога
         self.setLayout(layout)
-    
-    def on_button_clicked(self):
+
+    def on_browse_clicked(self):       
+        directory_path = QFileDialog.getExistingDirectory(None, "Выберите папку", ".", )
+        self.game_path_edit.setText(directory_path)
+
+    def on_game_path_changed(self, current_text):
+        self.settings.setValue("path", current_text)
+        print("Path changed to", current_text)
+
+    def on_connect_clicked(self):
         response = self.connect_action()
         if(response.ok):
             QMessageBox.information(self, "Подключено", "Соединение установлено.")

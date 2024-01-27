@@ -1,11 +1,10 @@
-from modulefinder import ReplacePackage
-import sys
-from PyQt5.QtWidgets import QApplication, QMenu, QMessageBox, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
-    QPushButton, QComboBox
+from PyQt5.QtWidgets import QMenu, QMessageBox, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
+    QPushButton
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import QSettings, pyqtSignal, Qt
 from typing import List
 
+import os
 from DataTypes import Deck, DeckCard, Response
 from utils.XMLGenerator import XMLGenerator
 from Widgets.components.DeckListDialog import DeckListDialog
@@ -56,9 +55,9 @@ class MyTreeWidget(QTreeWidget):
         self.setColumnWidth(2, 160)
         self.setColumnWidth(3, 50)
 
-        self.setDragEnabled(True)   # Разрешить перетаскивание элементов
-        self.setAcceptDrops(True)   # Разрешить сбрасывать элементы
-        self.setDragDropMode(QTreeWidget.InternalMove)  # Режим внутреннего перемещения
+        self.setDragEnabled(True)
+        self.setAcceptDrops(True)
+        self.setDragDropMode(QTreeWidget.InternalMove)
 
 
         self.bfont = self.font()
@@ -304,6 +303,9 @@ class DeckView(QWidget):
         return Response(True)
 
     def update_deck(self):
+        if not self.current_deck:
+            return QMessageBox.warning(self, "Ошибка", "Колода не выбрана")
+
         string_deck = self.tree_widget.current_decktree_to_str()
         if(QMessageBox.question(self, "Сохранение", f"Колода {self.current_deck.id}: '{self.current_deck.name.upper()}' будет перезаписана. Сохранить?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes):
             return
@@ -312,6 +314,7 @@ class DeckView(QWidget):
                 return
         self.update_deck_requested.emit((self.current_deck.id, string_deck))
         #current_deck.cards update
+        return
 
     def new_deck(self):
         dialog = QDialog(self)
@@ -372,5 +375,18 @@ class DeckView(QWidget):
         return deck
     
     def export_items(self):
+        if not self.current_deck:
+            return QMessageBox.warning(self, "Ошибка", "Колода не выбрана")
         deck = self.get_current_rich_deck()
-        XMLGenerator.generate_xml_deck(deck)
+
+        game_dir  = self.settings.value("path")
+        if not game_dir:
+            game_dir = os.getcwd()
+        decks_dir = os.path.join(game_dir, "data", "decks")
+        os.makedirs(decks_dir, exist_ok=True)
+
+        full_deck_path = os.path.join(decks_dir, deck.name + ".cod")
+        os.startfile(decks_dir) # Windows only
+        XMLGenerator.generate_xml_deck(full_deck_path, deck)
+
+        QMessageBox.information(self, "Готово", f"Колода {deck.name.upper()} выгружена.")

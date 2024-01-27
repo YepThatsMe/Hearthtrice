@@ -2,7 +2,7 @@ import os
 from typing import List
 
 from PyQt5.QtWidgets import QFrame, QGridLayout, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
-from PyQt5.QtCore import pyqtSignal, QSize
+from PyQt5.QtCore import pyqtSignal, QSize, QSettings
 from PyQt5.QtGui import QMovie, QResizeEvent
 from Widgets.DeckView import DeckView
 
@@ -24,6 +24,7 @@ class LibraryView(QFrame):
         super().__init__(parent)
         self.card_widgets: List[CardWidget] = []
         self.deck_view = DeckView()
+        self.settings = QSettings("HearthTrice")
         self.set_up_ui()
         self.set_up_connections()
 
@@ -161,22 +162,27 @@ class LibraryView(QFrame):
         if not self.card_widgets:
             print("Empty library")
             return
-        
-        directory_path = QFileDialog.getExistingDirectory(None, "Выберите папку", ".", )
-        if directory_path:
-            for card in self.card_widgets:
-                img = bytes_to_pixmap(card.metadata.card_image)
-                img.save(os.path.join(directory_path, card.metadata.name + ".png"))
-            # Windows only
-            os.startfile(directory_path)
+        game_dir = self.settings.value("path").replace("/", "\\")
+        if not game_dir:
+            game_dir = os.getcwd()
+        pics_dir = os.path.join(game_dir, "data", "pics", "CUSTOM")
+        os.makedirs(pics_dir, exist_ok=True)
+        for card in self.card_widgets:
+            img = bytes_to_pixmap(card.metadata.card_image)
+            img.save(os.path.join(pics_dir, card.metadata.name + ".png"))
+            os.startfile(pics_dir) # Windows only
 
-        meta_list = []
+        metas_list = []
         for card_widget in self.card_widgets:
             meta = card_widget.metadata
-            #meta.card_image = None
-            #meta.picture = None
-            meta_list.append(meta)
-        XMLGenerator.generate_xml_library(meta_list)
+            metas_list.append(meta)
+        customsets_dir = os.path.join(game_dir, "data", "customsets")
+        os.makedirs(customsets_dir, exist_ok=True)
+
+        lib_xml_path = os.path.join(customsets_dir, "HearthTrice Customset.xml")
+        XMLGenerator.generate_xml_library(lib_xml_path, metas_list)
+
+        QMessageBox.information(self, "Готово", "Библиотека выгружена.")
 
     def open_deck_view(self):
         dialog = QDialog(self)
