@@ -4,6 +4,9 @@ __pycache__
 .idea
 build/
 dist/
+data/
+*.xml
+*.cod
 *.spec
 test.py
 CHANGELOG.md

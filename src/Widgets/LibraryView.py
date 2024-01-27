@@ -162,7 +162,7 @@ class LibraryView(QFrame):
         if not self.card_widgets:
             print("Empty library")
             return
-        game_dir = self.settings.value("path").replace("/", "\\")
+        game_dir = self.settings.value("path")
         if not game_dir:
             game_dir = os.getcwd()
         pics_dir = os.path.join(game_dir, "data", "pics", "CUSTOM")
