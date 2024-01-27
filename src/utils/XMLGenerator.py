@@ -56,12 +56,14 @@ class XMLGenerator:
         root = ET.Element("cockatrice_deck", version="1")
         ET.SubElement(root, "deckname").text = deck.name
 
-        zones = {"main": [], "side": []}
+        zones = {"main": [], "side": [], "tokens": []}
         for card in deck.cards:
             if card.side == DeckCard.Side.MAINDECK:
                 zone = "main"
-            else:
+            elif card.side == DeckCard.Side.SIDEBOARD:
                 zone = "side"
+            else:
+                zone = "tokens"
             zones[zone].append((card.name, card.count))
 
         for zone_name, zone_cards in zones.items():

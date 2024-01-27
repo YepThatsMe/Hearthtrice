@@ -111,10 +111,12 @@ class MyTreeWidget(QTreeWidget):
         self.items_by_id = {}
 
 
-    def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0):
+    def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0, sideboard: bool = 0):
         level = "Deck"
         if istoken:
             level = "Tokens"
+        elif sideboard:
+            level = "Sideboard"
 
         existing_item: MyTreeWidgetItem = self.items_by_id.get(id)
 
@@ -149,6 +151,8 @@ class MyTreeWidget(QTreeWidget):
             side = DeckCard.Side.MAINDECK
             if item.parent() == self.parent_item2:
                 side = DeckCard.Side.SIDEBOARD
+            elif item.parent() == self.parent_item3:
+                side = DeckCard.Side.TOKENS
                 
             string_deck+= f"{id_value},{count},{side};"
         return string_deck
@@ -162,6 +166,8 @@ class MyTreeWidget(QTreeWidget):
             card.side = DeckCard.Side.MAINDECK
             if item.parent() == self.parent_item2:
                 card.side = DeckCard.Side.SIDEBOARD
+            elif item.parent() == self.parent_item3:
+                card.side = DeckCard.Side.TOKENS
                 
             card.name = item.text(2)
             card.manacost = int(item.text(3))
@@ -289,11 +295,11 @@ class DeckView(QWidget):
         layout.addWidget(export_button)
         #layout.addWidget(graph)
 
-    def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0) -> Response:
+    def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0, sideboard: bool = 0) -> Response:
         if not self.current_deck:
             return Response(False, "Колода не выбрана")
      
-        self.tree_widget.add_item(id, name, manacost, istoken)
+        self.tree_widget.add_item(id, name, manacost, istoken, sideboard)
 
         return Response(True)
 
@@ -354,7 +360,8 @@ class DeckView(QWidget):
         self.tree_widget.clear()
         for card in self.current_deck.cards:
             for _ in range(card.count):
-                self.add_item(card.id, card.name, card.manacost, card.istoken)
+                sideboard = True if card.side == DeckCard.Side.SIDEBOARD else False
+                self.add_item(card.id, card.name, card.manacost, card.istoken, sideboard)
     
     def get_current_rich_deck(self) -> Deck:
         deck = Deck()
@@ -367,12 +374,3 @@ class DeckView(QWidget):
     def export_items(self):
         deck = self.get_current_rich_deck()
         XMLGenerator.generate_xml_deck(deck)
-
-from PyQt5.QtGui import QColor, QFont
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    
-    window = DeckView()
-
-    window.show()
-    sys.exit(app.exec_())

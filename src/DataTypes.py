@@ -13,6 +13,7 @@ class DeckCard:
     class Side(IntEnum):
         MAINDECK = auto()
         SIDEBOARD = auto()
+        TOKENS = auto()
 
     def __init__(self):
         self.id: int
