@@ -176,7 +176,7 @@ class MyTreeWidget(QTreeWidget):
 
     def show_context_menu(self, position):
         item = self.itemAt(position)
-        if item is not None:
+        if item and item != self.parent_item1 and item != self.parent_item2 and item != self.parent_item3:
             menu = QMenu(self)
 
             increase_action = menu.addAction("+1")
