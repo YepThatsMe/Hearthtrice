@@ -1,10 +1,11 @@
 import os
 from typing import List
 
-from PyQt5.QtWidgets import QFrame, QGridLayout, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QFrame, QGridLayout, QLineEdit, QComboBox, QCheckBox, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
 from PyQt5.QtCore import pyqtSignal, QSize, QSettings
 from PyQt5.QtGui import QMovie, QResizeEvent
 from Widgets.DeckView import DeckView
+from Widgets.components.ToggleButton import ToggleButton
 
 from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
@@ -23,6 +24,7 @@ class LibraryView(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.card_widgets: List[CardWidget] = []
+        self.original_positions = {}
         self.deck_view = DeckView()
         self.settings = QSettings("HearthTrice")
         self.set_up_ui()
@@ -68,11 +70,81 @@ class LibraryView(QFrame):
         self.scroll_area.setWidget(self.scrollable_widget)
         self.scroll_area.setWidgetResizable(True)
 
+        self.filter_layout = QHBoxLayout()
+
+        self.reset_filter_button = QPushButton("Очистить", self)
+        self.reset_filter_button.clicked.connect(self.reset_filter)
+
+        self.name_filter = QLineEdit(self)
+        self.name_filter.setPlaceholderText("Поиск...")
+        self.name_filter.textChanged.connect(self.on_filter_changed)
+
+        self.cardtype_filter = QComboBox(self)
+        self.cardtype_filter.addItems(["Тип", "Minion", "Spell", "Weapon", "Hero"])
+        self.cardtype_filter.currentIndexChanged.connect(self.on_filter_changed)
+
+        self.no_tokens_toggle = ToggleButton("Без токенов", self)
+        self.no_tokens_toggle.toggled.connect(self.on_filter_changed)
+        
+        self.standard_only_toggle = ToggleButton("Стандартные", self)
+        self.standard_only_toggle.toggled.connect(self.on_filter_changed)
+        
+        self.filter_layout.addWidget(self.reset_filter_button)
+        self.filter_layout.addWidget(self.name_filter)
+        self.filter_layout.addWidget(self.cardtype_filter)
+        self.filter_layout.addWidget(self.no_tokens_toggle)
+        self.filter_layout.addWidget(self.standard_only_toggle)
+
         self.sub_gen_layout.addLayout(self.control_layout)
         self.sub_gen_layout.addWidget(self.scroll_stack)
+        self.sub_gen_layout.addLayout(self.filter_layout)
         self.gen_layout.addLayout(self.sub_gen_layout, stretch=5)
         self.gen_layout.addWidget(self.deck_view, stretch=2)
         self.setLayout(self.gen_layout)
+
+    def on_filter_changed(self):
+        pos = 0
+        for card in self.card_widgets:
+            if self.filter_is_empty():
+                self.grid_layout.removeWidget(card)
+                x, y = self.original_positions[card]
+                self.grid_layout.addWidget(card, x, y)
+                card.setVisible(True)
+            else: 
+                self.grid_layout.removeWidget(card)
+                if self.check_filter_conditions(card):
+                    self.grid_layout.addWidget(card, pos//4, pos%4)
+                    card.setVisible(True)
+                    pos+=1
+                else:
+                    card.setVisible(False)
+
+    def filter_is_empty(self) -> bool:
+        is_empty = True
+        is_empty = is_empty & ( not self.name_filter.text() )
+        is_empty = is_empty & ( not self.cardtype_filter.currentIndex() )
+        is_empty = is_empty & ( not self.no_tokens_toggle.isChecked )
+        is_empty = is_empty & ( not self.standard_only_toggle.isChecked )
+        return is_empty
+
+    def check_filter_conditions(self, card: CardWidget) -> bool:
+        match = True
+
+        match = match & ( self.name_filter.text().upper() in card.metadata.name.upper() )
+        if self.cardtype_filter.currentIndex():
+            match = match & ( self.cardtype_filter.currentIndex() == card.metadata.cardtype )
+        if self.no_tokens_toggle.isChecked:
+            match = match & ( not card.metadata.istoken )
+
+        return match
+
+    def reset_filter(self):
+        self.name_filter.clear()
+        self.cardtype_filter.setCurrentIndex(0)
+        if self.no_tokens_toggle.isChecked:
+            self.no_tokens_toggle.toggleState()
+        if self.standard_only_toggle.isChecked:
+            self.standard_only_toggle.toggleState()
 
     def update(self):
         self.set_loading(True)
@@ -93,37 +165,6 @@ class LibraryView(QFrame):
         self.refresh_button.setEnabled(not is_loading)
         self.export_button.setEnabled(not is_loading)
 
-    def set_updated_decks(self, decks: List[Deck]):
-        if not decks:
-            print("Cannot update decks")
-            return
-        
-        # TODO: switch to map
-        for deck in decks:
-            for card in deck.cards:
-                partial_meta = self.get_card_metadata_by_id(card.id, deck_fields_only=True)
-                if partial_meta:
-                    card.name = partial_meta.name
-                    card.manacost = partial_meta.manacost
-                    card.istoken = partial_meta.istoken
-                else:
-                    card.name = "|Not Found|"
-                    card.manacost = -1
-                    card.istoken = 0
-        self.deck_view.set_updated_decks(decks)
-            
-    def get_card_metadata_by_id(self, id: int, deck_fields_only: bool = False) -> CardMetadata:
-        for card_widget in self.card_widgets:
-            if card_widget.metadata.id == id:
-                if not deck_fields_only:
-                    return card_widget.metadata
-                partial_meta = CardMetadata()
-                partial_meta.name = card_widget.metadata.name
-                partial_meta.manacost = card_widget.metadata.manacost
-                partial_meta.istoken = card_widget.metadata.istoken
-                return partial_meta
-        return None
-        
     def set_updated_library(self, cards: List[CardMetadata]):
         if not cards:
             print("Cannot update library view")
@@ -141,21 +182,26 @@ class LibraryView(QFrame):
             card_widget.delete_card_requested.connect(self.delete_card_requested)
             card_widget.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
             self.grid_layout.addWidget(card_widget, pos//4, pos%4)
+            self.original_positions[card_widget] = (pos//4, pos%4)
+
             self.card_widgets.append(card_widget)
             pos+=1
             
-        
         self.scrollable_widget.setMinimumWidth(self.scroll_area.width())
         self.scrollable_widget.setMinimumHeight(self.scroll_area.height())
-        print("Library view updated")
+        if not self.no_tokens_toggle.isChecked:
+            self.no_tokens_toggle.toggleState()
         self.set_loading(False)
-        self.resizeEvent(QResizeEvent(QSize(0,0), QSize(0,0)))
+        print("Library view updated")
 
     def clear_grid(self):
         while self.grid_layout.count():
             child = self.grid_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+
+        self.card_widgets.clear()
+        self.original_positions.clear()
 
     
     def on_export_clicked(self):
@@ -206,6 +252,37 @@ class LibraryView(QFrame):
                     continue
                 self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, token_meta.istoken)
 
+    def set_updated_decks(self, decks: List[Deck]):
+        if not decks:
+            print("Cannot update decks")
+            return
+        
+        # TODO: switch to map
+        for deck in decks:
+            for card in deck.cards:
+                partial_meta = self.get_card_metadata_by_id(card.id, deck_fields_only=True)
+                if partial_meta:
+                    card.name = partial_meta.name
+                    card.manacost = partial_meta.manacost
+                    card.istoken = partial_meta.istoken
+                else:
+                    card.name = "|Not Found|"
+                    card.manacost = -1
+                    card.istoken = 0
+        self.deck_view.set_updated_decks(decks)
+            
+    def get_card_metadata_by_id(self, id: int, deck_fields_only: bool = False) -> CardMetadata:
+        for card_widget in self.card_widgets:
+            if card_widget.metadata.id == id:
+                if not deck_fields_only:
+                    return card_widget.metadata
+                partial_meta = CardMetadata()
+                partial_meta.name = card_widget.metadata.name
+                partial_meta.manacost = card_widget.metadata.manacost
+                partial_meta.istoken = card_widget.metadata.istoken
+                return partial_meta
+        return None
+        
     def resizeEvent(self, a0) -> None:
         self.scrollable_widget.resize(self.scroll_area.size())
         return super().resizeEvent(a0)
