@@ -167,3 +167,6 @@ class FormView(QFrame):
         self.mana_form.setValue(0)
         self.rarity_form.setCurrentIndex(0)
         self.tribe_form.setText("")
+        self.comment_form.setText("")
+        self.istoken_form.setChecked(False)
+        self.tokenstable_form.clear()

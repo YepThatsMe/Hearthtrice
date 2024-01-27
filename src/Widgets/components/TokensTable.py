@@ -45,8 +45,7 @@ class TokensTable(QFrame):
 
     def populate_table(self, tokens_string: str):
         self.table.itemChanged.disconnect(self.item_changed)
-        self.table.clearContents()
-        self.table.setRowCount(0)
+        self.clear()
         for number in tokens_string.split(','):
             trimmed_number = number.strip()
             if trimmed_number.isdigit():
@@ -55,3 +54,7 @@ class TokensTable(QFrame):
                 self.table.setItem(row_count, 0, QTableWidgetItem(trimmed_number))
         self.table.insertRow(self.table.rowCount())
         self.table.itemChanged.connect(self.item_changed)
+
+    def clear(self):
+        self.table.clearContents()
+        self.table.setRowCount(1)

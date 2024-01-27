@@ -12,7 +12,7 @@ from DataPresenter import DataPresenter
 from Widgets.components.ButtonGroup import ExclusiveButtonGroup
 from utils.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes
 from DataTypes import CardMetadata, CardType, ClassType
-from Widgets.FormView import FormView
+from Widgets.components.FormView import FormView
 from Widgets.components.CardPreview import CardPreview
 from ImageGenerator.CardImageGenerator import GenerationError
 from ImageGenerator.MinionImageGenerator import MinionImageGenerator
