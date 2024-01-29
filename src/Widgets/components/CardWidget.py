@@ -20,8 +20,8 @@ class CardWidget(QWidget):
 
     def set_up_ui(self):
         self.pixmap = bytes_to_pixmap(self.metadata.card_image)
-        w, h = int(self.pixmap.width()/4), int(self.pixmap.height()/4)
-        self.pixmap = self.pixmap.scaled(w,h)
+        w, h = int(self.pixmap.width()/5), int(self.pixmap.height()/5)
+        self.pixmap = self.pixmap.scaled(w, h, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # Подгонка размера
 
         self.card_label = QLabel(self)
         self.card_label.setPixmap(self.pixmap)

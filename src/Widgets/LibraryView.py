@@ -6,6 +6,7 @@ from PyQt5.QtCore import pyqtSignal, QSize, QSettings
 from PyQt5.QtGui import QMovie, QResizeEvent
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
+from Widgets.components.ScrollableGrid import ScrollableGrid
 
 from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
@@ -52,26 +53,19 @@ class LibraryView(QFrame):
         self.export_button = QPushButton("Экспорт", self)
         self.control_layout.addWidget(self.export_button)
 
-        self.scroll_stack = QStackedWidget(self)
-        self.scroll_area = QScrollArea(self)
-        self.scroll_area.setMinimumWidth(CardWidget.minimumWidth(self) * 6)
-        
         self.loading_label = QLabel(self)
         self.loading_animation = QMovie(r":loading_animation.gif")
         self.loading_label.setMovie(self.loading_animation)
 
-        self.scroll_stack.addWidget(self.scroll_area)
-        self.scroll_stack.addWidget(self.loading_label)
-        self.scroll_stack.setCurrentIndex(0)
+        self.main_gallery_grid = ScrollableGrid(self)
+        self.std_gallery_grid = ScrollableGrid(self)
 
-        self.scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.scrollable_widget = QWidget(self.scroll_area)
-        self.grid_layout = QGridLayout(self.scrollable_widget)
-        self.scroll_area.setWidget(self.scrollable_widget)
-        self.scroll_area.setWidgetResizable(True)
+        self.stack = QStackedWidget(self)
+        self.stack.addWidget(self.main_gallery_grid)
+        self.stack.addWidget(self.std_gallery_grid)
+        self.stack.addWidget(self.loading_label)
 
         self.filter_layout = QHBoxLayout()
-
         self.reset_filter_button = QPushButton("Очистить", self)
         self.reset_filter_button.clicked.connect(self.reset_filter)
 
@@ -87,7 +81,7 @@ class LibraryView(QFrame):
         self.no_tokens_toggle.toggled.connect(self.on_filter_changed)
         
         self.standard_only_toggle = ToggleButton("Стандартные", self)
-        self.standard_only_toggle.toggled.connect(self.on_filter_changed)
+        self.standard_only_toggle.toggled.connect(self.switch_to_standard_grid)
         
         self.filter_layout.addWidget(self.reset_filter_button)
         self.filter_layout.addWidget(self.name_filter)
@@ -96,24 +90,30 @@ class LibraryView(QFrame):
         self.filter_layout.addWidget(self.standard_only_toggle)
 
         self.sub_gen_layout.addLayout(self.control_layout)
-        self.sub_gen_layout.addWidget(self.scroll_stack)
+        self.sub_gen_layout.addWidget(self.stack)
         self.sub_gen_layout.addLayout(self.filter_layout)
         self.gen_layout.addLayout(self.sub_gen_layout, stretch=5)
         self.gen_layout.addWidget(self.deck_view, stretch=2)
         self.setLayout(self.gen_layout)
 
+    def switch_to_standard_grid(self):
+        if self.standard_only_toggle.isChecked:
+            self.stack.setCurrentIndex(1)
+        else:
+            self.stack.setCurrentIndex(0)
+
     def on_filter_changed(self):
         pos = 0
         for card in self.card_widgets:
             if self.filter_is_empty():
-                self.grid_layout.removeWidget(card)
+                self.main_gallery_grid.grid_layout.removeWidget(card)
                 x, y = self.original_positions[card]
-                self.grid_layout.addWidget(card, x, y)
+                self.main_gallery_grid.grid_layout.addWidget(card, x, y)
                 card.setVisible(True)
             else: 
-                self.grid_layout.removeWidget(card)
+                self.main_gallery_grid.grid_layout.removeWidget(card)
                 if self.check_filter_conditions(card):
-                    self.grid_layout.addWidget(card, pos//4, pos%4)
+                    self.main_gallery_grid.grid_layout.addWidget(card, pos//4, pos%4)
                     card.setVisible(True)
                     pos+=1
                 else:
@@ -152,12 +152,11 @@ class LibraryView(QFrame):
 
     def set_loading(self, is_loading: bool):
         if is_loading:
-            self.scroll_stack.setCurrentIndex(1)
-            self.loading_label.resize(self.scroll_area.size())
-            self.loading_label.setStyleSheet(self.scrollable_widget.styleSheet())
             self.loading_animation.start()
+            self.stack.setCurrentIndex(2)
         else:
-            self.scroll_stack.setCurrentIndex(0)
+            self.stack.setCurrentIndex(0)
+            self.standard_only_toggle.setChecked(False)
             self.loading_animation.stop()
             self.setEnabled(True)
 
@@ -181,22 +180,22 @@ class LibraryView(QFrame):
             card_widget.edit_card_requested.connect(self.edit_card_requested)
             card_widget.delete_card_requested.connect(self.delete_card_requested)
             card_widget.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-            self.grid_layout.addWidget(card_widget, pos//4, pos%4)
+            self.main_gallery_grid.grid_layout.addWidget(card_widget, pos//4, pos%4)
             self.original_positions[card_widget] = (pos//4, pos%4)
 
             self.card_widgets.append(card_widget)
             pos+=1
             
-        self.scrollable_widget.setMinimumWidth(self.scroll_area.width())
-        self.scrollable_widget.setMinimumHeight(self.scroll_area.height())
         if not self.no_tokens_toggle.isChecked:
             self.no_tokens_toggle.toggleState()
+        for row in range(self.main_gallery_grid.grid_layout.rowCount()):
+            self.main_gallery_grid.grid_layout.setRowMinimumHeight(row, 280)
         self.set_loading(False)
         print("Library view updated")
 
     def clear_grid(self):
-        while self.grid_layout.count():
-            child = self.grid_layout.takeAt(0)
+        while self.main_gallery_grid.grid_layout.count():
+            child = self.main_gallery_grid.grid_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
@@ -284,5 +283,4 @@ class LibraryView(QFrame):
         return None
         
     def resizeEvent(self, a0) -> None:
-        self.scrollable_widget.resize(self.scroll_area.size())
         return super().resizeEvent(a0)
