@@ -104,3 +104,7 @@ class CardMetadata:
     
     def __getattr__(self, __name: str):
         return self.__getitem__(__name)
+
+class StdMetadata(CardMetadata):
+    isstandard: bool = True
+    card_image_path: str

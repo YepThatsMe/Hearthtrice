@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIcon, QMouseEvent, QPixmap, QColor, QPainter
 from PyQt5.QtCore import pyqtSignal
 from utils.BytesEncoder import bytes_to_pixmap
 
-from DataTypes import CardMetadata
+from DataTypes import CardMetadata, StdMetadata
 
 class CardWidget(QWidget):
     card_clicked_event = pyqtSignal(CardMetadata)
@@ -36,6 +36,10 @@ class CardWidget(QWidget):
         delete_action = QAction("Удалить", self)
         self.context_menu.addAction(edit_action)
         self.context_menu.addAction(delete_action)
+
+        if isinstance(self.metadata, StdMetadata):
+            edit_action.setEnabled(False)
+            delete_action.setEnabled(False)
 
         # Подключаем обработчики событий для контекстного меню
         edit_action.triggered.connect(self.editActionClicked)

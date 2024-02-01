@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import QSize
 
 import resources
+import resources_std
 from Widgets.Arena import Arena
 from Widgets.LibraryView import LibraryView
 from utils.Thread import Thread, send_to_thread

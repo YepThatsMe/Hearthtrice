@@ -4,6 +4,7 @@ __pycache__
 .idea
 build/
 dist/
+src/assets/std/
 data/
 *.xml
 *.cod
@@ -11,3 +12,4 @@ data/
 test.py
 CHANGELOG.md
 src/resources.py
+src/resources_std.py

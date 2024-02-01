@@ -11,4 +11,5 @@
 
 ```sh
 pyrcc5 src\assets\resource_list.qrc -o src\resources.py
+pyrcc5 src\assets\resource_list_std.qrc -o src\resources_std.py
 ```

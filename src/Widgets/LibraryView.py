@@ -1,16 +1,17 @@
 import os
 from typing import List
+import json
 
 from PyQt5.QtWidgets import QFrame, QGridLayout, QLineEdit, QComboBox, QCheckBox, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
-from PyQt5.QtCore import pyqtSignal, QSize, QSettings
-from PyQt5.QtGui import QMovie, QResizeEvent
+from PyQt5.QtCore import pyqtSignal, QDir, QByteArray, QFile, QTextStream, QSize, QSettings, QIODevice
+from PyQt5.QtGui import QMovie
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
 from Widgets.components.ScrollableGrid import ScrollableGrid
 
 from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
-from DataTypes import CardMetadata, Deck
+from DataTypes import CardMetadata, Deck, Response, StdMetadata
 from utils.XMLGenerator import XMLGenerator
 
 class LibraryView(QFrame):
@@ -25,10 +26,13 @@ class LibraryView(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.card_widgets: List[CardWidget] = []
+        self.std_card_widgets: List[CardWidget] = []
         self.original_positions = {}
+        self.std_original_positions= {}
         self.deck_view = DeckView()
         self.settings = QSettings("HearthTrice")
         self.set_up_ui()
+        self.load_standard_cards()
         self.set_up_connections()
 
     def set_up_connections(self):
@@ -118,6 +122,23 @@ class LibraryView(QFrame):
                     pos+=1
                 else:
                     card.setVisible(False)
+        pos = 0
+        for card in self.std_card_widgets:
+            if self.filter_is_empty():
+                self.std_gallery_grid.grid_layout.removeWidget(card)
+                x, y = self.std_original_positions[card]
+                self.std_gallery_grid.grid_layout.addWidget(card, x, y)
+                card.setVisible(True)
+            else: 
+                self.std_gallery_grid.grid_layout.removeWidget(card)
+                if self.check_filter_conditions(card):
+                    self.std_gallery_grid.grid_layout.addWidget(card, pos//4, pos%4)
+                    card.setVisible(True)
+                    pos+=1
+                else:
+                    card.setVisible(False)
+
+        
 
     def filter_is_empty(self) -> bool:
         is_empty = True
@@ -281,6 +302,56 @@ class LibraryView(QFrame):
                 partial_meta.istoken = card_widget.metadata.istoken
                 return partial_meta
         return None
-        
+    
+    def load_standard_cards(self) -> Response:
+        try:
+            json_path = ':std/std_metadata.json'
+            file = QFile(json_path)
+            if not file.open(QFile.ReadOnly | QFile.Text):
+                print(f"Cannot open file: {json_path}")
+                return None
+            text_stream = QTextStream(file)
+            json_text = text_stream.readAll()
+            file.close()
+            std_metadata = json.loads(str(json_text))
+
+            for new_id, entry in enumerate(std_metadata):
+                std_meta = StdMetadata()
+                std_meta.id = -new_id-10
+                std_meta.name = entry["name"]
+                std_meta.description = entry["description"]
+                std_meta.manacost = entry["manacost"]
+                std_meta.rarity = entry["rarity"]
+                std_meta.cardtype = entry["cardtype"]
+                std_meta.classtype = entry["classtype"]
+                std_meta.attack = entry["attack"]
+                std_meta.health = entry["health"]
+                std_meta.tribe = entry["tribe"]
+                std_meta.istoken = entry["istoken"]
+                std_meta.card_image_path = entry["card_image_path"]
+
+                file = QFile(f":{std_meta.card_image_path}")
+                if file.open(QIODevice.ReadOnly):
+                    bytes_data = file.readAll()
+                    file.close()
+                    std_meta.card_image = bytes_data
+                std_card = CardWidget(std_meta, self)
+                self.std_card_widgets.append(std_card)
+            print(len(self.std_card_widgets))
+
+            pos = 0
+            for card_widget in self.std_card_widgets:
+                card_widget.card_clicked_event.connect(self.on_card_clicked)
+                card_widget.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+                self.std_gallery_grid.grid_layout.addWidget(card_widget, pos//4, pos%4)
+                self.std_original_positions[card_widget] = (pos//4, pos%4)
+                pos+=1
+                
+            for row in range(self.std_gallery_grid.grid_layout.rowCount()):
+                self.std_gallery_grid.grid_layout.setRowMinimumHeight(row, 130)
+        except Exception as e:
+            print("Unable to load std cards", e)
+            return Response(False, str(e))
+    
     def resizeEvent(self, a0) -> None:
         return super().resizeEvent(a0)
