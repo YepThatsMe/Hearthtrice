@@ -53,9 +53,13 @@ class LibraryView(QFrame):
 
         self.refresh_button = QPushButton("Refresh", self)
         self.control_layout.addWidget(self.refresh_button)
+        self.control_layout.addStretch()
 
-        self.export_button = QPushButton("Экспорт", self)
+        self.export_button = QPushButton("Экспорт библиотеки", self)
         self.control_layout.addWidget(self.export_button)
+
+        self.export_std_checkbox = ToggleButton("Вместе со стандартными", self)
+        self.control_layout.addWidget(self.export_std_checkbox)
 
         self.loading_label = QLabel(self)
         self.loading_animation = QMovie(r":loading_animation.gif")
@@ -242,6 +246,7 @@ class LibraryView(QFrame):
 
     
     def on_export_clicked(self):
+        # Get path
         if not self.card_widgets:
             print("Empty library")
             return
@@ -250,11 +255,14 @@ class LibraryView(QFrame):
             game_dir = os.getcwd()
         pics_dir = os.path.join(game_dir, "data", "pics", "CUSTOM")
         os.makedirs(pics_dir, exist_ok=True)
+
+        # Export custom set
         for card in self.card_widgets:
             img = bytes_to_pixmap(card.metadata.card_image)
             img.save(os.path.join(pics_dir, card.metadata.name + ".png"))
             os.startfile(pics_dir) # Windows only
 
+        # Save custom xml
         metas_list = []
         for card_widget in self.card_widgets:
             meta = card_widget.metadata
@@ -264,6 +272,24 @@ class LibraryView(QFrame):
 
         lib_xml_path = os.path.join(customsets_dir, "HearthTrice Customset.xml")
         XMLGenerator.generate_xml_library(lib_xml_path, metas_list)
+
+
+        # Export standard set
+        if self.export_std_checkbox.isChecked and self.std_card_widgets:
+            for card in self.std_card_widgets:
+                img = bytes_to_pixmap(card.metadata.card_image)
+                img.save(os.path.join(pics_dir, card.metadata.name + ".png"))
+
+        # Save std xml
+            metas_list = []
+            for card_widget in self.std_card_widgets:
+                meta = card_widget.metadata
+                metas_list.append(meta)
+            customsets_dir = os.path.join(game_dir, "data", "customsets")
+            os.makedirs(customsets_dir, exist_ok=True)
+
+            lib_xml_path = os.path.join(customsets_dir, "HearthTrice Standardset.xml")
+            XMLGenerator.generate_xml_library(lib_xml_path, metas_list)
 
         QMessageBox.information(self, "Готово", "Библиотека выгружена.")
 
