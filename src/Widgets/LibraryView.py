@@ -352,10 +352,7 @@ class LibraryView(QFrame):
         new_card.edit_card_requested.connect(self.edit_card_requested)
         new_card.delete_card_requested.connect(self.delete_card_requested)
 
-        print(self.no_tokens_toggle.isChecked)
-        if self.no_tokens_toggle.isChecked:
-            self.no_tokens_toggle.toggleState()
-        print(self.no_tokens_toggle.isChecked)
+        self.no_tokens_toggle.setChecked(False)
         count = self.main_gallery_grid.grid_layout.count()
         self.main_gallery_grid.grid_layout.addWidget(new_card, count // 4, count % 4)
         self.original_positions[new_card] = (count //4, count % 4)
@@ -423,7 +420,7 @@ class LibraryView(QFrame):
                     std_meta.card_image = bytes_data
                 std_card = CardWidget(std_meta, self)
                 self.std_card_widgets.append(std_card)
-            print(len(self.std_card_widgets))
+            print("Loaded", len(self.std_card_widgets), "standard cards.")
 
             pos = 0
             for card_widget in self.std_card_widgets:
