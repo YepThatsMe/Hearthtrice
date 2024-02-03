@@ -88,8 +88,8 @@ class CardPreview(QLabel):
             self.move_x -= distance_x
             self.move_y -= distance_y
 
-        if distance_x or distance_y:
-            self.picture_moved.emit()
+            if distance_x or distance_y:
+                self.picture_moved.emit()
     
     def wheelEvent(self, event):
         if QApplication.keyboardModifiers() == Qt.ControlModifier:
