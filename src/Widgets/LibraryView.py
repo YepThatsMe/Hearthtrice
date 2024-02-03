@@ -80,6 +80,14 @@ class LibraryView(QFrame):
         self.cardtype_filter = QComboBox(self)
         self.cardtype_filter.addItems(["Тип", "Minion", "Spell", "Weapon", "Hero"])
         self.cardtype_filter.currentIndexChanged.connect(self.on_filter_changed)
+        
+        self.classtype_filter = QComboBox(self)
+        self.classtype_filter.addItems(["Класс", "Neutral", "Mage", "Hunter", "Paladin", "Warrior", "Druid", "Rogue", "Priest", "Warlock", "Shaman"])
+        self.classtype_filter.currentIndexChanged.connect(self.on_filter_changed)
+
+        self.manacost_filter = QComboBox(self)
+        self.manacost_filter.addItems(["Мана", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"])
+        self.manacost_filter.currentIndexChanged.connect(self.on_filter_changed)
 
         self.no_tokens_toggle = ToggleButton("Без токенов", self)
         self.no_tokens_toggle.toggled.connect(self.on_filter_changed)
@@ -89,7 +97,9 @@ class LibraryView(QFrame):
         
         self.filter_layout.addWidget(self.reset_filter_button)
         self.filter_layout.addWidget(self.name_filter)
+        self.filter_layout.addWidget(self.manacost_filter)
         self.filter_layout.addWidget(self.cardtype_filter)
+        self.filter_layout.addWidget(self.classtype_filter)
         self.filter_layout.addWidget(self.no_tokens_toggle)
         self.filter_layout.addWidget(self.standard_only_toggle)
 
@@ -138,12 +148,12 @@ class LibraryView(QFrame):
                 else:
                     card.setVisible(False)
 
-        
-
     def filter_is_empty(self) -> bool:
         is_empty = True
         is_empty = is_empty & ( not self.name_filter.text() )
         is_empty = is_empty & ( not self.cardtype_filter.currentIndex() )
+        is_empty = is_empty & ( not self.classtype_filter.currentIndex() )
+        is_empty = is_empty & ( not self.manacost_filter.currentIndex() )
         is_empty = is_empty & ( not self.no_tokens_toggle.isChecked )
         is_empty = is_empty & ( not self.standard_only_toggle.isChecked )
         return is_empty
@@ -154,6 +164,13 @@ class LibraryView(QFrame):
         match = match & ( self.name_filter.text().upper() in card.metadata.name.upper() )
         if self.cardtype_filter.currentIndex():
             match = match & ( self.cardtype_filter.currentIndex() == card.metadata.cardtype )
+        if self.classtype_filter.currentIndex():
+            match = match & ( self.classtype_filter.currentIndex() == card.metadata.classtype )
+        if self.manacost_filter.currentIndex():
+            if self.manacost_filter.currentIndex() >= 11:
+                match = match & ( card.metadata.manacost >= 10 )
+            else:
+                match = match & ( self.manacost_filter.currentIndex() == card.metadata.manacost + 1 )
         if self.no_tokens_toggle.isChecked:
             match = match & ( not card.metadata.istoken )
 
@@ -162,8 +179,8 @@ class LibraryView(QFrame):
     def reset_filter(self):
         self.name_filter.clear()
         self.cardtype_filter.setCurrentIndex(0)
-        if self.no_tokens_toggle.isChecked:
-            self.no_tokens_toggle.toggleState()
+        self.classtype_filter.setCurrentIndex(0)
+        self.manacost_filter.setCurrentIndex(0)
         if self.standard_only_toggle.isChecked:
             self.standard_only_toggle.toggleState()
 
