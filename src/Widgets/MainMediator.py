@@ -108,7 +108,7 @@ class MainMediator(QMainWindow):
     def upload_card(self, metadata: CardMetadata):
         response = self.data_presenter.upload_card(metadata)
         if response.ok:
-            self.library_view.update()
+            self.library_view.update_uploaded_card(metadata)
             QMessageBox.information(None, "Информация", "Карта загружена в библиотеку.")
         else:
             QMessageBox.warning(None, "Предупреждение", response.msg)
@@ -117,7 +117,7 @@ class MainMediator(QMainWindow):
     def upload_edit_card(self, metadata: CardMetadata):
         response = self.data_presenter.upload_edit_card(metadata)
         if response.ok:
-            self.library_view.update()
+            self.library_view.update_edited_card(metadata)
             QMessageBox.information(None, "Информация", "Карта изменена.")
         else:
             QMessageBox.warning(None, "Предупреждение", response.msg)

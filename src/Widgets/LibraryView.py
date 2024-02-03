@@ -303,6 +303,49 @@ class LibraryView(QFrame):
                 return partial_meta
         return None
     
+    def update_uploaded_card(self, card_metadata: CardMetadata):
+        new_card = CardWidget(card_metadata, self)
+        new_card.card_clicked_event.connect(self.on_card_clicked)
+        new_card.edit_card_requested.connect(self.edit_card_requested)
+        new_card.delete_card_requested.connect(self.delete_card_requested)
+
+        print(self.no_tokens_toggle.isChecked)
+        if self.no_tokens_toggle.isChecked:
+            self.no_tokens_toggle.toggleState()
+        print(self.no_tokens_toggle.isChecked)
+        count = self.main_gallery_grid.grid_layout.count()
+        self.main_gallery_grid.grid_layout.addWidget(new_card, count // 4, count % 4)
+        self.original_positions[new_card] = (count //4, count % 4)
+        self.card_widgets.append(new_card)
+
+    def update_edited_card(self, card_metadata: CardMetadata):
+        for i, card_widget in enumerate(self.card_widgets):
+            if card_widget.metadata.id == card_metadata.id:
+                print(card_widget in self.card_widgets)
+                new_card = CardWidget(card_metadata, self)
+                new_card.card_clicked_event.connect(self.on_card_clicked)
+                new_card.edit_card_requested.connect(self.edit_card_requested)
+                new_card.delete_card_requested.connect(self.delete_card_requested)
+                x, y = self.original_positions[card_widget]
+                self.original_positions.pop(card_widget)
+                self.original_positions[new_card] = x, y
+
+                new_x, new_y = x,y
+                if self.no_tokens_toggle.isChecked:
+                    for j in range(self.main_gallery_grid.grid_layout.count()):
+                        item = self.main_gallery_grid.grid_layout.itemAt(j)
+                        if item.widget() == card_widget:
+                            new_x, new_y, _, _ = self.main_gallery_grid.grid_layout.getItemPosition(j)
+
+                self.main_gallery_grid.grid_layout.removeWidget(card_widget)
+                self.main_gallery_grid.grid_layout.addWidget(new_card, new_x, new_y)
+                
+
+                self.card_widgets[i] = new_card
+                card_widget.deleteLater()
+                print(card_widget in self.card_widgets)
+                return
+
     def load_standard_cards(self) -> Response:
         try:
             json_path = ':std/std_metadata.json'
