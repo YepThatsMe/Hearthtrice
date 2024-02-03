@@ -4,6 +4,7 @@ from PyQt5.QtCore import pyqtSignal
 from DataTypes import CardMetadata, CardType, ClassType, Rarity
 from Widgets.components.ButtonGroup import ExclusiveButtonGroup
 from Widgets.components.FormLabel import FormLabel
+from Widgets.components.ToggleButton import ToggleButton
 from Widgets.components.TokensTable import TokensTable
 
 class FormView(QFrame):
@@ -71,8 +72,8 @@ class FormView(QFrame):
         self.comment_form.setPlaceholderText('Техническая заметка')
         self.comment_form.setMaximumHeight(200)
 
-        self.istoken_label = FormLabel("Является токеном", self)
-        self.istoken_form = QCheckBox(self)
+        self.istoken_form = ToggleButton("Является токеном", self)
+        self.istoken_form.setMaximumWidth(150)
 
         self.tokenstable_label = FormLabel("Токены", self)
         self.tokenstable_form = TokensTable(self)
@@ -113,7 +114,6 @@ class FormView(QFrame):
         self.form_layout2.addWidget(self.comment_label)
         self.form_layout2.addWidget(self.comment_form)
 
-        self.form_layout2.addWidget(self.istoken_label)
         self.form_layout2.addWidget(self.istoken_form)
 
         self.form_layout2.addWidget(self.tokenstable_label)
@@ -142,7 +142,7 @@ class FormView(QFrame):
             "health": self.health_form.value(),
             "tribe": self.tribe_form.text(),
             "comment": self.comment_form.toPlainText(),
-            "istoken": self.istoken_form.isChecked(),
+            "istoken": self.istoken_form.isChecked,
             "tokens": self.tokenstable_form.get_tokens_string()
         }
 
@@ -168,5 +168,5 @@ class FormView(QFrame):
         self.rarity_form.setCurrentIndex(0)
         self.tribe_form.setText("")
         self.comment_form.setText("")
-        self.istoken_form.setChecked(False)
         self.tokenstable_form.clear()
+        self.istoken_form.setChecked(False)

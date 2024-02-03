@@ -16,6 +16,12 @@ class ToggleButton(QPushButton):
         self.updateStyle()
         self.toggled.emit(self.isChecked)
 
+    def setChecked(self, isChecked: bool):
+        if isChecked and not self.isChecked:
+            self.toggleState()
+        if not isChecked and self.isChecked:
+            self.toggleState()
+
     def updateStyle(self):
         if self.isChecked:
             self.setStyleSheet("""
