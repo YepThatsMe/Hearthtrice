@@ -195,6 +195,10 @@ class MyTreeWidget(QTreeWidget):
         new_count = current_count + amount
         if new_count <= 0:
             self.delete_item(item)
+            for id, dict_item in self.items_by_id.items():
+                if item == dict_item:
+                    self.items_by_id.pop(id)
+                    break
         else:
             item.setText(0, str(new_count))
         self.sortItems(3, 0)
@@ -206,6 +210,10 @@ class MyTreeWidget(QTreeWidget):
         else:
             parent = item.parent()
             parent.takeChild(parent.indexOfChild(item))
+        for id, dict_item in self.items_by_id.items():
+            if item == dict_item:
+                self.items_by_id.pop(id)
+                break
         self.sortItems(3, 0)
 
 
