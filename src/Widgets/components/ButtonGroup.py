@@ -33,7 +33,7 @@ class ExclusiveButtonGroup(QFrame):
                 button.setIconSize(button.size())
             else:
                 scale = 2.2
-                resized_pixmap = pixmap.scaled(pixmap.width()/scale, pixmap.height()/scale)
+                resized_pixmap = pixmap.scaled(int(pixmap.width()/scale), int(pixmap.height()/scale))
                 button.setFixedSize(resized_pixmap.size())
                 button.setIconSize(resized_pixmap.size())
             
