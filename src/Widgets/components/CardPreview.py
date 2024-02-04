@@ -14,7 +14,7 @@ class CardPreview(QLabel):
         self.move_y = 0
         self.zoom = 0
 
-        self.import_picturef(r"assets/start_card.png")
+        self.import_picturef(r":assets/start_card.png")
 
         self.setFocusPolicy(Qt.StrongFocus)
         self.setAlignment(Qt.AlignCenter)

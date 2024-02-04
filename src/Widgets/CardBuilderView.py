@@ -1,23 +1,18 @@
-from io import BytesIO
 from PyQt5.QtWidgets import QLineEdit, QFileDialog, QMessageBox, QDialog, QTextEdit, QLabel, QVBoxLayout, QComboBox, QFrame, QHBoxLayout, QPushButton, QSpinBox, QSizePolicy
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QImage, QKeySequence
-from PyQt5.QtCore import Qt, QEvent, QBuffer, QIODevice, pyqtSignal
-import base64
+from PyQt5.QtCore import Qt, QIODevice, pyqtSignal
 from enum import IntEnum, auto
+import win32clipboard
+from io import BytesIO
+from PIL import Image
 
-from Widgets.Arena import Arena
-from Widgets.LibraryView import LibraryView
-from utils.Thread import Thread
-from DataPresenter import DataPresenter
-from Widgets.components.ButtonGroup import ExclusiveButtonGroup
 from utils.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes
-from DataTypes import CardMetadata, CardType, ClassType
+from DataTypes import CardMetadata, CardType
 from Widgets.components.FormView import FormView
 from Widgets.components.CardPreview import CardPreview
 from ImageGenerator.CardImageGenerator import GenerationError
 from ImageGenerator.MinionImageGenerator import MinionImageGenerator
 from ImageGenerator.SpellImageGenerator import SpellImageGenerator
-from PIL import Image
 
 
 class CardBuilderView(QFrame):
@@ -54,6 +49,7 @@ class CardBuilderView(QFrame):
 
         self.upload_button.clicked.connect(self.upload_button_clicked)
         self.download_button.clicked.connect(self.download_button_clicked)
+        self.copy_button.clicked.connect(self.copy_image_to_clipboard)
         self.reset_button.clicked.connect(self.reset)
 
     def set_up_ui(self):
@@ -81,6 +77,10 @@ class CardBuilderView(QFrame):
         self.reset_button.setFont(QFont("Arial", 22))
         self.reset_button.setMinimumHeight(50)
 
+        self.copy_button = QPushButton("Копировать", self)
+        self.copy_button.setFont(QFont("Arial", 22))
+        self.copy_button.setMinimumHeight(50)
+
         self.upload_button = QPushButton("Загрузить", self)
         self.upload_button.setFont(QFont("Arial", 22))
         self.upload_button.setMinimumHeight(50)
@@ -93,6 +93,7 @@ class CardBuilderView(QFrame):
         self.preview_layout.addLayout(self.control_layout)
 
         self.control_layout_inlay1.addWidget(self.reset_button)
+        self.control_layout_inlay1.addWidget(self.copy_button)
         self.control_layout_inlay2.addWidget(self.upload_button)
         self.control_layout_inlay2.addWidget(self.download_button)
 
@@ -200,6 +201,21 @@ class CardBuilderView(QFrame):
         self.form.tokenstable_form.populate_table(metadata.tokens)
         self.generate()
     
+    def copy_image_to_clipboard(self):
+        img_bytes = self.card_metadata.card_image
+        if not img_bytes:
+            return
+        image = Image.open(BytesIO(img_bytes))
+        output = BytesIO()
+        image.convert("RGB").save(output, "BMP")
+        data = output.getvalue()[14:]
+        output.close()
+
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+        win32clipboard.CloseClipboard()
+
     def reset(self):
         self.form.reset()
 
