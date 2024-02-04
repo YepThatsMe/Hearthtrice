@@ -60,9 +60,8 @@ class CardBuilderView(QFrame):
         self.form_layout_inlay1 = QHBoxLayout()
         self.form_layout_inlay2 = QHBoxLayout()
         self.form_layout_inlay3 = QVBoxLayout()
-        self.control_layout = QHBoxLayout()
-        self.control_layout_inlay1 = QVBoxLayout()
-        self.control_layout_inlay2 = QVBoxLayout()
+        self.control_layout = QVBoxLayout()
+        self.control_layout_inlay1 = QHBoxLayout()
 
         self.card_preview = CardPreview(self)
 
@@ -70,32 +69,34 @@ class CardBuilderView(QFrame):
         self.form.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.generate_button = QPushButton("Сгенерировать", self)
-        self.generate_button.setFont(QFont("Arial", 22))
-        self.generate_button.setMinimumHeight(50)
+        self.generate_button.setFont(QFont("Arial", 16))
+        self.generate_button.setMinimumHeight(35)
 
         self.reset_button = QPushButton("Очистить", self)
-        self.reset_button.setFont(QFont("Arial", 22))
-        self.reset_button.setMinimumHeight(50)
+        self.reset_button.setFont(QFont("Arial", 16))
+        self.reset_button.setMinimumHeight(35)
+        self.reset_button.setStyleSheet('QPushButton{background-color: #bcbcbc;}')
 
         self.copy_button = QPushButton("Копировать", self)
-        self.copy_button.setFont(QFont("Arial", 22))
-        self.copy_button.setMinimumHeight(50)
+        self.copy_button.setFont(QFont("Arial", 16))
+        self.copy_button.setMinimumHeight(35)
+        self.copy_button.setStyleSheet('QPushButton{background-color: #bcbcbc;}')
 
-        self.upload_button = QPushButton("Загрузить", self)
+        self.upload_button = QPushButton("Загрузить в библиотеку", self)
         self.upload_button.setFont(QFont("Arial", 22))
         self.upload_button.setMinimumHeight(50)
 
         self.download_button = QPushButton("Сохранить как...", self)
-        self.download_button.setFont(QFont("Arial", 22))
-        self.download_button.setMinimumHeight(50)
+        self.download_button.setFont(QFont("Arial", 16))
+        self.download_button.setMinimumHeight(35)
+        self.download_button.setStyleSheet('QPushButton{background-color: #bcbcbc;}')
         
         self.preview_layout.addWidget(self.card_preview)
         self.preview_layout.addLayout(self.control_layout)
 
         self.control_layout_inlay1.addWidget(self.reset_button)
         self.control_layout_inlay1.addWidget(self.copy_button)
-        self.control_layout_inlay2.addWidget(self.upload_button)
-        self.control_layout_inlay2.addWidget(self.download_button)
+        self.control_layout_inlay1.addWidget(self.download_button)
 
         self.form_layout_inlay2.addWidget(self.form)
         self.form_layout_inlay2.addStretch()
@@ -105,8 +106,8 @@ class CardBuilderView(QFrame):
         self.form_layout.addLayout(self.form_layout_inlay2)
         self.form_layout.addLayout(self.form_layout_inlay3)
 
+        self.control_layout.addWidget(self.upload_button)
         self.control_layout.addLayout(self.control_layout_inlay1)
-        self.control_layout.addLayout(self.control_layout_inlay2)
 
         self.gen_layout.addLayout(self.preview_layout)
         self.gen_layout.addLayout(self.form_layout)
@@ -220,8 +221,8 @@ class CardBuilderView(QFrame):
         self.form.reset()
 
         self.upload_mode = CardBuilderView.UploadMode.NEW
-        self.upload_button.setText("Загрузить")
-        self.upload_button.setStyleSheet('')
+        self.upload_button.setText("Загрузить в библиотеку")
+        self.upload_button.setStyleSheet('QPushButton{background-color: #B2B2FF;}')
         self.card_preview.move_x = 0
         self.card_preview.move_y = 0
         self.card_preview.zoom = 0
