@@ -33,7 +33,7 @@
 ```sh 
 pyrcc5 src\assets\resource_list.qrc -o src\resources.py
 ```
-Ресурсы стандартной коллекции (необходимо даже при отсутствии стандартных карт).
+Ресурсы стандартной коллекции:
 ```sh
 pyrcc5 src\assets\resource_list_std.qrc -o src\resources_std.py
 ```

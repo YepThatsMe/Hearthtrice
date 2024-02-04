@@ -32,8 +32,14 @@ class LibraryView(QFrame):
         self.deck_view = DeckView()
         self.settings = QSettings("HearthTrice")
         self.set_up_ui()
-        self.load_standard_cards()
         self.set_up_connections()
+
+        try:
+            import resources_std
+            self.load_standard_cards()
+        except ImportError as e:
+            self.export_std_checkbox.setEnabled(False)
+            self.standard_only_toggle.setEnabled(False)
 
     def set_up_connections(self):
         self.deck_view.get_decks_requested.connect(self.get_decks_requsted)
