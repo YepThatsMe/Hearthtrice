@@ -6,8 +6,8 @@ from src.main import VERSION_MAJOR, VERSION_MINOR
 
 
 print("Generating resources...")
-os.system("pyrcc5 src\assets\resource_list.qrc -o src\resources.py")
-os.system("pyrcc5 src\assets\resource_list_std.qrc -o src\resources_std.py")
+os.system(r"pyrcc5 src\assets\resource_list.qrc -o src\resources.py")
+os.system(r"pyrcc5 src\assets\resource_list_std.qrc -o src\resources_std.py")
 
 app_name = f"HearthTrice {VERSION_MAJOR}.{VERSION_MINOR}"
 
