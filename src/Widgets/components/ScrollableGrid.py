@@ -15,3 +15,9 @@ class ScrollableGrid(QFrame):
         self.scrollArea.setWidgetResizable(True)
 
         self.layout.addWidget(self.scrollArea)
+
+    def scrollToTop(self):
+        self.scrollArea.verticalScrollBar().setValue(0)
+
+    def ensureWidgetVisible(self, widget: QWidget):
+        self.scrollArea.ensureWidgetVisible(widget)

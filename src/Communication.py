@@ -2,6 +2,8 @@ import pyodbc
 from typing import List, Tuple
 from DataTypes import CardMetadata, Deck, Response
 
+DEBUG = 0
+
 class Communication:
     def __init__(self) -> None:
         self.driver = ""
@@ -179,6 +181,10 @@ class Communication:
         query = """
         SELECT * FROM CARDS;
         """
+        if DEBUG:
+            query = """
+            SELECT * FROM CardsDbg;
+            """
         try:
             self.cursor.execute(query)
             rows = self.cursor.fetchall()
@@ -248,3 +254,10 @@ class Communication:
         except pyodbc.Error as e:
             print(f"Update error: {e}")
             return Response(False, e)
+
+if __name__ == '__main__':
+    c = Communication()
+    c.server = "26.113.25.65"
+    c.login = "hs_guest"
+    c.password = "123"
+    print(c.set_connection(c.server, c.login, c.password).ok)

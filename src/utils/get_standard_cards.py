@@ -3,10 +3,16 @@ from typing import List
 import json
 import os
 
+from PIL import Image
+from io import BytesIO
+
+class NoKeyException(BaseException):
+    pass
+
 # Download from https://rapidapi.com/omgvamp/api/hearthstone
 base_url = 'https://omgvamp-hearthstone-v1.p.rapidapi.com/cards/sets/'
 headers = {
-    'X-RapidAPI-Key': '', # API key here
+    'X-RapidAPI-Key': 'cfb8a4ff50mshf4a0583c4bc1afap197f77jsn475b97f9e948', # API key here
     'X-RapidAPI-Host': 'omgvamp-hearthstone-v1.p.rapidapi.com'
 }
 
@@ -40,9 +46,11 @@ def get_cards_json(set_names: List[str]) -> List[dict]:
     return all_sets_json
 
 def save_card(name: str, card_image: bytes, img_path: str):
-    with open(os.path.join(img_path, name + ".png"), 'wb') as f:
-        f.write(card_image)
- 
+    with Image.open(BytesIO(card_image)) as img:
+        img_resized = img.resize((769, 1107), Image.LANCZOS)
+        
+        img_resized.save(os.path.join(img_path, name + ".png"))
+
 def create_or_overwrite_qrc_file(filename: str, resource_paths: list):
     with open(filename, 'w') as file:
         file.write('<!DOCTYPE RCC><RCC version="1.0">\n')
@@ -57,9 +65,12 @@ def create_or_overwrite_qrc_file(filename: str, resource_paths: list):
     print(f"QRC '{filename}' has been overwritten successfully.")
 
 def start(sets: List[str]):
+    if headers['X-RapidAPI-Key'] == '':
+        raise NoKeyException()
+    
     os.makedirs(IMG_PATH, exist_ok=True)
 
-    set_data = get_cards_json()
+    set_data = get_cards_json(sets)
 
     card_jsons = []
     qrc_entries = []

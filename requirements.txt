@@ -11,5 +11,6 @@ PyQt5-Qt5==5.15.2
 PyQt5-sip==12.13.0
 pywin32==306
 pywin32-ctypes==0.2.2
+requests==2.32.3
 Wand==0.6.13
 zipp==3.17.0

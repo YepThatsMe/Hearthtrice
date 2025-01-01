@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import QSize
 
 import resources
-from Widgets.Arena import Arena
+from Widgets.ArenaView import ArenaView
 from Widgets.LibraryView import LibraryView
 from utils.Thread import Thread, send_to_thread
 from DataPresenter import DataPresenter
@@ -50,7 +50,7 @@ class MainMediator(QMainWindow):
 
         self.card_builder_view = CardBuilderView(self)
         self.library_view = LibraryView(self)
-        self.arena_view = Arena()
+        self.arena_view = ArenaView(self.library_view, self)
 
         self.central_widget = QWidget(self)
         self.gen_layout = QVBoxLayout()

@@ -4,18 +4,21 @@
     <file>std/img/Avatar of the Coin.png</file>
     <file>std/img/Backstab.png</file>
     <file>std/img/Bottled Madness.png</file>
+    <file>std/img/Chicken.png</file>
     <file>std/img/Crackling Doom.png</file>
     <file>std/img/Excess Mana.png</file>
     <file>std/img/Frog.png</file>
     <file>std/img/Innervate.png</file>
     <file>std/img/Mirror Image.png</file>
     <file>std/img/Moonfire.png</file>
+    <file>std/img/Murloc.png</file>
     <file>std/img/Ritual of Doom.png</file>
     <file>std/img/Sacrificial Pact.png</file>
     <file>std/img/Totemic Might.png</file>
     <file>std/img/Arcane Missiles.png</file>
     <file>std/img/Arcane Shot.png</file>
     <file>std/img/Blessing of Might.png</file>
+    <file>std/img/Bloodsail Deckhand.png</file>
     <file>std/img/Boar.png</file>
     <file>std/img/Call of the Void.png</file>
     <file>std/img/Claw.png</file>
@@ -23,7 +26,10 @@
     <file>std/img/Crimson Clergy.png</file>
     <file>std/img/Deadly Poison.png</file>
     <file>std/img/Elven Archer.png</file>
+    <file>std/img/Emboldener 3000.png</file>
+    <file>std/img/Emerald Skytalon.png</file>
     <file>std/img/Execute.png</file>
+    <file>std/img/Focused Will.png</file>
     <file>std/img/Frost Shock.png</file>
     <file>std/img/Goldshire Footman.png</file>
     <file>std/img/Grimscale Oracle.png</file>
@@ -32,6 +38,7 @@
     <file>std/img/Healing Totem.png</file>
     <file>std/img/Holy Smite.png</file>
     <file>std/img/Holy Smite.png</file>
+    <file>std/img/Homing Chicken.png</file>
     <file>std/img/Humility.png</file>
     <file>std/img/Hunter's Mark.png</file>
     <file>std/img/Light's Justice.png</file>
@@ -41,14 +48,24 @@
     <file>std/img/Mortal Coil.png</file>
     <file>std/img/Murloc Raider.png</file>
     <file>std/img/Murloc Scout.png</file>
+    <file>std/img/Northshire Cleric.png</file>
     <file>std/img/Pilfer.png</file>
+    <file>std/img/Poultryizer.png</file>
     <file>std/img/Power Word: Shield.png</file>
     <file>std/img/Power Word: Shield.png</file>
     <file>std/img/Psychic Conjurer.png</file>
     <file>std/img/Radiance.png</file>
+    <file>std/img/Reckoning.png</file>
+    <file>std/img/Repair Bot.png</file>
     <file>std/img/Scarlet Subjugator.png</file>
     <file>std/img/Searing Totem.png</file>
     <file>std/img/Sheep.png</file>
+    <file>std/img/Silver Hand Recruit.png</file>
+    <file>std/img/Silver Hand Recruit.png</file>
+    <file>std/img/Silver Hand Recruit.png</file>
+    <file>std/img/Silver Hand Recruit.png</file>
+    <file>std/img/Silver Hand Recruit.png</file>
+    <file>std/img/Silver Hand Recruit.png</file>
     <file>std/img/Silver Hand Recruit.png</file>
     <file>std/img/Sinister Strike.png</file>
     <file>std/img/Smoke Bomb.png</file>
@@ -71,10 +88,12 @@
     <file>std/img/Ballista Shot.png</file>
     <file>std/img/Bloodfen Raptor.png</file>
     <file>std/img/Bluegill Warrior.png</file>
+    <file>std/img/Captain's Parrot.png</file>
     <file>std/img/Cleave.png</file>
     <file>std/img/Dagger Mastery.png</file>
     <file>std/img/Deadeye.png</file>
     <file>std/img/Dire Shapeshift.png</file>
+    <file>std/img/Divine Spirit.png</file>
     <file>std/img/Fan of Knives.png</file>
     <file>std/img/Felstalker.png</file>
     <file>std/img/Fiery War Axe.png</file>
@@ -84,24 +103,25 @@
     <file>std/img/Frostbolt.png</file>
     <file>std/img/Frostwolf Grunt.png</file>
     <file>std/img/Generous Spirit.png</file>
-    <file>std/img/Heal.png</file>
     <file>std/img/Heroic Strike.png</file>
     <file>std/img/Holy Light.png</file>
     <file>std/img/Icicle.png</file>
     <file>std/img/Kobold Geomancer.png</file>
     <file>std/img/Kul Tiran Chaplain.png</file>
-    <file>std/img/Lesser Heal.png</file>
     <file>std/img/Life Tap.png</file>
     <file>std/img/Mark of the Wild.png</file>
+    <file>std/img/Mind Blast.png</file>
     <file>std/img/Murloc Tidehunter.png</file>
     <file>std/img/NOOOOOOOOOOOO.png</file>
     <file>std/img/Novice Engineer.png</file>
     <file>std/img/Poisoned Daggers.png</file>
     <file>std/img/Pursuit of Justice.png</file>
+    <file>std/img/Pursuit of Justice.png</file>
     <file>std/img/Reinforce.png</file>
     <file>std/img/River Crocolisk.png</file>
     <file>std/img/Rockbiter Weapon.png</file>
     <file>std/img/Sap.png</file>
+    <file>std/img/Selective Breeder.png</file>
     <file>std/img/Shadow Word: Death.png</file>
     <file>std/img/Shadow Word: Pain.png</file>
     <file>std/img/Shapeshift.png</file>
@@ -114,6 +134,8 @@
     <file>std/img/The Silver Hand.png</file>
     <file>std/img/Totemic Call.png</file>
     <file>std/img/Totemic Slam.png</file>
+    <file>std/img/Vanessa VanCleef.png</file>
+    <file>std/img/Wild Growth.png</file>
     <file>std/img/Windfury.png</file>
     <file>std/img/Animal Companion.png</file>
     <file>std/img/Arcane Intellect.png</file>
@@ -141,11 +163,12 @@
     <file>std/img/Razorfen Hunter.png</file>
     <file>std/img/Savage Roar.png</file>
     <file>std/img/Shadow Bolt.png</file>
+    <file>std/img/Shadowed Spirit.png</file>
     <file>std/img/Shattered Sun Cleric.png</file>
     <file>std/img/Silverback Patriarch.png</file>
+    <file>std/img/Swipe.png</file>
     <file>std/img/War Cache.png</file>
     <file>std/img/Warsong Commander.png</file>
-    <file>std/img/Wild Growth.png</file>
     <file>std/img/Wolfrider.png</file>
     <file>std/img/Assassin's Blade.png</file>
     <file>std/img/Assassinate.png</file>
@@ -155,27 +178,33 @@
     <file>std/img/Fireball.png</file>
     <file>std/img/Gnomish Inventor.png</file>
     <file>std/img/Houndmaster.png</file>
+    <file>std/img/I Am Murloc.png</file>
     <file>std/img/Kor'kron Elite.png</file>
     <file>std/img/Multi-Shot.png</file>
     <file>std/img/Nordrassil Druid.png</file>
     <file>std/img/Oasis Snapjaw.png</file>
     <file>std/img/Ogre Magi.png</file>
+    <file>std/img/Old Murk-Eye.png</file>
     <file>std/img/Plaguebringer.png</file>
     <file>std/img/Polymorph.png</file>
     <file>std/img/Power Infusion.png</file>
+    <file>std/img/Power of the Horde.png</file>
+    <file>std/img/Rogues Do It....png</file>
     <file>std/img/Sen'jin Shieldmasta.png</file>
     <file>std/img/Shadow Word: Ruin.png</file>
     <file>std/img/SI:7 Infiltrator.png</file>
     <file>std/img/Stormwind Knight.png</file>
-    <file>std/img/Swipe.png</file>
     <file>std/img/Truesilver Champion.png</file>
     <file>std/img/Warsong Outrider.png</file>
     <file>std/img/Water Elemental.png</file>
     <file>std/img/Windspeaker.png</file>
+    <file>std/img/Aegwynn, the Guardian.png</file>
     <file>std/img/Arcanite Reaper.png</file>
     <file>std/img/Bloodlust.png</file>
     <file>std/img/Booty Bay Bodyguard.png</file>
     <file>std/img/Darkscale Healer.png</file>
+    <file>std/img/Elite Tauren Chieftain.png</file>
+    <file>std/img/Felsoul Jailer.png</file>
     <file>std/img/Frostwolf Warlord.png</file>
     <file>std/img/Gurubashi Berserker.png</file>
     <file>std/img/Nightblade.png</file>
@@ -188,10 +217,12 @@
     <file>std/img/Boulderfist Ogre.png</file>
     <file>std/img/Dread Infernal.png</file>
     <file>std/img/Fire Elemental.png</file>
+    <file>std/img/Gelbin Mekkatorque.png</file>
     <file>std/img/High Inquisitor Whitemane.png</file>
     <file>std/img/Lord of the Arena.png</file>
     <file>std/img/Reckless Rocketeer.png</file>
     <file>std/img/Starfire.png</file>
+    <file>std/img/Vanish.png</file>
     <file>std/img/Barrens Stablehand.png</file>
     <file>std/img/Core Hound.png</file>
     <file>std/img/Enslaved Fel Lord.png</file>
@@ -204,7 +235,9 @@
     <file>std/img/Gift of the Wild.png</file>
     <file>std/img/Ironbark Protector.png</file>
     <file>std/img/Natalie Seline.png</file>
+    <file>std/img/Alexstrasza the Life-Binder.png</file>
     <file>std/img/Mind Control.png</file>
+    <file>std/img/Ysera the Dreamer.png</file>
     <file>std/img/Circle of Healing.png</file>
     <file>std/img/Inner Rage.png</file>
     <file>std/img/Preparation.png</file>
@@ -222,6 +255,7 @@
     <file>std/img/Blood Imp.png</file>
     <file>std/img/Bloodsail Corsair.png</file>
     <file>std/img/Cold Blood.png</file>
+    <file>std/img/Conceal.png</file>
     <file>std/img/Damaged Golem.png</file>
     <file>std/img/Defender.png</file>
     <file>std/img/Defias Bandit.png</file>
@@ -234,6 +268,7 @@
     <file>std/img/Heavy Axe.png</file>
     <file>std/img/Hound.png</file>
     <file>std/img/Hungry Crab.png</file>
+    <file>std/img/Ice Lance.png</file>
     <file>std/img/Imp.png</file>
     <file>std/img/Inner Fire.png</file>
     <file>std/img/Leper Gnome.png</file>
@@ -241,7 +276,9 @@
     <file>std/img/Lightwarden.png</file>
     <file>std/img/Mana Wyrm.png</file>
     <file>std/img/Murloc Tidecaller.png</file>
+    <file>std/img/Naturalize.png</file>
     <file>std/img/Noble Sacrifice.png</file>
+    <file>std/img/Power Overwhelming.png</file>
     <file>std/img/Redemption.png</file>
     <file>std/img/Repentance.png</file>
     <file>std/img/Savagery.png</file>
@@ -290,6 +327,7 @@
     <file>std/img/Freezing Trap.png</file>
     <file>std/img/Gnoll.png</file>
     <file>std/img/Hyena.png</file>
+    <file>std/img/Icicle.png</file>
     <file>std/img/INFERNO!.png</file>
     <file>std/img/Knife Juggler.png</file>
     <file>std/img/Lightwell.png</file>
@@ -313,6 +351,8 @@
     <file>std/img/Shadowform.png</file>
     <file>std/img/Snake Trap.png</file>
     <file>std/img/Snipe.png</file>
+    <file>std/img/Snipe.png</file>
+    <file>std/img/Sorcerer's Apprentice.png</file>
     <file>std/img/Spirit Wolf.png</file>
     <file>std/img/Stormforged Axe.png</file>
     <file>std/img/Sunfury Protector.png</file>
@@ -320,16 +360,19 @@
     <file>std/img/Wild Pyromancer.png</file>
     <file>std/img/Wrath.png</file>
     <file>std/img/Youthful Brewmaster.png</file>
+    <file>std/img/Acolyte of Pain.png</file>
     <file>std/img/Alarm-o-Bot.png</file>
     <file>std/img/Aldor Peacekeeper.png</file>
     <file>std/img/Arcane Golem.png</file>
     <file>std/img/Blood Fury.png</file>
     <file>std/img/Blood Knight.png</file>
+    <file>std/img/Coldlight Oracle.png</file>
     <file>std/img/Coldlight Seer.png</file>
     <file>std/img/Cone of Cold.png</file>
     <file>std/img/Counterspell.png</file>
     <file>std/img/Deadly Shot.png</file>
     <file>std/img/Demolisher.png</file>
+    <file>std/img/Divine Favor.png</file>
     <file>std/img/Eaglehorn Bow.png</file>
     <file>std/img/Earthen Ring Farseer.png</file>
     <file>std/img/Edwin VanCleef.png</file>
@@ -342,6 +385,7 @@
     <file>std/img/Harvest Golem.png</file>
     <file>std/img/Headcrack.png</file>
     <file>std/img/Ice Barrier.png</file>
+    <file>std/img/Ice Block.png</file>
     <file>std/img/Imp Master.png</file>
     <file>std/img/Injured Blademaster.png</file>
     <file>std/img/Ironbeak Owl.png</file>
@@ -366,6 +410,7 @@
     <file>std/img/Soul of the Forest.png</file>
     <file>std/img/Southsea Captain.png</file>
     <file>std/img/Spellbender.png</file>
+    <file>std/img/Sword of Justice.png</file>
     <file>std/img/Tauren Warrior.png</file>
     <file>std/img/Thrallmar Farseer.png</file>
     <file>std/img/Tinkmaster Overspark.png</file>
@@ -376,6 +421,7 @@
     <file>std/img/Ancient Brewmaster.png</file>
     <file>std/img/Ancient Mage.png</file>
     <file>std/img/Arathi Weaponsmith.png</file>
+    <file>std/img/Auchenai Soulpriest.png</file>
     <file>std/img/Big Game Hunter.png</file>
     <file>std/img/Bite.png</file>
     <file>std/img/Cult Master.png</file>
@@ -391,22 +437,25 @@
     <file>std/img/Mortal Strike.png</file>
     <file>std/img/Nerubian.png</file>
     <file>std/img/Pit Lord.png</file>
+    <file>std/img/Pit Lord.png</file>
     <file>std/img/Shadowflame.png</file>
     <file>std/img/Silvermoon Guardian.png</file>
     <file>std/img/Siphon Soul.png</file>
-    <file>std/img/Sorcerer's Apprentice.png</file>
+    <file>std/img/Spellbreaker.png</file>
     <file>std/img/Summoning Portal.png</file>
     <file>std/img/The Black Knight.png</file>
     <file>std/img/Twilight Drake.png</file>
     <file>std/img/Violet Teacher.png</file>
     <file>std/img/Abomination.png</file>
     <file>std/img/Ashbringer.png</file>
+    <file>std/img/Azure Drake.png</file>
     <file>std/img/Baine Bloodhoof.png</file>
     <file>std/img/Bane of Doom.png</file>
     <file>std/img/Blessed Champion.png</file>
     <file>std/img/Brawl.png</file>
     <file>std/img/Captain Greenskin.png</file>
     <file>std/img/Devilsaur.png</file>
+    <file>std/img/Doomguard.png</file>
     <file>std/img/Doomhammer.png</file>
     <file>std/img/Earth Elemental.png</file>
     <file>std/img/Explosive Shot.png</file>
@@ -415,6 +464,8 @@
     <file>std/img/Force of Nature.png</file>
     <file>std/img/Harrison Jones.png</file>
     <file>std/img/Holy Wrath.png</file>
+    <file>std/img/Leeroy Jenkins.png</file>
+    <file>std/img/Mind Control Tech.png</file>
     <file>std/img/Nourish.png</file>
     <file>std/img/Silver Hand Knight.png</file>
     <file>std/img/Spiteful Smith.png</file>
@@ -436,12 +487,14 @@
     <file>std/img/Druid of the Claw.png</file>
     <file>std/img/Frost Elemental.png</file>
     <file>std/img/Hogger.png</file>
+    <file>std/img/Holy Fire.png</file>
     <file>std/img/Infernal.png</file>
     <file>std/img/Kidnapper.png</file>
     <file>std/img/Lay on Hands.png</file>
     <file>std/img/Priestess of Elune.png</file>
     <file>std/img/Savannah Highmane.png</file>
     <file>std/img/Sunwalker.png</file>
+    <file>std/img/Sylvanas Windrunner.png</file>
     <file>std/img/The Beast.png</file>
     <file>std/img/Windfury Harpy.png</file>
     <file>std/img/Xavius.png</file>
@@ -452,12 +505,14 @@
     <file>std/img/Gadgetzan Auctioneer.png</file>
     <file>std/img/Gladiator's Longbow.png</file>
     <file>std/img/Gorehowl.png</file>
+    <file>std/img/Prophet Velen.png</file>
     <file>std/img/Ravenholdt Assassin.png</file>
     <file>std/img/Al'Akir the Windlord.png</file>
     <file>std/img/Cenarius.png</file>
     <file>std/img/Grommash Hellscream.png</file>
     <file>std/img/Gruul.png</file>
     <file>std/img/Lord Jaraxxus.png</file>
+    <file>std/img/Ragnaros the Firelord.png</file>
     <file>std/img/Tirion Fordring.png</file>
     <file>std/img/Twisting Nether.png</file>
     <file>std/img/Alexstrasza.png</file>
@@ -469,10 +524,11 @@
     <file>std/img/Deathwing.png</file>
     <file>std/img/Pyroblast.png</file>
     <file>std/img/Sea Giant.png</file>
+    <file>std/img/Mountain Giant.png</file>
+    <file>std/img/Molten Giant.png</file>
     <file>std/img/Mr. Bigglesworth.png</file>
     <file>std/img/Spore.png</file>
     <file>std/img/Avenge.png</file>
-    <file>std/img/Deathcharger.png</file>
     <file>std/img/Eruption.png</file>
     <file>std/img/Fallout Slime.png</file>
     <file>std/img/Harvest.png</file>
@@ -571,49 +627,6 @@
     <file>std/img/Chains.png</file>
     <file>std/img/Kel'Thuzad.png</file>
     <file>std/img/Thaddius.png</file>
-    <file>std/img/Chicken.png</file>
-    <file>std/img/Murloc.png</file>
-    <file>std/img/Conceal.png</file>
-    <file>std/img/Emboldener 3000.png</file>
-    <file>std/img/Homing Chicken.png</file>
-    <file>std/img/Ice Lance.png</file>
-    <file>std/img/Naturalize.png</file>
-    <file>std/img/Northshire Cleric.png</file>
-    <file>std/img/Poultryizer.png</file>
-    <file>std/img/Power Overwhelming.png</file>
-    <file>std/img/Repair Bot.png</file>
-    <file>std/img/Captain's Parrot.png</file>
-    <file>std/img/Divine Spirit.png</file>
-    <file>std/img/Mind Blast.png</file>
-    <file>std/img/Murkspark Eel.png</file>
-    <file>std/img/Acolyte of Pain.png</file>
-    <file>std/img/Black Cat.png</file>
-    <file>std/img/Coldlight Oracle.png</file>
-    <file>std/img/Divine Favor.png</file>
-    <file>std/img/Ice Block.png</file>
-    <file>std/img/Mind Control Tech.png</file>
-    <file>std/img/Auchenai Soulpriest.png</file>
-    <file>std/img/I Am Murloc.png</file>
-    <file>std/img/Old Murk-Eye.png</file>
-    <file>std/img/Power of the Horde.png</file>
-    <file>std/img/Rogues Do It....png</file>
-    <file>std/img/Spellbreaker.png</file>
-    <file>std/img/Azure Drake.png</file>
-    <file>std/img/Doomguard.png</file>
-    <file>std/img/Elite Tauren Chieftain.png</file>
-    <file>std/img/Glitter Moth.png</file>
-    <file>std/img/Gloom Stag.png</file>
-    <file>std/img/Leeroy Jenkins.png</file>
-    <file>std/img/Gelbin Mekkatorque.png</file>
-    <file>std/img/Genn Greymane.png</file>
-    <file>std/img/Holy Fire.png</file>
-    <file>std/img/Sylvanas Windrunner.png</file>
-    <file>std/img/Vanish.png</file>
-    <file>std/img/Prophet Velen.png</file>
-    <file>std/img/Ragnaros the Firelord.png</file>
-    <file>std/img/Baku the Mooneater.png</file>
-    <file>std/img/Mountain Giant.png</file>
-    <file>std/img/Molten Giant.png</file>
     <file>std/std_metadata.json</file>
 </qresource>
 </RCC>

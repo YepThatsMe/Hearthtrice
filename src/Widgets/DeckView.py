@@ -45,7 +45,7 @@ class MyTreeWidget(QTreeWidget):
                                                         border-left:0px;\
                                                         border-right:0px;\
                                                         background: #D7D7D7;\
-                                                    }");
+                                                    }")
 
         self.setColumnCount(4)
         self.setHeaderLabels(["Count", "ID", "Name", "Manacost"])
@@ -260,7 +260,7 @@ class DeckView(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Product List")
+        self.setWindowTitle("Deck Editor")
         self.deck_list_dialog = DeckListDialog(self)
         self.current_deck: Deck = None
 
@@ -276,29 +276,29 @@ class DeckView(QWidget):
 
         self.tree_widget = MyTreeWidget(self)
 
-        new_deck_button = QPushButton("Новая колода", self)
-        new_deck_button.clicked.connect(self.new_deck)
+        self.new_deck_button = QPushButton("Новая колода", self)
+        self.new_deck_button.clicked.connect(self.new_deck)
 
-        load_deck_button = QPushButton("Загрузить колоду", self)
-        load_deck_button.clicked.connect(lambda: self.get_decks_requested.emit(self.login))
+        self.load_deck_button = QPushButton("Загрузить колоду", self)
+        self.load_deck_button.clicked.connect(lambda: self.get_decks_requested.emit(self.login))
 
         self.current_deck_label = QLabel("", self)
         self.current_deck_label.setStyleSheet("font-size: 10pt; font-weight: bold")
 
-        save_button = QPushButton("Сохранить")
-        save_button.clicked.connect(self.update_deck)
+        self.save_button = QPushButton("Сохранить")
+        self.save_button.clicked.connect(self.update_deck)
 
         export_button = QPushButton("Экспорт")
         export_button.clicked.connect(self.export_items)
         
-        control_layout_inlay1.addWidget(new_deck_button)
-        control_layout_inlay1.addWidget(load_deck_button)
+        control_layout_inlay1.addWidget(self.new_deck_button)
+        control_layout_inlay1.addWidget(self.load_deck_button)
         control_layout.addLayout(control_layout_inlay1)
     
         layout.addLayout(control_layout)
         layout.addWidget(self.current_deck_label)
         layout.addWidget(self.tree_widget)
-        layout.addWidget(save_button)
+        layout.addWidget(self.save_button)
         layout.addWidget(export_button)
         #layout.addWidget(graph)
 
@@ -347,6 +347,13 @@ class DeckView(QWidget):
         if result == QDialog.Accepted:
             deck_name = line_edit.text()
             self.create_new_deck_requested.emit(deck_name)
+    
+    def new_virtual_deck(self):
+        virtual_deck = Deck()
+        virtual_deck.id = -2
+        virtual_deck.name = "Arena"
+        virtual_deck.owner = ""
+        self.current_deck = virtual_deck
 
     def on_new_deck_data_received(self, new_deck_data: tuple):
         deck_id, deck_name, owner = new_deck_data
@@ -368,7 +375,7 @@ class DeckView(QWidget):
         
         self.current_deck = decks[selected_deck_id]
         self.current_deck_label.setText(current_deck_label)
-        self.tree_widget.clear()
+        self.clear()
         for card in self.current_deck.cards:
             for _ in range(card.count):
                 sideboard = True if card.side == DeckCard.Side.SIDEBOARD else False
@@ -398,3 +405,6 @@ class DeckView(QWidget):
         XMLGenerator.generate_xml_deck(full_deck_path, deck)
 
         QMessageBox.information(self, "Готово", f"Колода {deck.name.upper()} выгружена.")
+    
+    def clear(self):
+        self.tree_widget.clear()
