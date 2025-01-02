@@ -340,14 +340,6 @@ class LibraryView(QFrame):
 
         QMessageBox.information(self, "Готово", "Библиотека выгружена.")
 
-    def open_deck_view(self):
-        dialog = QDialog(self)
-        self.deck_view.setParent(dialog)
-        self.deck_view.show()
-        geometry = self.geometry()
-        dialog.setGeometry(geometry.right(), geometry.top(), 200, self.height())
-        dialog.exec_()
-
     def on_card_clicked(self, metadata: CardMetadata):
         response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost, metadata.istoken)
         if not response.ok:

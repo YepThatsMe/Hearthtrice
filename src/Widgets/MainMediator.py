@@ -127,6 +127,23 @@ class MainMediator(QMainWindow):
         self.tab_bar.setCurrentIndex(0)
 
     def on_delete_card_requested(self, metadata: CardMetadata):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Удаление карты")
+
+        label = QLabel("Удалить карту?")
+
+        ok_button = QPushButton("ОК", dialog)
+        ok_button.clicked.connect(dialog.accept)
+
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(label)
+        layout.addWidget(ok_button)
+
+        dialog.setLayout(layout)
+
+        if not dialog.exec_():
+            return        
+        
         response = self.data_presenter.delete_card(metadata)
         if response.ok:
             self.library_view.update()
