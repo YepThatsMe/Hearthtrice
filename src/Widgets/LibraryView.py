@@ -193,7 +193,10 @@ class LibraryView(QFrame):
     def check_filter_conditions(self, card: CardWidget) -> bool:
         match = True
 
-        match = match & ( self.name_filter.text().upper() in card.metadata.name.upper() )
+        tribe = card.metadata.tribe if card.metadata.tribe else ""
+
+        match = match & ( self.name_filter.text().upper() in card.metadata.name.upper() or 
+                         self.name_filter.text().upper() in tribe.upper())
         if self.cardtype_filter.currentIndex():
             match = match & ( self.cardtype_filter.currentIndex() == card.metadata.cardtype )
         if self.rarity_filter.currentIndex():
