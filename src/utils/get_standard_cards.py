@@ -185,7 +185,7 @@ def start(sets: List[str]):
 
 if __name__ == '__main__':
     IMG_PATH = os.path.join("src", "assets", "std", "img")
-    sets = ['Legacy', 'Classic', 'Naxxramas', 'Hall of Fame']
+    sets = ['Legacy', 'Classic', 'Naxxramas', 'Hall of Fame', 'The League of Explorers', 'Whispers of the Old Gods', 'One Night in Karazhan', 'The Witchwood']
     start(sets)
     
     

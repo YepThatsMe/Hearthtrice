@@ -306,11 +306,11 @@ class LibraryView(QFrame):
         pics_dir = os.path.join(game_dir, "data", "pics", "CUSTOM")
         os.makedirs(pics_dir, exist_ok=True)
 
+        os.startfile(pics_dir) # Windows only
         # Export custom set
         for card in self.card_widgets:
             img = bytes_to_pixmap(card.metadata.card_image)
             img.save(os.path.join(pics_dir, card.metadata.name + ".png"))
-            os.startfile(pics_dir) # Windows only
 
         # Save custom xml
         metas_list = []
