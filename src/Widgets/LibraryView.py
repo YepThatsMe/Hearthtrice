@@ -310,7 +310,7 @@ class LibraryView(QFrame):
         # Export custom set
         for card in self.card_widgets:
             img = bytes_to_pixmap(card.metadata.card_image)
-            img.save(os.path.join(pics_dir, card.metadata.name + ".png"))
+            img.save(os.path.join(pics_dir, card.metadata.name.replace(":", "") + ".png"))
 
         # Save custom xml
         metas_list = []
@@ -328,7 +328,7 @@ class LibraryView(QFrame):
         if self.export_std_checkbox.isChecked and self.std_card_widgets:
             for card in self.std_card_widgets:
                 img = bytes_to_pixmap(card.metadata.card_image)
-                img.save(os.path.join(pics_dir, card.metadata.name + ".png"))
+                img.save(os.path.join(pics_dir, card.metadata.name.replace(":", "") + ".png"))
 
         # Save std xml
             metas_list = []
