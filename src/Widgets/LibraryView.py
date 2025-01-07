@@ -1,3 +1,4 @@
+from genericpath import isdir, isfile
 import os
 import random
 from turtle import isvisible
@@ -59,7 +60,12 @@ class LibraryView(QFrame):
 
         self.gen_layout = QHBoxLayout(self)
         self.sub_gen_layout = QVBoxLayout()
+        self.sub_gen_layout_2 = QVBoxLayout()
         self.control_layout = QHBoxLayout()
+
+        self.launch_button = QPushButton("Запуск Cockatrice")
+        self.launch_button.setStyleSheet('QPushButton{ background-color: #bfffbf; font-weight: bold; }')
+        self.launch_button.clicked.connect(self.launch_cockatrice)
 
         self.refresh_button = QPushButton("Refresh", self)
         self.control_layout.addWidget(self.refresh_button)
@@ -133,8 +139,12 @@ class LibraryView(QFrame):
         self.sub_gen_layout.addLayout(self.control_layout)
         self.sub_gen_layout.addWidget(self.stack)
         self.sub_gen_layout.addLayout(self.filter_layout)
+
+        self.sub_gen_layout_2.addWidget(self.deck_view)
+        self.sub_gen_layout_2.addWidget(self.launch_button)
+
         self.gen_layout.addLayout(self.sub_gen_layout, stretch=5)
-        self.gen_layout.addWidget(self.deck_view, stretch=2)
+        self.gen_layout.addLayout(self.sub_gen_layout_2, stretch=2)
         self.setLayout(self.gen_layout)
 
     def switch_to_standard_grid(self):
@@ -303,14 +313,20 @@ class LibraryView(QFrame):
         game_dir = self.settings.value("path")
         if not game_dir:
             game_dir = os.getcwd()
-        pics_dir = os.path.join(game_dir, "data", "pics", "CUSTOM")
-        os.makedirs(pics_dir, exist_ok=True)
 
-        os.startfile(pics_dir) # Windows only
+        pics_dir = os.path.join(game_dir, "data", "pics")
+        if not os.path.isdir(pics_dir):
+            pics_dir = os.path.join(os.getenv('APPDATA'), "Cockatrice", "data", "pics")
+
+        custom_pics_dir = os.path.join(pics_dir, "CUSTOM")
+        os.makedirs(custom_pics_dir, exist_ok=True)
+
+        os.startfile(custom_pics_dir) # Windows only
+
         # Export custom set
         for card in self.card_widgets:
             img = bytes_to_pixmap(card.metadata.card_image)
-            img.save(os.path.join(pics_dir, card.metadata.name.replace(":", "") + ".png"))
+            img.save(os.path.join(custom_pics_dir, card.metadata.name.replace(":", "") + ".png"))
 
         # Save custom xml
         metas_list = []
@@ -328,7 +344,7 @@ class LibraryView(QFrame):
         if self.export_std_checkbox.isChecked and self.std_card_widgets:
             for card in self.std_card_widgets:
                 img = bytes_to_pixmap(card.metadata.card_image)
-                img.save(os.path.join(pics_dir, card.metadata.name.replace(":", "") + ".png"))
+                img.save(os.path.join(custom_pics_dir, card.metadata.name.replace(":", "") + ".png"))
 
         # Save std xml
             metas_list = []
@@ -355,7 +371,7 @@ class LibraryView(QFrame):
                 token_meta = self.get_card_metadata_by_id(card_id, deck_fields_only=True)
                 if not token_meta:
                     continue
-                self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, token_meta.istoken)
+                self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, True)
 
     def set_updated_decks(self, decks: List[Deck]):
         if not decks:
@@ -478,5 +494,14 @@ class LibraryView(QFrame):
             print("Unable to load std cards", e)
             return Response(False, str(e))
     
+    def launch_cockatrice(self):
+        game_dir = self.settings.value("path")
+        exe_path = os.path.join(game_dir, "cockatrice.exe")
+        if not os.path.isfile(exe_path):
+            QMessageBox.warning(self, "Ошибка", f"cockatrice.exe не найден в {game_dir}")
+            return
+        
+        os.startfile(exe_path)        
+
     def resizeEvent(self, a0) -> None:
         return super().resizeEvent(a0)

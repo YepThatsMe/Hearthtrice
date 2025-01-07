@@ -53,6 +53,7 @@ class ArenaView(QFrame):
         self.deck_view.save_button.hide()
 
         self.max_cards = 40
+        self.round = 0
         self.chosen_classtype = None
         self.filtered_library = []
         
@@ -68,6 +69,7 @@ class ArenaView(QFrame):
 
         self.gen_layout = QHBoxLayout(self)
         self.sub_gen_layout = QVBoxLayout()
+        self.sub_gen_layout_2 = QVBoxLayout()
 
         self.stack = QStackedWidget(self)
         
@@ -156,6 +158,10 @@ class ArenaView(QFrame):
             lambda: self.custom_morph_chance_legendary_label_int.setText(str(self.custom_morph_chance_legendary_slider.value())) if self.custom_morph_chance_legendary_custom_checkbox.isChecked() else self.custom_morph_chance_legendary_label_int.setText("[Нормально]")
         )
 
+        self.launch_button = QPushButton("Запуск Cockatrice")
+        self.launch_button.setStyleSheet('QPushButton{ background-color: #bfffbf; font-weight: bold; }')
+        self.launch_button.clicked.connect(self.library_view.launch_cockatrice)
+
         self.class_select_control_1.addWidget(self.card_count_label)
         self.class_select_control_1.addWidget(self.card_count_label_int)
         self.class_select_control_1.addWidget(self.card_count_slider)
@@ -215,7 +221,7 @@ class ArenaView(QFrame):
         self.reset_button.clicked.connect(self.reset)
         self.progress_bar = QProgressBar()
         self.progress_bar.setOrientation(Qt.Horizontal)
-        self.progress_bar.setRange(0, self.max_cards)
+        self.progress_bar.setRange(1, self.max_cards)
         self.progress_bar.setTextVisible(True)
         self.progress_bar.setFormat("%v")
         self.control_layout2.addWidget(self.progress_bar)
@@ -242,9 +248,11 @@ class ArenaView(QFrame):
             pos+=1
 
         self.sub_gen_layout.addWidget(self.stack)
+        self.sub_gen_layout_2.addWidget(self.deck_view)
+        self.sub_gen_layout_2.addWidget(self.launch_button)
 
         self.gen_layout.addLayout(self.sub_gen_layout, stretch=5)
-        self.gen_layout.addWidget(self.deck_view, stretch=2)
+        self.gen_layout.addLayout(self.sub_gen_layout_2, stretch=2)
         self.setLayout(self.gen_layout)
 
     def start(self):
@@ -290,10 +298,9 @@ class ArenaView(QFrame):
     def populate_arena(self):
         self.select_lo.addSpacerItem(QSpacerItem(80,1))
 
-        round = self.progress_bar.value()
         chosen_cards = set()
         for _ in range(3):
-            is_legendary = self.legendary_map[round]
+            is_legendary = self.legendary_map[self.round]
             is_custom = False
             if is_legendary:
                 is_custom = random.randint(0,100) < self.custom_morph_chance_legendary
@@ -339,12 +346,13 @@ class ArenaView(QFrame):
                 token_meta = self.library_view.get_card_metadata_by_id(card_id, deck_fields_only=True)
                 if not token_meta:
                     continue
-                self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, token_meta.istoken)
+                self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, True)
+
+        self.round += 1
+        self.progress_bar.setValue(self.round)
 
         self.clear_grid()
-        self.progress_bar.setValue(self.progress_bar.value() + 1)
-
-        if self.progress_bar.value() < self.max_cards:
+        if self.round < self.max_cards:
             self.populate_arena()
 
     def update_max_cards(self, value: int):
@@ -358,5 +366,6 @@ class ArenaView(QFrame):
         self.clear_grid()
         self.chosen_classtype = None
         self.filtered_library.clear()
+        self.round = 0
 
         self.stack.setCurrentIndex(0)
