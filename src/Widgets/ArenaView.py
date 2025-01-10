@@ -317,6 +317,7 @@ class ArenaView(QFrame):
     
             dup_card = CardWidget(random_card.metadata, self)
             dup_card.card_clicked_event.connect(self.on_card_clicked)
+            dup_card.context_menu.removeAction(dup_card.delete_action)
             
             self.select_lo.addWidget(dup_card)
         
