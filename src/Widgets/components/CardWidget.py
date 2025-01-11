@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QMenu, QAction
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMenu, QAction
 from PyQt5.QtCore import QTimer, Qt, QRect
 from PyQt5.QtGui import QIcon, QMouseEvent, QPixmap, QColor, QPainter, QCursor
 from PyQt5.QtCore import pyqtSignal
@@ -19,11 +19,18 @@ class PreviewPopup(QWidget):
         self.note_label = QLabel("Заметка: ", self)
         self.note_label.setWordWrap(True)
 
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
+        text_layout = QVBoxLayout()
+
         layout.addWidget(self.label)
-        layout.addWidget(self.id_label)
-        layout.addWidget(self.note_label)
+        layout.addLayout(text_layout)
+
+        text_layout.addWidget(self.id_label, stretch=1)
+        text_layout.addWidget(self.note_label, stretch=5)
+        
         self.setLayout(layout)
+
+        self.setMaximumWidth(600)
 
     def set_content(self, pixmap: QPixmap, obj_id: int, note: str):
         self.label.setPixmap(pixmap)
@@ -93,7 +100,7 @@ class CardWidget(QWidget):
     def enterEvent(self, event):
         self.setHighlighted(True)
         
-        self.hover_timer.start(1500)
+        self.hover_timer.start(1000)
         super().enterEvent(event)
 
     def leaveEvent(self, event):
