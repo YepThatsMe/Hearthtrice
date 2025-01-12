@@ -15,11 +15,17 @@ class DataPresenter(QObject):
         self.login = ""
         self.comm = Communication()
 
-    def get_library(self) -> List[CardMetadata]:
+    def get_library(self, ids: List[int] = None) -> List[CardMetadata]:
         if not self.comm.is_connected:
             print("Connection is not established")
             return 
-        card_raw_data = self.comm.fetch_all_cards()
+        card_raw_data = []
+        if not ids:
+            print("FETCH ALL")
+            card_raw_data = self.comm.fetch_all_cards()
+        else:
+            card_raw_data = self.comm.fetch_cards_by_ids(ids)
+
         if not card_raw_data:
             print("Fetch error: empty list")
             return
@@ -39,15 +45,49 @@ class DataPresenter(QObject):
             meta.istoken = params_list[10]
             meta.tokens = params_list[11]
             meta.comment = params_list[12]
-            meta.picture = params_list[13]
-            meta.move_x = params_list[14]
-            meta.move_y = params_list[15]
-            meta.zoom = params_list[16]
-            meta.card_image = params_list[17]
-            meta.hash = params_list[18]
+            meta.card_image = params_list[13]
+            meta.hash = params_list[14]
             library.append(meta)
         return library
     
+    def get_edit_data(self, id: int) -> CardMetadata:
+        if not self.comm.is_connected:
+            print("Connection is not established")
+            return 
+
+        raw_edit_data = self.comm.fetch_edit_data_by_id(id)
+        if not raw_edit_data:
+            print("Fetch error: empty list")
+            return
+        
+        meta = CardMetadata()
+        meta.id = raw_edit_data[0]
+        meta.picture = raw_edit_data[1]
+        meta.move_x = raw_edit_data[2]
+        meta.move_y = raw_edit_data[3]
+        meta.zoom = raw_edit_data[4]
+        
+        return meta 
+
+    def get_hashes(self) -> List[dict]:
+        if not self.comm.is_connected:
+            print("Connection is not established")
+            return 
+        hash_raw_data = self.comm.fetch_all_hashes()
+        if not hash_raw_data:
+            print("Fetch error: empty list")
+            return
+
+        hashes_by_ids = []
+        for i in hash_raw_data:
+            hash = {}
+            hash["id"] = i[0]
+            hash["name"] = i[1]
+            hash["hash"] = i[2]
+            hashes_by_ids.append(hash)
+        
+        return hashes_by_ids
+
     def create_new_deck(self, deck_name: str) -> Tuple:
         if not self.comm.is_connected:
             print("Connection is not established")
@@ -117,7 +157,6 @@ class DataPresenter(QObject):
     def upload_edit_card(self, metadata: CardMetadata) -> Response:
         return self.comm.upload_edit_card(metadata)
         
-
     def delete_card(self, metadata: CardMetadata) -> Response:
         return self.comm.delete_card(metadata)
 

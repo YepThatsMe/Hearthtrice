@@ -3,6 +3,7 @@ from typing import List, Tuple
 from DataTypes import CardMetadata, Deck, Response
 
 DEBUG = 0
+TABLE = "Cards" if not DEBUG else "CardsDbg"
 
 class Communication:
     def __init__(self) -> None:
@@ -54,20 +55,81 @@ class Communication:
             self.connection = None
             return Response(False, msg)
 
-    def get_card_by_name(self, name: str):
+    def fetch_all_cards(self) -> List[tuple]:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return
+        query = f"""
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, card_image, hash FROM {TABLE} where card_image is not null;
+        """
+
         try:
-            query = "SELECT * FROM Cards WHERE name = ?;"
-            self.cursor.execute(query, (name,))
+            self.cursor.execute(query)
             rows = self.cursor.fetchall()
+            print(f"Library has been loaded from the database.")
+            return rows
         except pyodbc.Error as e:
-            print("Fetch error:", e)
-    
+            print(f"Fetch cards error: {e}")
+            return None
+
+    def fetch_cards_by_ids(self, ids: List[int]) -> List[tuple]:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return
+        if not ids:
+            return Response(False, "Empty ID list")
+        
+        placeholders = ", ".join("?" for _ in ids)
+        query = f"SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, card_image, hash FROM {TABLE} WHERE id IN ({placeholders}) and card_image is not null"
+
+        try:
+            self.cursor.execute(query, ids)
+            rows = self.cursor.fetchall()
+            return rows
+        except pyodbc.Error as e:
+            print(f"Fetch cards error: {e}")
+            return None
+             
+    def fetch_edit_data_by_id(self, id: int) -> tuple:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return
+        if not id:
+            print("fetch_edit_data_by_ids: Empty ID")
+            return Response(False, "Empty ID")
+        
+        params = ( id )
+        query = f"SELECT id, picture, move_x, move_y, zoom FROM {TABLE} WHERE id IN (?) and card_image is not null"
+
+        try:
+            self.cursor.execute(query, params)
+            rows = self.cursor.fetchall()
+            return rows[0]
+        except pyodbc.Error as e:
+            print(f"Fetch cards error: {e}")
+            return None
+   
+    def fetch_all_hashes(self) -> List[tuple]:
+        if not self.is_connected:
+            print('Connection is not established.')
+            return
+        query = f"""
+        SELECT id, name, hash FROM {TABLE} where card_image is not null;
+        """
+        try:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            return rows
+        except pyodbc.Error as e:
+            print(f"Fetch hashes error: {e}")
+            return None
+
     def upload_card(self, metadata: CardMetadata) -> Response:
         if not self.is_connected:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
-        query = """
-        INSERT INTO Cards (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, picture, move_x, move_y, zoom, card_image, hash)
+        query = f"""
+        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, picture, move_x, move_y, zoom, card_image, hash)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
         # Параметры (кроме id) передаются в execute в виде кортежа
@@ -88,7 +150,7 @@ class Communication:
                     metadata.move_y,
                     metadata.zoom, 
                     metadata.card_image,
-                    metadata.hash)
+                    metadata.hash  )
 
         try:
 
@@ -106,7 +168,7 @@ class Communication:
             return Response(False, "Подключение не установлено.")
         # Параметризованный SQL запрос
         query = f"""
-            UPDATE Cards
+            UPDATE {TABLE}
             SET name = ?,
                 description = ?,
                 manacost = ?,
@@ -161,7 +223,7 @@ class Communication:
             return Response(False, "Подключение не установлено.")
         
         sql_query = f"""
-            DELETE FROM Cards
+            DELETE FROM {TABLE}
             WHERE id = ?
         """
 
@@ -173,26 +235,6 @@ class Communication:
         except pyodbc.Error as e:
             print(f"Deletion error: {e}")
             return Response(False, e)
-
-    def fetch_all_cards(self) -> List[tuple]:
-        if not self.is_connected:
-            print('Connection is not established.')
-            return
-        query = """
-        SELECT * FROM CARDS;
-        """
-        if DEBUG:
-            query = """
-            SELECT * FROM CardsDbg;
-            """
-        try:
-            self.cursor.execute(query)
-            rows = self.cursor.fetchall()
-            print(f"Library has been loaded from the database.")
-            return rows
-        except pyodbc.Error as e:
-            print(f"Fetch cards error: {e}")
-            return None
 
     def create_new_deck(self, deck_name: str, owner: str) -> int:
         if not self.is_connected:

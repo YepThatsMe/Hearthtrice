@@ -72,8 +72,8 @@ class CardMetadata:
 
     istoken: bool
     tokens: str
-
     comment: str
+
     picture: bytes
     move_x: int    
     move_y: int
@@ -90,8 +90,11 @@ class CardMetadata:
     def to_json(self) -> str:
         return json.dumps(self.__dict__, indent=2)
     
-    def all(self) -> dict:
+    def dict(self) -> dict:
         return self.__dict__
+    
+    def values(self) -> list:
+        return self.__dict__.values()
 
     def update(self, data: dict) -> None:
         self.__dict__.update(data)

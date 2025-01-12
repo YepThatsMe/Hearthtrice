@@ -100,7 +100,7 @@ class CardWidget(QWidget):
     def enterEvent(self, event):
         self.setHighlighted(True)
         
-        self.hover_timer.start(1000)
+        self.hover_timer.start(650)
         super().enterEvent(event)
 
     def leaveEvent(self, event):

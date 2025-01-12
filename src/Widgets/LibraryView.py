@@ -16,6 +16,7 @@ from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
 from DataTypes import CardMetadata, Deck, Response, StdMetadata
 from utils.XMLGenerator import XMLGenerator
+from utils.string import sanitize
 
 class LibraryView(QFrame):
 
@@ -293,7 +294,7 @@ class LibraryView(QFrame):
         for row in range(self.main_gallery_grid.grid_layout.rowCount()):
             self.main_gallery_grid.grid_layout.setRowMinimumHeight(row, 280)
         self.set_loading(False)
-        print("Library view updated")
+        print("LibraryView updated")
 
     def clear_grid(self):
         while self.main_gallery_grid.grid_layout.count():
@@ -326,7 +327,7 @@ class LibraryView(QFrame):
         # Export custom set
         for card in self.card_widgets:
             img = bytes_to_pixmap(card.metadata.card_image)
-            img.save(os.path.join(custom_pics_dir, card.metadata.name.replace(":", "") + ".png"))
+            img.save(os.path.join(custom_pics_dir, sanitize(card.metadata.name) + ".png"))
 
         # Save custom xml
         metas_list = []
@@ -344,7 +345,7 @@ class LibraryView(QFrame):
         if self.export_std_checkbox.isChecked and self.std_card_widgets:
             for card in self.std_card_widgets:
                 img = bytes_to_pixmap(card.metadata.card_image)
-                img.save(os.path.join(custom_pics_dir, card.metadata.name.replace(":", "") + ".png"))
+                img.save(os.path.join(custom_pics_dir, sanitize(card.metadata.name) + ".png"))
 
         # Save std xml
             metas_list = []
@@ -419,7 +420,6 @@ class LibraryView(QFrame):
     def update_edited_card(self, card_metadata: CardMetadata):
         for i, card_widget in enumerate(self.card_widgets):
             if card_widget.metadata.id == card_metadata.id:
-                print(card_widget in self.card_widgets)
                 new_card = CardWidget(card_metadata, self)
                 new_card.card_clicked_event.connect(self.on_card_clicked)
                 new_card.edit_card_requested.connect(self.edit_card_requested)
@@ -438,10 +438,8 @@ class LibraryView(QFrame):
                 self.main_gallery_grid.grid_layout.removeWidget(card_widget)
                 self.main_gallery_grid.grid_layout.addWidget(new_card, new_x, new_y)
                 
-
                 self.card_widgets[i] = new_card
                 card_widget.deleteLater()
-                print(card_widget in self.card_widgets)
                 return
 
     def load_standard_cards(self) -> Response:

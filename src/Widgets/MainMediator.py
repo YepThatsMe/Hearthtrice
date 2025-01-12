@@ -1,8 +1,10 @@
+from importlib import metadata
 from typing import List, Tuple
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QLineEdit, QLabel, QDialog, QHBoxLayout, QVBoxLayout, QWidget, QApplication, QAction, QStackedWidget, QTabWidget, QSizePolicy, QTabBar
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit, QLabel, QDialog, QHBoxLayout, QVBoxLayout, QWidget, QApplication, QAction, QStackedWidget, QTabWidget, QSizePolicy, QTabBar
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import QSize
 
+from CacheManager import CacheManager
 import resources
 from Widgets.ArenaView import ArenaView
 from Widgets.LibraryView import LibraryView
@@ -18,7 +20,6 @@ class MainMediator(QMainWindow):
         super().__init__()
         self.setWindowIcon(QIcon(':icons/icon.ico'))
         self.setWindowTitle('HearthTrice Manager')
-
         self.data_presenter = DataPresenter()
 
         self.bool = True
@@ -31,15 +32,15 @@ class MainMediator(QMainWindow):
             #lambda n: send_to_thread(self, self.upload_card, args=(n,), kwargs=()))
         self.card_builder_view.upload_edit_requested.connect(self.upload_edit_card)
 
+        self.library_view.update_library_requested.connect(
+            lambda: send_to_thread(self, self.data_presenter.get_hashes, self.on_hashes_received))
         self.library_view.create_new_deck_requested.connect(
             lambda name: send_to_thread(self, self.data_presenter.create_new_deck, self.on_deck_created, args=(name,)))
         self.library_view.update_deck_requested.connect(
             lambda deckdata: send_to_thread(self, self.data_presenter.update_deck, self.on_deck_updated, args=(deckdata[0],deckdata[1],)))
         self.library_view.get_decks_requsted.connect(
             lambda: send_to_thread(self, self.data_presenter.get_decks, self.update_decks))
-        self.library_view.update_library_requested.connect(
-            lambda: send_to_thread(self, self.data_presenter.get_library, self.update_library))
-        self.library_view.edit_card_requested.connect(self.on_edit_card_requested)
+        self.library_view.edit_card_requested.connect(self.on_edit_card_requested_A)
         self.library_view.delete_card_requested.connect(self.on_delete_card_requested)
 
         self.connection_settings.settings_button.button.clicked.connect(self.on_settings_clicked)
@@ -48,7 +49,9 @@ class MainMediator(QMainWindow):
     def set_up_ui(self):
         self.connection_settings = ConnectionSettingsDialog(self.data_presenter, self)
 
-        self.card_builder_view = CardBuilderView(self)
+        self.cache_manager = CacheManager(self.data_presenter)
+
+        self.card_builder_view = CardBuilderView(self.cache_manager, self)
         self.library_view = LibraryView(self)
         self.arena_view = ArenaView(self.library_view, self)
 
@@ -79,6 +82,25 @@ class MainMediator(QMainWindow):
         self.central_widget.setLayout(self.gen_layout)
         self.setCentralWidget(self.central_widget)
 
+    def on_hashes_received(self, hashlist: List[dict]):
+        ids_to_request = self.cache_manager.get_discrepant_ids(hashlist)
+        if not ids_to_request:
+            print("Nothing no download")
+            self.update_library_from_cache()
+            return
+        
+        print("\nIDs to download:", ids_to_request)
+        send_to_thread(self, self.data_presenter.get_library, self.on_library_part_received, args=(ids_to_request,))
+
+    def on_library_part_received(self, received_card_metadata: List[CardMetadata]):
+        self.cache_manager.save_cache(received_card_metadata)
+        print("Updated cards have been cached.")
+        self.update_library_from_cache()
+
+    def update_library_from_cache(self):
+        cached_library = self.cache_manager.get_cache()
+        self.library_view.set_updated_library(cached_library)
+
     def on_deck_created(self, new_deck_data: tuple):
         if not new_deck_data:
             return
@@ -99,11 +121,6 @@ class MainMediator(QMainWindow):
             return
         self.library_view.set_updated_decks(decks)
 
-    def update_library(self, cards: List[CardMetadata]):
-        if not cards:
-            return
-        self.library_view.set_updated_library(cards)
-
     def upload_card(self, metadata: CardMetadata):
         response = self.data_presenter.upload_card(metadata)
         if response.ok:
@@ -121,8 +138,13 @@ class MainMediator(QMainWindow):
         else:
             QMessageBox.warning(None, "Предупреждение", response.msg)
 
-    def on_edit_card_requested(self, metadata: CardMetadata):
-        self.card_builder_view.on_edit_card_requested(metadata)
+    def on_edit_card_requested_A(self, metadata: CardMetadata):
+        self.card_to_edit_metadata = metadata
+        send_to_thread(self, self.data_presenter.get_edit_data, self.on_edit_card_requested_B, args=(metadata.id,))
+    
+    def on_edit_card_requested_B(self, metadata: CardMetadata):
+        self.card_to_edit_metadata.update(metadata.dict())
+        self.card_builder_view.on_edit_card_requested(self.card_to_edit_metadata)
         self.stacked_widget.setCurrentIndex(0)
         self.tab_bar.setCurrentIndex(0)
 
@@ -130,14 +152,18 @@ class MainMediator(QMainWindow):
         dialog = QDialog(self)
         dialog.setWindowTitle("Удаление карты")
 
-        label = QLabel("Удалить карту?")
+        label = QLabel(f"Удалить карту ID:{metadata.id} {metadata.name}?")
 
-        ok_button = QPushButton("ОК", dialog)
+        ok_button = QPushButton("Удалить", dialog)
         ok_button.clicked.connect(dialog.accept)
+
+        no_button = QPushButton("Отмена", dialog)
+        no_button.clicked.connect(dialog.reject)
 
         layout = QVBoxLayout(dialog)
         layout.addWidget(label)
         layout.addWidget(ok_button)
+        layout.addWidget(no_button)
 
         dialog.setLayout(layout)
 
@@ -146,6 +172,7 @@ class MainMediator(QMainWindow):
         
         response = self.data_presenter.delete_card(metadata)
         if response.ok:
+            self.cache_manager.delete_from_cache(metadata.id)
             self.library_view.update()
             QMessageBox.information(None, "Информация", "Карта удалена.")
         else:

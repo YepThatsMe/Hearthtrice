@@ -6,6 +6,7 @@ import win32clipboard
 from io import BytesIO
 from PIL import Image
 
+from CacheManager import CacheManager
 from utils.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes
 from DataTypes import CardMetadata, CardType
 from Widgets.components.FormView import FormView
@@ -24,10 +25,11 @@ class CardBuilderView(QFrame):
     upload_requested = pyqtSignal(object)
     upload_edit_requested = pyqtSignal(object)
 
-    def __init__(self, parent=None):
+    def __init__(self, cache_manager: CacheManager, parent=None):
         super().__init__(parent)
         self.upload_mode = CardBuilderView.UploadMode.NEW
-        
+        self.cache_manager = cache_manager
+
         self.picture = QPixmap()
         self.card_metadata = CardMetadata()
 
@@ -114,15 +116,14 @@ class CardBuilderView(QFrame):
 
         self.setLayout(self.gen_layout)
 
-
-    def gather_metadata(self):
+    def gather_form_data(self):
         meta_data = self.form.get_form_data()
         self.card_metadata.update(meta_data)
         
     def generate(self):
         self.setCursor(Qt.WaitCursor)
 
-        self.gather_metadata()
+        self.gather_form_data()
 
         self.card_metadata.picture = pixmap_to_bytes(self.picture)
 
@@ -146,11 +147,13 @@ class CardBuilderView(QFrame):
         self.setCursor(Qt.ArrowCursor)
 
     def upload_button_clicked(self):
-        self.gather_metadata()
+        self.gather_form_data()
         if not self.card_metadata.name:
             QMessageBox.warning(self, "Ошибка", "Имя карты не может быть пустым.")
             return
-        
+
+        self.card_metadata.hash = self.cache_manager.calculate_hash(self.card_metadata)
+
         if self.upload_mode == CardBuilderView.UploadMode.NEW:
             self.upload_requested.emit(self.card_metadata)
         elif self.upload_mode == CardBuilderView.UploadMode.EDIT:
