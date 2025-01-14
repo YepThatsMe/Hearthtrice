@@ -317,7 +317,7 @@ class LibraryView(QFrame):
 
         pics_dir = os.path.join(game_dir, "data", "pics")
         if not os.path.isdir(pics_dir):
-            pics_dir = os.path.join(os.getenv('APPDATA'), "Cockatrice", "Cockatrice", "pics")
+            pics_dir = os.path.join(os.getenv('LOCALAPPDATA'), "Cockatrice", "Cockatrice", "pics")
 
         custom_pics_dir = os.path.join(pics_dir, "CUSTOM")
         os.makedirs(custom_pics_dir, exist_ok=True)
