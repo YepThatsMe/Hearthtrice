@@ -397,7 +397,10 @@ class DeckView(QWidget):
         game_dir  = self.settings.value("path")
         if not game_dir:
             game_dir = os.getcwd()
+
         decks_dir = os.path.join(game_dir, "data", "decks")
+        if not os.path.isdir(decks_dir):
+            decks_dir = os.path.join(os.getenv('LOCALAPPDATA'), "Cockatrice", "Cockatrice", "data", "decks")
         os.makedirs(decks_dir, exist_ok=True)
 
         full_deck_path = os.path.join(decks_dir, deck.name + ".cod")
