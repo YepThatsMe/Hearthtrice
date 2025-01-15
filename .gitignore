@@ -7,6 +7,8 @@ build/
 dist/
 src/assets/std/
 data/
+src/utils/get_changelog.py
+changelog_report.txt
 *.xml
 *.cod
 *.spec

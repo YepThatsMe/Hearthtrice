@@ -130,13 +130,20 @@ class MainMediator(QMainWindow):
             QMessageBox.warning(None, "Предупреждение", response.msg)
 
 
-    def upload_edit_card(self, metadata: CardMetadata):
-        response = self.data_presenter.upload_edit_card(metadata)
+    def upload_edit_card(self, metas: Tuple[CardMetadata]):
+        response = self.data_presenter.upload_edit_card(metas[0])
         if response.ok:
-            self.library_view.update_edited_card(metadata)
+            self.data_presenter.upload_edit_changelog(metas[0], metas[1])
+            self.library_view.update_edited_card(metas[0])
             QMessageBox.information(None, "Информация", "Карта изменена.")
         else:
             QMessageBox.warning(None, "Предупреждение", response.msg)
+
+    def upload_edit_card_changelog(self, metadata: CardMetadata, old_metadata: CardMetadata = None):
+        response = self.data_presenter.upload_edit_card(metadata, old_metadata)
+        if response.ok:
+            self.library_view.update_edited_card(metadata)
+            print("Logs updated")
 
     def on_edit_card_requested_A(self, metadata: CardMetadata):
         self.card_to_edit_metadata = metadata

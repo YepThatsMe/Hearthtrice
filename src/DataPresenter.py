@@ -155,14 +155,14 @@ class DataPresenter(QObject):
         return self.comm.upload_card(metadata)
 
     def upload_edit_card(self, metadata: CardMetadata) -> Response:
-        return self.comm.upload_edit_card(metadata)
+        response = self.comm.upload_edit_card(metadata)
+        return response
+        
+    def upload_edit_changelog(self, metadata: CardMetadata, old_metadata: CardMetadata = None) -> Response:
+        return self.comm.upload_edit_changelog(metadata, old_metadata)
         
     def delete_card(self, metadata: CardMetadata) -> Response:
         return self.comm.delete_card(metadata)
-
-
-
-
 
 
 

@@ -32,6 +32,7 @@ class CardBuilderView(QFrame):
 
         self.picture = QPixmap()
         self.card_metadata = CardMetadata()
+        self.card_previous_version = CardMetadata()
 
         self.card_image_generator = MinionImageGenerator()
         self.card_image_generator_spell = SpellImageGenerator()
@@ -158,7 +159,7 @@ class CardBuilderView(QFrame):
             self.upload_requested.emit(self.card_metadata)
         elif self.upload_mode == CardBuilderView.UploadMode.EDIT:
             if(QMessageBox.question(self, "Редактирование", f"Карта ID:{self.card_metadata.id} '{self.card_metadata.name}' будет изменена. Перезаписать?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes):
-                self.upload_edit_requested.emit(self.card_metadata)
+                self.upload_edit_requested.emit([self.card_metadata, self.card_previous_version])
     
     def update_card_preview(self, pixmap: QPixmap):
         self.card_preview.set_preview_image(pixmap)
@@ -185,6 +186,8 @@ class CardBuilderView(QFrame):
     def on_edit_card_requested(self, metadata: CardMetadata):
         self.upload_mode = CardBuilderView.UploadMode.EDIT
         self.card_metadata = metadata
+        self.card_previous_version.update(metadata.dict())
+
         self.upload_button.setText("Изменить")
         self.upload_button.setStyleSheet('QPushButton{background-color: #FFF68F;}')
         self.picture = bytes_to_pixmap(metadata.picture)
@@ -232,3 +235,4 @@ class CardBuilderView(QFrame):
         self.update_card_preview(QPixmap(r":start_card.png"))
         self.picture = QPixmap()
         self.card_metadata = CardMetadata()
+        self.card_previous_version = CardMetadata()

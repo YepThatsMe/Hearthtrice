@@ -1,9 +1,11 @@
+from datetime import datetime
 import pyodbc
 from typing import List, Tuple
 from DataTypes import CardMetadata, Deck, Response
 
-DEBUG = 0
+from main import DEBUG
 TABLE = "Cards" if not DEBUG else "CardsDbg"
+CHANGELOG_TABLE = "CardsLog" if not DEBUG else "CardsLogDbg"
 
 class Communication:
     def __init__(self) -> None:
@@ -216,6 +218,38 @@ class Communication:
         except pyodbc.Error as e:
             print(f"Update error: {e}")
             return Response(False, e)
+        
+    def upload_edit_changelog(self, metadata: CardMetadata, old_metadata: CardMetadata) -> Response:
+        if not self.is_connected:
+            print('Connection is not established.')
+            return Response(False, "Подключение не установлено.")
+        
+        date = datetime.now()
+
+        for meta in (old_metadata, metadata):
+            query = f"""
+            INSERT INTO {CHANGELOG_TABLE} (id, name, description, manacost, rarity, attack, health, tribe, comment, change_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """
+
+            params = (  meta.id,
+                        meta.name,
+                        meta.description,
+                        meta.manacost,
+                        meta.rarity,
+                        meta.attack, 
+                        meta.health, 
+                        meta.tribe,
+                        meta.comment,
+                        date )
+            
+            self.cursor.execute(query, params)
+        try:
+            self.connection.commit()
+            return Response(True)
+        except pyodbc.Error as e:
+            print(f"Update error: {e}")
+            return Response(False, e)
 
     def delete_card(self, metadata: CardMetadata) -> Response:
         if not self.is_connected:
@@ -293,6 +327,26 @@ class Communication:
             self.connection.commit()
             print(f"Deck {id} has been updated.")
             return Response(True)
+        except pyodbc.Error as e:
+            print(f"Update error: {e}")
+            return Response(False, e)
+
+    def fetch_full_changelog(self, days: int = 0):
+        # SQL-запрос
+        query = "SELECT * FROM MyTable order by change_date DESC;"
+        if days:
+            query = f"""
+            SELECT *
+            FROM {CHANGELOG_TABLE}
+            WHERE change_date >= DATEADD(DAY, -(?), GETDATE())
+            order by change_date ASC;
+            """
+        params = ( days )
+        
+        try:
+            self.cursor.execute(query, params)
+            rows = self.cursor.fetchall()
+            return rows
         except pyodbc.Error as e:
             print(f"Update error: {e}")
             return Response(False, e)

@@ -11,15 +11,17 @@ from DataTypes import CardMetadata
 from utils.BytesEncoder import bytes_to_pixmap
 from utils.string import sanitize
 
+from main import DEBUG
+CACHE_PATH = "cache" if not DEBUG else "cache_dbg"
 
 class CacheManager:
     def __init__(self, data_presenter: DataPresenter, ttl_days=7):
         self.data_presenter = data_presenter
         self.ttl = timedelta(days=ttl_days)
 
-        self.cache_dir = os.path.join(os.getcwd(), "cache")
+        self.cache_dir = os.path.join(os.getcwd(), CACHE_PATH)
         if os.getenv("LOCALAPPDATA"):
-            self.cache_dir = os.path.join(os.getenv("LOCALAPPDATA"), "Hearthtrice", "cache")
+            self.cache_dir = os.path.join(os.getenv("LOCALAPPDATA"), "Hearthtrice", CACHE_PATH)
 
         self.index_path = os.path.join(self.cache_dir, "index.json")
         self.images_dir = os.path.join(self.cache_dir, "images")

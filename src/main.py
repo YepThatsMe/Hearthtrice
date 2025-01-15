@@ -5,6 +5,8 @@ import sys
 VERSION_MAJOR = 2
 VERSION_MINOR = 3
 
+DEBUG = 0
+
 def main():
     
     app = QApplication(sys.argv)
