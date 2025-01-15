@@ -96,10 +96,12 @@ class MainMediator(QMainWindow):
         self.cache_manager.save_cache(received_card_metadata)
         print("Updated cards have been cached.")
         self.update_library_from_cache()
+        self.library_view.on_export_clicked(received_card_metadata)
 
     def update_library_from_cache(self):
-        cached_library = self.cache_manager.get_cache()
-        self.library_view.set_updated_library(cached_library)
+        def callback(cached_library):
+            self.library_view.set_updated_library(cached_library)
+        send_to_thread(self, self.cache_manager.get_cache, callback)
 
     def on_deck_created(self, new_deck_data: tuple):
         if not new_deck_data:
@@ -146,14 +148,14 @@ class MainMediator(QMainWindow):
             print("Logs updated")
 
     def on_edit_card_requested_A(self, metadata: CardMetadata):
+        def callback(metadata: CardMetadata):
+            self.card_to_edit_metadata.update(metadata.dict())
+            self.card_builder_view.on_edit_card_requested(self.card_to_edit_metadata)
+            self.stacked_widget.setCurrentIndex(0)
+            self.tab_bar.setCurrentIndex(0)
         self.card_to_edit_metadata = metadata
-        send_to_thread(self, self.data_presenter.get_edit_data, self.on_edit_card_requested_B, args=(metadata.id,))
+        send_to_thread(self, self.data_presenter.get_edit_data, callback, args=(metadata.id,))
     
-    def on_edit_card_requested_B(self, metadata: CardMetadata):
-        self.card_to_edit_metadata.update(metadata.dict())
-        self.card_builder_view.on_edit_card_requested(self.card_to_edit_metadata)
-        self.stacked_widget.setCurrentIndex(0)
-        self.tab_bar.setCurrentIndex(0)
 
     def on_delete_card_requested(self, metadata: CardMetadata):
         dialog = QDialog(self)

@@ -5,8 +5,8 @@ from turtle import isvisible
 from typing import List
 import json
 
-from PyQt5.QtWidgets import QFrame, QGridLayout, QLineEdit, QComboBox, QCheckBox, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
-from PyQt5.QtCore import pyqtSignal, QDir, QByteArray, QFile, QTextStream, QSize, QSettings, QIODevice
+from PyQt5.QtWidgets import QFrame, QApplication, QProgressBar, QGridLayout, QLineEdit, QComboBox, QCheckBox, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
+from PyQt5.QtCore import pyqtSignal, Qt, QThread, QDir, QByteArray, QFile, QTextStream, QSize, QSettings, QIODevice
 from PyQt5.QtGui import QMovie, QIcon
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
@@ -17,6 +17,35 @@ from Widgets.components.CardWidget import CardWidget
 from DataTypes import CardMetadata, Deck, Response, StdMetadata
 from utils.XMLGenerator import XMLGenerator
 from utils.string import sanitize
+
+class ExportThread(QThread):
+    update_progress = pyqtSignal(int)  # Сигнал для обновления прогресса
+    finished_export = pyqtSignal()     # Сигнал о завершении работы
+
+    def __init__(self, metas, card_widgets, custom_pics_dir, parent=None):
+        super().__init__(parent)
+        self.metas = metas
+        self.card_widgets = card_widgets
+        self.custom_pics_dir = custom_pics_dir
+
+    def run(self):
+        """Выполняет экспорт данных в фоновом потоке."""
+        progress = 0
+        if not self.metas:
+            self.update_progress.emit(0)
+            for card in self.card_widgets:
+                img = bytes_to_pixmap(card.metadata.card_image)
+                img.save(os.path.join(self.custom_pics_dir, sanitize(card.metadata.name) + ".png"))
+                progress += 1
+                self.update_progress.emit(progress)
+        else:
+            self.update_progress.emit(0)
+            for meta in self.metas:
+                img = bytes_to_pixmap(meta.card_image)
+                img.save(os.path.join(self.custom_pics_dir, sanitize(meta.name) + ".png"))
+                progress += 1
+                self.update_progress.emit(progress)
+        self.finished_export.emit()
 
 class LibraryView(QFrame):
 
@@ -305,15 +334,15 @@ class LibraryView(QFrame):
         self.card_widgets.clear()
         self.original_positions.clear()
 
-    
-    def on_export_clicked(self):
+    def on_export_clicked(self, metas: List[CardMetadata] = None):
         # Get path
         if not self.card_widgets:
             print("Empty library")
             return
         game_dir = self.settings.value("path")
         if not game_dir:
-            game_dir = os.getcwd()
+            QMessageBox.information("Экспорт", "Укажите директоирю Cockatrice в настройках")
+            # game_dir = os.getcwd()
 
         pics_dir = os.path.join(game_dir, "data", "pics")
         if not os.path.isdir(pics_dir):
@@ -322,12 +351,37 @@ class LibraryView(QFrame):
         custom_pics_dir = os.path.join(pics_dir, "CUSTOM")
         os.makedirs(custom_pics_dir, exist_ok=True)
 
-        os.startfile(custom_pics_dir) # Windows only
+        if not metas:
+            os.startfile(custom_pics_dir) # Windows only
 
-        # Export custom set
-        for card in self.card_widgets:
-            img = bytes_to_pixmap(card.metadata.card_image)
-            img.save(os.path.join(custom_pics_dir, sanitize(card.metadata.name) + ".png"))
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Экспорт")
+        dialog.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+
+        layout = QVBoxLayout()
+        label = QLabel("Выгрузка библиотеки...")
+        if metas:
+            label.setText("Обновление экспорта...")
+        layout.addWidget(label)
+        label.setAlignment(Qt.AlignCenter)
+
+        progress = QProgressBar()
+        layout.addWidget(progress)
+        progress.setRange(0, len(self.card_widgets))
+        if metas:
+            progress.setRange(0, len(metas))
+            
+        dialog.setLayout(layout)
+        dialog.setModal(True)
+
+        export_thread = ExportThread(metas, self.card_widgets, custom_pics_dir)
+        export_thread.update_progress.connect(progress.setValue)
+        export_thread.finished_export.connect(dialog.accept)
+
+        dialog.show()
+        export_thread.start()
+
+        dialog.exec_()
 
         # Save custom xml
         metas_list = []
@@ -340,14 +394,21 @@ class LibraryView(QFrame):
         lib_xml_path = os.path.join(customsets_dir, "HearthTrice Customset.xml")
         XMLGenerator.generate_xml_library(lib_xml_path, metas_list)
 
-
+        ## STD
         # Export standard set
         if self.export_std_checkbox.isChecked and self.std_card_widgets:
-            for card in self.std_card_widgets:
-                img = bytes_to_pixmap(card.metadata.card_image)
-                img.save(os.path.join(custom_pics_dir, sanitize(card.metadata.name) + ".png"))
+            label.setText("Выгрузка стандартных карт...")
+            progress.setRange(0, len(self.std_card_widgets))
+            export_thread = ExportThread(None, self.std_card_widgets, custom_pics_dir)
+            export_thread.update_progress.connect(progress.setValue)
+            export_thread.finished_export.connect(dialog.accept)
 
-        # Save std xml
+            dialog.show()
+            export_thread.start()
+
+            dialog.exec_()
+
+            # Save std xml
             metas_list = []
             for card_widget in self.std_card_widgets:
                 meta = card_widget.metadata
@@ -358,7 +419,10 @@ class LibraryView(QFrame):
             lib_xml_path = os.path.join(customsets_dir, "HearthTrice Standardset.xml")
             XMLGenerator.generate_xml_library(lib_xml_path, metas_list)
 
-        QMessageBox.information(self, "Готово", "Библиотека выгружена.")
+        if not metas:
+            QMessageBox.information(self, "Готово", "Библиотека выгружена.")
+        
+        QApplication.instance().activeWindow()
 
     def on_card_clicked(self, metadata: CardMetadata):
         response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost, metadata.istoken)

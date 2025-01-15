@@ -5,6 +5,7 @@ def send_to_thread(parent, func, handler=None, args=None, kwargs=None):
     thread = Thread(func, args, kwargs, parent)
     if handler:
         thread.finished.connect(handler)
+    thread.finished.connect(thread.deleteLater)
     thread.start()
 
 
