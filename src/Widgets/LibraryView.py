@@ -388,7 +388,10 @@ class LibraryView(QFrame):
         for card_widget in self.card_widgets:
             meta = card_widget.metadata
             metas_list.append(meta)
+
         customsets_dir = os.path.join(game_dir, "data", "customsets")
+        if not os.path.isdir(customsets_dir):
+            customsets_dir = os.path.join(os.getenv('LOCALAPPDATA'), "Cockatrice", "Cockatrice", "customsets")
         os.makedirs(customsets_dir, exist_ok=True)
 
         lib_xml_path = os.path.join(customsets_dir, "HearthTrice Customset.xml")
