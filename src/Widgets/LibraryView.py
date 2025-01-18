@@ -416,7 +416,7 @@ class LibraryView(QFrame):
             for card_widget in self.std_card_widgets:
                 meta = card_widget.metadata
                 metas_list.append(meta)
-            customsets_dir = os.path.join(game_dir, "data", "customsets")
+
             os.makedirs(customsets_dir, exist_ok=True)
 
             lib_xml_path = os.path.join(customsets_dir, "TK_STD.xml")
