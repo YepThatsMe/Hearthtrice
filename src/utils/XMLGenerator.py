@@ -3,21 +3,21 @@ from xml.dom import minidom
 
 import xml.etree.ElementTree as ET
 
-from DataTypes import CardMetadata, CardType, ClassType, Rarity, Deck, DeckCard
+from DataTypes import CardMetadata, CardType, Deck, DeckCard
 
 class XMLGenerator:
     def generate_xml_library(full_xml_path: str, cards: List[CardMetadata]):
-        card_database = ET.Element("cockatrice_carddatabase", version="3")
+        card_database = ET.Element("cockatrice_carddatabase", version="4")
 
         set_element = ET.SubElement(card_database, "set")
         set_name = ET.SubElement(set_element, "name")
-        set_name.text = "name"
+        set_name.text = "TK"
         set_longname = ET.SubElement(set_element, "longname")
-        set_longname.text = "longname"
+        set_longname.text = ""
         set_settype = ET.SubElement(set_element, "settype")
-        set_settype.text = "settype"
+        set_settype.text = ""
         set_releasedate = ET.SubElement(set_element, "releasedate")
-        set_releasedate.text = "releasedate"
+        set_releasedate.text = ""
 
         cards_element = ET.SubElement(card_database, "cards")
 
@@ -30,20 +30,22 @@ class XMLGenerator:
             card_text = ET.SubElement(card_element, "text")
             card_text.text = card.description
 
+            # Set to istoken to be shown in tokens list and display p/t
+            card_istoken = ET.SubElement(card_element, "token")
+            card_istoken.text = "1"
             prop_element = ET.SubElement(card_element, "prop")
-            prop_manacost = ET.SubElement(prop_element, "manacost")
-            prop_manacost.text = str(card.manacost)
             prop_colors = ET.SubElement(prop_element, "colors")
-            prop_colors.text = str(card.cardtype)
+            prop_colors.text = " "
 
-            if card.cardtype == CardType.MINION:# or card.cardtype == CardType.WEAPON:
+            if card.cardtype == CardType.MINION:
                 prop_pt = ET.SubElement(prop_element, "pt")
                 prop_pt.text = str(card.attack) + "/" + str(card.health)
 
-            rarity = Rarity(card.rarity).name if card.rarity else "NONE"
-            classtype = ClassType(card.classtype).name if card.classtype else "NEUTRAL"
-            set_text = ET.SubElement(card_element, "set", rarity=rarity)
-            set_text.text = classtype
+            set_text = ET.SubElement(card_element, "set")
+            set_text.text = "TK"
+            
+            tablerow_text = ET.SubElement(card_element, "tablerow")
+            tablerow_text.text = "0"
 
         tree = ET.ElementTree(card_database)
         rough_string = ET.tostring(card_database, 'utf-8')

@@ -113,7 +113,7 @@ class MyTreeWidget(QTreeWidget):
     def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0, sideboard: bool = 0):
         level = "Deck"
         if istoken:
-            level = "Tokens"
+            level = "Sideboard"
         elif sideboard:
             level = "Sideboard"
 

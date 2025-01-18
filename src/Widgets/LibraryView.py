@@ -394,7 +394,7 @@ class LibraryView(QFrame):
             customsets_dir = os.path.join(os.getenv('LOCALAPPDATA'), "Cockatrice", "Cockatrice", "customsets")
         os.makedirs(customsets_dir, exist_ok=True)
 
-        lib_xml_path = os.path.join(customsets_dir, "HearthTrice Customset.xml")
+        lib_xml_path = os.path.join(customsets_dir, "TK.xml")
         XMLGenerator.generate_xml_library(lib_xml_path, metas_list)
 
         ## STD
@@ -419,7 +419,7 @@ class LibraryView(QFrame):
             customsets_dir = os.path.join(game_dir, "data", "customsets")
             os.makedirs(customsets_dir, exist_ok=True)
 
-            lib_xml_path = os.path.join(customsets_dir, "HearthTrice Standardset.xml")
+            lib_xml_path = os.path.join(customsets_dir, "TK_STD.xml")
             XMLGenerator.generate_xml_library(lib_xml_path, metas_list)
 
         if not metas:
