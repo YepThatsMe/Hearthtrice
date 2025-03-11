@@ -8,9 +8,22 @@ class Response:
         self.ok = ok
         self.msg = msg
 
-
+class BaseEnum(IntEnum):
+    @classmethod
+    def get_name(cls, value: int) -> str:
+        try:
+            return cls(value).name
+        except ValueError:
+            return "UNKNOWN"
+        
+    @classmethod
+    def get_value(cls, name: str) -> int:
+        val = cls.__members__.get(name.upper(), None)
+        if val: return int(val)
+        return None
+    
 class DeckCard:
-    class Side(IntEnum):
+    class Side(BaseEnum):
         MAINDECK = auto()
         SIDEBOARD = auto()
         TOKENS = auto()
@@ -34,7 +47,7 @@ class Deck:
         self.owner: str
     
 
-class ClassType(IntEnum):
+class ClassType(BaseEnum):
     NEUTRAL: int = auto()
     MAGE: int = auto()
     HUNTER: int = auto()
@@ -47,17 +60,17 @@ class ClassType(IntEnum):
     SHAMAN: int = auto()
     DEMONHUNTER: int = auto()
 
-class Rarity(IntEnum):
+class Rarity(BaseEnum):
     NONE: int = auto()
     COMMON: int = auto()
     RARE: int = auto()
     EPIC: int = auto()
     LEGENDARY: int = auto()
 
-class CardType(IntEnum):
+class CardType(BaseEnum):
     MINION: int = auto()
     SPELL: int = auto()
-
+        
 class CardMetadata:
     id: int
     name: str
@@ -112,3 +125,4 @@ class CardMetadata:
 class StdMetadata(CardMetadata):
     isstandard: bool = True
     card_image_path: str
+

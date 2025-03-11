@@ -22,7 +22,6 @@ class MainMediator(QMainWindow):
         self.setWindowIcon(QIcon(':icons/icon.ico'))
         self.setWindowTitle('HearthTrice Manager')
         self.data_presenter = DataPresenter()
-        self.game_listener = GameListener()
 
         self.bool = True
         
@@ -45,8 +44,6 @@ class MainMediator(QMainWindow):
         self.library_view.edit_card_requested.connect(self.on_edit_card_requested_A)
         self.library_view.delete_card_requested.connect(self.on_delete_card_requested)
 
-        self.game_listener.card_from_library_requested.connect(self.library_view.respond_on_game_request)
-
         self.connection_settings.settings_button.button.clicked.connect(self.on_settings_clicked)
         self.connection_settings.connection_response_received.connect(self.library_view.update)
 
@@ -58,6 +55,7 @@ class MainMediator(QMainWindow):
         self.card_builder_view = CardBuilderView(self.cache_manager, self)
         self.library_view = LibraryView(self)
         self.arena_view = ArenaView(self.library_view, self)
+        self.game_listener = GameListener(self.library_view, self)
 
         self.central_widget = QWidget(self)
         self.gen_layout = QVBoxLayout()

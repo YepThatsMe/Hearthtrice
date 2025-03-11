@@ -6,7 +6,7 @@ from typing import List
 import json
 
 from PyQt5.QtWidgets import QFrame, QApplication, QProgressBar, QGridLayout, QLineEdit, QComboBox, QCheckBox, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
-from PyQt5.QtCore import pyqtSignal, Qt, QThread, QDir, QByteArray, QFile, QTextStream, QSize, QSettings, QIODevice
+from PyQt5.QtCore import pyqtSignal, Qt, QThread, QTimer, QDir, QByteArray, QFile, QTextStream, QSize, QSettings, QIODevice
 from PyQt5.QtGui import QMovie, QIcon
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
@@ -14,8 +14,9 @@ from Widgets.components.ScrollableGrid import ScrollableGrid
 
 from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
-from DataTypes import CardMetadata, Deck, Response, StdMetadata
+from DataTypes import CardMetadata, Deck, Response, CardType, Rarity, ClassType, StdMetadata
 from utils.XMLGenerator import XMLGenerator
+from GameListener import GameListener
 from utils.string import sanitize
 
 class ExportThread(QThread):
@@ -261,21 +262,26 @@ class LibraryView(QFrame):
         if self.standard_only_toggle.isChecked:
             self.standard_only_toggle.toggleState()
 
-    def roll(self):
+    def roll(self) -> int:
         card_widgets = self.std_card_widgets if self.standard_only_toggle.isChecked else self.card_widgets
         filtered_cards = []
         for card_widget in card_widgets:
             if card_widget.isVisible():
                 filtered_cards.append(card_widget)
 
+        if not filtered_cards:
+            return 0
+
         random_card = random.choice(filtered_cards)
-        random_card.setHighlighted(True)
+        random_card.setHighlightedPing(3)
 
         if self.standard_only_toggle.isChecked:
             self.std_gallery_grid.ensureWidgetVisible(random_card)
         else:
             self.main_gallery_grid.ensureWidgetVisible(random_card)
 
+        return random_card.metadata.id
+    
     def update(self):
         self.set_loading(True)
         self.update_library_requested.emit()
@@ -568,10 +574,39 @@ class LibraryView(QFrame):
         
         os.startfile(exe_path)        
 
-    def respond_on_game_request(self, card_name: str):
+    def get_card_name_by_id(self, id: int) -> str:
+        for card_widget in self.card_widgets + self.std_card_widgets:
+            if card_widget.metadata.id == id:
+                return card_widget.metadata.name
+        return ""
+
+    def get_card_command_by_name(self, card_name: str) -> str:
         for card_widget in self.card_widgets + self.std_card_widgets:
             if card_widget.metadata.name == card_name:
-                pass
+                return card_widget.metadata.command
+        return ""
+    
+    def get_random_card_among_ids(self, ids: List[int]) -> str:
+        chosen_id = int(random.choice(ids))
+        for card_widget in self.card_widgets + self.std_card_widgets:
+            if card_widget.metadata.id == chosen_id:
+                return card_widget.metadata.name
+        return ""
+
+    def get_random_card_by_filter(self, cardtype: str, classtype: str, manacost: str,
+                                     tribe: str, rarity: str, std_only: bool) -> int:
+        self.reset_filter()
+        self.no_tokens_toggle.setChecked(True)
+
+        if cardtype != "any": self.cardtype_filter.setCurrentIndex(CardType.get_value(cardtype)) 
+        if classtype != "any": self.classtype_filter.setCurrentIndex(ClassType.get_value(classtype))
+        if manacost != "any": self.manacost_filter.setCurrentIndex(int(manacost) + 1)
+        if tribe != "any": self.name_filter.setText(tribe)
+        if rarity != "any": self.manacost_filter.setCurrentIndex(Rarity.get_value(rarity))
+        self.standard_only_toggle.setChecked(std_only)
+        
+        chosen_id = self.roll()
+        return chosen_id
 
     def resizeEvent(self, a0) -> None:
         return super().resizeEvent(a0)

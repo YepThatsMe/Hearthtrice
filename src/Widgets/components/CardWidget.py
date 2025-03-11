@@ -145,6 +145,22 @@ class CardWidget(QWidget):
         else:
             self.card_label.setPixmap(self.pixmap_small)
 
+    def setHighlightedPing(self, times: int):
+        delay_off = 250
+        delay_on = 500
+
+        self.setHighlighted(True)
+
+        for i in range(times):
+            QTimer.singleShot(delay_off, lambda state=False: self.setHighlighted(state))
+            
+            QTimer.singleShot(delay_on, lambda state=True: self.setHighlighted(state))
+            
+            delay_off += 750
+            delay_on += 750 
+
+        QTimer.singleShot(delay_off, lambda: self.setHighlighted(False))
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.pressPos = event.pos()
