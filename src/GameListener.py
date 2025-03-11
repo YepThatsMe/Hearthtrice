@@ -1,6 +1,7 @@
 import os
 import time
 import re
+import random
 
 from Widgets.LibraryView import LibraryView
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
@@ -36,7 +37,7 @@ class Helpers:
 
         numbers = [int(num) for num in re.findall(r'\d+', content)]
 
-        random_id = self.library.get_random_card_among_ids(numbers)
+        random_id = random.choice(numbers)
 
         if not random_id:
             print("process_rnd_with_ids:: random card ID = 0")
