@@ -568,5 +568,10 @@ class LibraryView(QFrame):
         
         os.startfile(exe_path)        
 
+    def respond_on_game_request(self, card_name: str):
+        for card_widget in self.card_widgets + self.std_card_widgets:
+            if card_widget.metadata.name == card_name:
+                pass
+
     def resizeEvent(self, a0) -> None:
         return super().resizeEvent(a0)

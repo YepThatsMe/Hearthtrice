@@ -73,6 +73,7 @@ class CardMetadata:
     istoken: bool
     tokens: str
     comment: str
+    command: str
 
     picture: bytes
     move_x: int    

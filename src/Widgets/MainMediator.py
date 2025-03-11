@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import QSize
 
 from CacheManager import CacheManager
+from GameListener import GameListener
 import resources
 from Widgets.ArenaView import ArenaView
 from Widgets.LibraryView import LibraryView
@@ -21,6 +22,7 @@ class MainMediator(QMainWindow):
         self.setWindowIcon(QIcon(':icons/icon.ico'))
         self.setWindowTitle('HearthTrice Manager')
         self.data_presenter = DataPresenter()
+        self.game_listener = GameListener()
 
         self.bool = True
         
@@ -42,6 +44,8 @@ class MainMediator(QMainWindow):
             lambda: send_to_thread(self, self.data_presenter.get_decks, self.update_decks))
         self.library_view.edit_card_requested.connect(self.on_edit_card_requested_A)
         self.library_view.delete_card_requested.connect(self.on_delete_card_requested)
+
+        self.game_listener.card_from_library_requested.connect(self.library_view.respond_on_game_request)
 
         self.connection_settings.settings_button.button.clicked.connect(self.on_settings_clicked)
         self.connection_settings.connection_response_received.connect(self.library_view.update)

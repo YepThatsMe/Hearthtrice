@@ -66,6 +66,7 @@ class CacheManager:
                                             "istoken": meta.istoken,
                                             "tokens": meta.tokens,
                                             "comment": meta.comment,
+                                            "command": meta.command,
                                             "hash": meta.hash }
                 
             self.__save_local_hashlist(local_hahslist)

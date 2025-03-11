@@ -62,7 +62,7 @@ class Communication:
             print("Connection is not established.")
             return
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, card_image, hash FROM {TABLE} where card_image is not null;
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash FROM {TABLE} where card_image is not null;
         """
 
         try:
@@ -82,7 +82,7 @@ class Communication:
             return Response(False, "Empty ID list")
         
         placeholders = ", ".join("?" for _ in ids)
-        query = f"SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, card_image, hash FROM {TABLE} WHERE id IN ({placeholders}) and card_image is not null"
+        query = f"SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash FROM {TABLE} WHERE id IN ({placeholders}) and card_image is not null"
 
         try:
             self.cursor.execute(query, ids)
@@ -131,7 +131,7 @@ class Communication:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
         query = f"""
-        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, picture, move_x, move_y, zoom, card_image, hash)
+        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, picture, move_x, move_y, zoom, card_image, hash)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
         # Параметры (кроме id) передаются в execute в виде кортежа
@@ -147,6 +147,7 @@ class Communication:
                     metadata.istoken,
                     metadata.tokens,
                     metadata.comment,
+                    metadata.command,
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,
@@ -183,6 +184,7 @@ class Communication:
                 istoken = ?,
                 tokens = ?,
                 comment = ?,
+                command = ?,
                 picture = ?,
                 move_x = ?,
                 move_y = ?,
@@ -203,6 +205,7 @@ class Communication:
                     metadata.istoken,
                     metadata.tokens,
                     metadata.comment,
+                    metadata.command,
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,

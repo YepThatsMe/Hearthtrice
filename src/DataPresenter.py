@@ -45,8 +45,9 @@ class DataPresenter(QObject):
             meta.istoken = params_list[10]
             meta.tokens = params_list[11]
             meta.comment = params_list[12]
-            meta.card_image = params_list[13]
-            meta.hash = params_list[14]
+            meta.command = params_list[13]
+            meta.card_image = params_list[14]
+            meta.hash = params_list[15]
             library.append(meta)
         return library
     
@@ -163,49 +164,3 @@ class DataPresenter(QObject):
         
     def delete_card(self, metadata: CardMetadata) -> Response:
         return self.comm.delete_card(metadata)
-
-
-
-
-    # def post_library(self, library: dict, backup=True):
-
-    #     library_json = json.dumps(library, indent=2, cls=BytesEncoder)
-    #     lib_hash = hash_library(library_json)
-
-    #     buffer = io.BytesIO()
-    #     buffer.write(library_json.encode('utf-8'))
-
-    #     if backup:
-    #         self.comm.back_up_file(self.LIBRARY_FILE_ID)
-
-    #     new_name = "library-" + lib_hash + "-.json"
-    #     self.comm.update_file(self.LIBRARY_FILE_ID, buffer, new_name=new_name)
-
-    #     buffer.close()
-
-
-    # def get_library(self) -> dict:
-    #     """
-    #     Returns a library with images in base64.
-    #     """
-    #     file = self.comm.download_file(self.LIBRARY_FILE_ID).decode('utf-8')
-    #     return json.loads(file)
-    
-    # def get_library_decoded(self) -> dict:
-    #     """
-    #     Returns a library with images in binary.
-    #     """
-    #     library = self.get_library()
-    #     for k, v in library.items():
-    #         if "picture" in v:
-    #             v["picture"] = base64_to_bytes(v["picture"])
-    #         if "card_image" in v:
-    #             v["card_image"] = base64_to_bytes(v["card_image"])
-
-    #     return library
-
-    # def find_library_id(self) -> dict:
-    #     files = self.comm.list_files()
-    #     for k, v in files.items():
-    #         if 'library' in v['name']:
-    #             return k

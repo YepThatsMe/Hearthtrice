@@ -78,6 +78,10 @@ class FormView(QFrame):
         self.tokenstable_label = FormLabel("Токены", self)
         self.tokenstable_form = TokensTable(self)
 
+        self.activation_command_label = FormLabel("Команда активации", self)
+        self.activation_command_line = QLineEdit(self)
+        self.activation_command_line.setPlaceholderText("Команда активации")
+
         ###
         self.form_layout1.addWidget(self.name_label)
         self.form_layout1.addWidget(self.name_form)
@@ -119,6 +123,9 @@ class FormView(QFrame):
         self.form_layout2.addWidget(self.tokenstable_label)
         self.form_layout2.addWidget(self.tokenstable_form)
 
+        self.form_layout2.addWidget(self.activation_command_label)
+        self.form_layout2.addWidget(self.activation_command_line)
+
         self.form_layout.addLayout(self.form_layout1)
         self.form_layout.addLayout(self.form_layout2)
 
@@ -142,6 +149,7 @@ class FormView(QFrame):
             "health": self.health_form.value(),
             "tribe": self.tribe_form.text(),
             "comment": self.comment_form.toPlainText(),
+            "command": self.activation_command_line.text(),
             "istoken": self.istoken_form.isChecked,
             "tokens": self.tokenstable_form.get_tokens_string()
         }
@@ -168,5 +176,6 @@ class FormView(QFrame):
         self.rarity_form.setCurrentIndex(0)
         self.tribe_form.setText("")
         self.comment_form.setText("")
+        self.activation_command_line.setText("")
         self.tokenstable_form.clear()
         self.istoken_form.setChecked(False)

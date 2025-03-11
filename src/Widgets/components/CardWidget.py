@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMenu, QAction
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMenu, QAction, QSpacerItem
 from PyQt5.QtCore import QTimer, Qt, QRect
 from PyQt5.QtGui import QIcon, QMouseEvent, QPixmap, QColor, QPainter, QCursor
 from PyQt5.QtCore import pyqtSignal
@@ -16,6 +16,10 @@ class PreviewPopup(QWidget):
 
         self.id_label = QLabel("ID: ", self)
         self.id_label.setStyleSheet("font-size: 11pt; font-weight: bold")
+        
+        self.tokens_label = QLabel("", self)
+        self.tokens_label.setStyleSheet("font-size: 9pt;")
+
         self.note_label = QLabel("Заметка: ", self)
         self.note_label.setWordWrap(True)
 
@@ -25,17 +29,24 @@ class PreviewPopup(QWidget):
         layout.addWidget(self.label)
         layout.addLayout(text_layout)
 
-        text_layout.addWidget(self.id_label, stretch=1)
-        text_layout.addWidget(self.note_label, stretch=5)
+        text_layout.addWidget(self.id_label)
+        text_layout.addWidget(self.tokens_label)
+        text_layout.addSpacerItem(QSpacerItem(0, 50))
+        text_layout.addWidget(self.note_label)
+        text_layout.addStretch()
         
         self.setLayout(layout)
 
         self.setMaximumWidth(600)
 
-    def set_content(self, pixmap: QPixmap, obj_id: int, note: str):
+    def set_content(self, pixmap: QPixmap, obj_id: int, note: str, tokens: str):
         self.label.setPixmap(pixmap)
 
         self.id_label.setText(f"ID: {obj_id}")
+
+        self.tokens_label.setText(f"Tokens: {tokens}")
+        self.tokens_label.setVisible(bool(tokens))
+
         self.note_label.setText(f"{note}")
         self.note_label.setVisible(bool(note))
 
@@ -121,7 +132,7 @@ class CardWidget(QWidget):
             Qt.KeepAspectRatio, 
             Qt.SmoothTransformation
         )
-        self.preview_popup.set_content(scaled_pixmap, self.metadata.id, self.metadata.comment)
+        self.preview_popup.set_content(scaled_pixmap, self.metadata.id, self.metadata.comment, self.metadata.tokens)
         cursor_pos = QCursor.pos()
         self.preview_popup.move(cursor_pos.x() + 10, cursor_pos.y() + 10)
         self.preview_popup.show()
