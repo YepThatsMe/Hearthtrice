@@ -44,6 +44,9 @@ class MainMediator(QMainWindow):
         self.library_view.edit_card_requested.connect(self.on_edit_card_requested_A)
         self.library_view.delete_card_requested.connect(self.on_delete_card_requested)
 
+        self.game_listener.switch_to_library.connect(
+            lambda: self.stacked_widget.setCurrentIndex(1))
+
         self.connection_settings.settings_button.button.clicked.connect(self.on_settings_clicked)
         self.connection_settings.connection_response_received.connect(self.library_view.update)
 

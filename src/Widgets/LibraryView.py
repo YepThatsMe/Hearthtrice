@@ -16,7 +16,6 @@ from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
 from DataTypes import CardMetadata, Deck, Response, CardType, Rarity, ClassType, StdMetadata
 from utils.XMLGenerator import XMLGenerator
-from GameListener import GameListener
 from utils.string import sanitize
 
 class ExportThread(QThread):
@@ -602,10 +601,11 @@ class LibraryView(QFrame):
         if classtype != "any": self.classtype_filter.setCurrentIndex(ClassType.get_value(classtype))
         if manacost != "any": self.manacost_filter.setCurrentIndex(int(manacost) + 1)
         if tribe != "any": self.name_filter.setText(tribe)
-        if rarity != "any": self.manacost_filter.setCurrentIndex(Rarity.get_value(rarity))
-        self.standard_only_toggle.setChecked(std_only)
+        if rarity != "any": self.rarity_filter.setCurrentIndex(Rarity.get_value(rarity))
+        self.standard_only_toggle.setChecked(int(std_only))
         
         chosen_id = self.roll()
+        self.reset_filter()
         return chosen_id
 
     def resizeEvent(self, a0) -> None:

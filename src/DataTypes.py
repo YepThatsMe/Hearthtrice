@@ -70,6 +70,8 @@ class Rarity(BaseEnum):
 class CardType(BaseEnum):
     MINION: int = auto()
     SPELL: int = auto()
+    WEAPON: int = auto()
+    HERO: int = auto()
         
 class CardMetadata:
     id: int
