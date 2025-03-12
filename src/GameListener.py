@@ -59,7 +59,7 @@ class Helpers:
         content = match.group(1)
         filter_words = [word.strip() for word in content.split(';')]
 
-        if len(filter_words) != 6:
+        if len(filter_words) != 7:
             print("process_rnd_with_filters:: filter count mismatch")
             return None
         
@@ -67,6 +67,7 @@ class Helpers:
 
         if not random_id:
             print("process_rnd_with_filters:: random card ID = 0")
+            print(*filter_words)
             return None
 
         output_string = re.sub(pattern, str(random_id), input_string)
@@ -202,15 +203,18 @@ class GameListener(QObject):
 
     def process_activation_comand(self, command: str, subcommand_number: int = 0) -> str:
         """
-        Activation command examples:
-        1) hand,5,1,0&table,6,2,0                           - Adds token #5 into hand and summons two tokens #6 on the field
-        2) hand,RND{5,6,7},2,0                              - Randomly chooses one of #5 #6 #7 tokens and adds two copies into hand
-        3) hand,RND[minion,mage,5,mech,legendary,1],1,0     - Add a random 5-cost legendary mage mech minion into hand (1=standard only)
-        4) hand,RND[any,any,5,any,any,0],1,0                - Add a random 5-cost card into your hand (0=custom only)
-        5) hand,5,1,0&table,6,2,0||table,7,1,0              - Activation command 1 or Activation command 2
+        Activation command structure:
+        zone;id or RND[] or RND {};count;nothing
+        RND[TYPE;CLASS;MANA;TRIBE;RARITY;STD_ONLY;NO_TOKENS]
+
+        1) hand;5;1;0&table;6;2;0                           - Adds token #5 into hand AND summons two #6 tokens on the table
+        2) hand;RND{5;6;7};2;0                              - Randomly chooses one of #5 #6 #7 tokens and adds two copies into hand
+        3) hand;RND[minion;mage;5;mech;legendary;1;0];1;0     - Add a random 5-cost legendary mage mech minion into hand (1=standard only) (0=may include tokens)
+        4) hand;RND[any;any;5;any;any;0;1];1;0                - Add a random 5-cost card into your hand (0=custom only) (1=no tokens)
+        5) hand;5;1;0&table;6;2;0||table;7;1;0              - Activation command 1 or Activation command 2
         
         Command then gets converted and sent into Cockatrice client as:
-        hand,Murasame,1,0
+        hand;Murasame;1;0
         """
         command = self.helpers.select_subcommand(command, subcommand_number)
         command = self.helpers.process_rnd_with_ids(command)
@@ -223,8 +227,8 @@ class GameListener(QObject):
 
     def process_filter_command(self, command: str) -> str:
         """
-        Activation command examples:
-        1) hand,RND[any,any,5,any,any,0],1,0                - Add a random 5-cost card into your hand (0=custom only)
+        Filter command examples:
+        1) hand;RND[any;any;5;any;any;0;1];1;0                - Add a random 5-cost card into your hand (0=custom only) (1=no tokens)
         """
         command = self.helpers.process_rnd_with_filters(command)
         command = self.helpers.convert_ids_to_names(command)

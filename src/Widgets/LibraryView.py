@@ -593,9 +593,8 @@ class LibraryView(QFrame):
         return ""
 
     def get_random_card_by_filter(self, cardtype: str, classtype: str, manacost: str,
-                                     tribe: str, rarity: str, std_only: bool) -> int:
+                                     tribe: str, rarity: str, std_only: bool, no_tokens: bool) -> int:
         self.reset_filter()
-        self.no_tokens_toggle.setChecked(True)
 
         if cardtype != "any": self.cardtype_filter.setCurrentIndex(CardType.get_value(cardtype)) 
         if classtype != "any": self.classtype_filter.setCurrentIndex(ClassType.get_value(classtype))
@@ -603,6 +602,7 @@ class LibraryView(QFrame):
         if tribe != "any": self.name_filter.setText(tribe)
         if rarity != "any": self.rarity_filter.setCurrentIndex(Rarity.get_value(rarity))
         self.standard_only_toggle.setChecked(int(std_only))
+        self.no_tokens_toggle.setChecked(int(no_tokens))
         
         chosen_id = self.roll()
         self.reset_filter()
