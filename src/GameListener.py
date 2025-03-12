@@ -23,27 +23,25 @@ class Helpers:
     def process_rnd_with_ids(self, input_string: str) -> str:
         if not input_string:
             return None
-        pattern = r'RND\{\s*([\d\s;]+)\s*\}' 
-        match = re.search(pattern, input_string)
 
-        if not match:
-            return input_string
+        pattern = r'RND\{\s*([\d\s;]+)\s*\}'
 
-        content = match.group(1)
+        def replace_rnd(match):
+            content = match.group(1)
+            if not re.fullmatch(r'[\d\s;]+', content):
+                print("process_rnd_with_ids:: wrong pattern", content)
+                return None
 
-        if not re.fullmatch(r'[\d\s;]+', content):
-            print("process_rnd_with_ids:: wrong pattern", content)
-            return None
+            numbers = [int(num) for num in re.findall(r'\d+', content)]
+            random_id = random.choice(numbers)
 
-        numbers = [int(num) for num in re.findall(r'\d+', content)]
+            if not random_id:
+                print("process_rnd_with_ids:: random card ID = 0")
+                return None
 
-        random_id = random.choice(numbers)
+            return str(random_id)
 
-        if not random_id:
-            print("process_rnd_with_ids:: random card ID = 0")
-            return None
-
-        output_string = re.sub(pattern, str(random_id), input_string)
+        output_string = re.sub(pattern, replace_rnd, input_string)
 
         return output_string
     
