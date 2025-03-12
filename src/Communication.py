@@ -132,7 +132,7 @@ class Communication:
             return Response(False, "Подключение не установлено.")
         query = f"""
         INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, picture, move_x, move_y, zoom, card_image, hash)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
         # Параметры (кроме id) передаются в execute в виде кортежа
         params = (  metadata.name,
