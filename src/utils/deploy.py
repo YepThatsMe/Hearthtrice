@@ -65,6 +65,15 @@ def remote_prepare_build(remote_user, remote_host):
     ]
     subprocess.run(ssh_cmd, check=True)
 
+def remote_clean_app(remote_user, remote_host, app_name):
+    # Очистка только конкретного приложения
+    ssh_cmd = [
+        "ssh",
+        f"{remote_user}@{remote_host}",
+        f"rm -rf ~/hearth-build/{app_name} ~/hearth-build/version*.json"
+    ]
+    subprocess.run(ssh_cmd, check=True)
+
 def scp_deploy(source_dir, arcname, version_json, remote_user="user", remote_host="host"):
     """
     Архивирует всю папку source_dir в tar.gz (arcname - имя подпапки), отправляет архив и version.json на сервер,
@@ -141,7 +150,15 @@ if __name__ == "__main__":
             break
         print("Неверный ввод. Введите 1, 2 или 3.")
     
-    remote_prepare_build(REMOTE_USER, REMOTE_HOST)
+    if choice == '3':
+        # Очистка всего hearth-build для обоих приложений
+        remote_prepare_build(REMOTE_USER, REMOTE_HOST)
+    elif choice == '1':
+        # Очистка только Hearthtrice
+        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Hearthtrice")
+    elif choice == '2':
+        # Очистка только Cockatrice
+        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Cockatrice")
 
     if choice in ['1', '3']:
         # Hearthtrice
