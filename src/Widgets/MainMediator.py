@@ -3,6 +3,7 @@ from typing import List, Tuple
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QMessageBox, QPushButton, QLineEdit, QLabel, QDialog, QHBoxLayout, QVBoxLayout, QWidget, QApplication, QAction, QStackedWidget, QTabWidget, QSizePolicy, QTabBar
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import QSize
+from main import VERSION_MINOR, VERSION_MAJOR
 
 from CacheManager import CacheManager
 from GameListener import GameListener
@@ -20,7 +21,7 @@ class MainMediator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon(':icons/icon.ico'))
-        self.setWindowTitle('HearthTrice Manager')
+        self.setWindowTitle(f'Hearthtrice Manager {VERSION_MAJOR}.{VERSION_MINOR}')
         self.data_presenter = DataPresenter()
 
         self.bool = True

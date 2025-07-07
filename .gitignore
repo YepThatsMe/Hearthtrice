@@ -12,7 +12,6 @@ changelog_report.txt
 *.xml
 *.cod
 *.spec
-deploy.py
 test.py
 CHANGELOG.md
 src/resources.py
