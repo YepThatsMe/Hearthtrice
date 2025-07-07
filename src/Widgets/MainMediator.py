@@ -48,7 +48,7 @@ class MainMediator(QMainWindow):
             lambda: self.stacked_widget.setCurrentIndex(1))
 
         self.connection_settings.settings_button.button.clicked.connect(self.on_settings_clicked)
-        self.connection_settings.connection_response_received.connect(self.library_view.update)
+        self.connection_settings.connection_response_received.connect(self.on_connection_response_received)
 
     def set_up_ui(self):
         self.connection_settings = ConnectionSettingsDialog(self.data_presenter, self)
@@ -86,6 +86,12 @@ class MainMediator(QMainWindow):
 
         self.central_widget.setLayout(self.gen_layout)
         self.setCentralWidget(self.central_widget)
+
+    def on_connection_response_received(self, response: Response):
+        if response.ok:
+            self.library_view.update()
+        else:
+            QMessageBox.warning(None, "Ошибка", "Не удалось подключиться к серверу: " + response.msg)
 
     def on_hashes_received(self, hashlist: List[dict]):
         ids_to_request = self.cache_manager.get_discrepant_ids(hashlist)

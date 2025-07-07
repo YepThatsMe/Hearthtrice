@@ -6,7 +6,7 @@ from Widgets.components.SettingsButton import SettingsButton
 from DataTypes import Response
 
 class ConnectionSettingsDialog(QDialog):
-    connection_response_received = pyqtSignal()
+    connection_response_received = pyqtSignal(object)
     def __init__(self, data_presenter: DataPresenter, parent=None):
         super(ConnectionSettingsDialog, self).__init__(parent)
         self.data_presenter = data_presenter
@@ -75,6 +75,8 @@ class ConnectionSettingsDialog(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Ошибка", "Ошибка подключения: " + response.msg)
+            
+        self.parent().library_view.setEnabled(response.ok)
 
 
     def connect_action(self) -> Response:

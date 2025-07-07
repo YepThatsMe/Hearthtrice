@@ -4,7 +4,7 @@ import io
 import json
 import hashlib
 
-from Communication import Communication
+from Communication import CommunicationPostgres
 from utils.BytesEncoder import BytesEncoder, base64_to_bytes, hash_library
 from DataTypes import CardMetadata, Deck, DeckCard, Response
 
@@ -13,7 +13,7 @@ class DataPresenter(QObject):
     def __init__(self) -> None:
         super().__init__()
         self.login = ""
-        self.comm = Communication()
+        self.comm = CommunicationPostgres()
 
     def get_library(self, ids: List[int] = None) -> List[CardMetadata]:
         if not self.comm.is_connected:
