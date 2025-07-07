@@ -4,7 +4,7 @@ import shutil
 import os
 from src.main import VERSION_MAJOR, VERSION_MINOR
 
-app_name = f"HearthTrice {VERSION_MAJOR}.{VERSION_MINOR}"
+app_name = f"HearthTrice-{VERSION_MAJOR}.{VERSION_MINOR}"
 
 pyinstaller_args = [
     'src/main.py',

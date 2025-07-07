@@ -27,6 +27,7 @@ class MainMediator(QMainWindow):
         
         self.set_up_ui()
         self.set_up_connections()
+        self.center()
 
     def set_up_connections(self):
         self.card_builder_view.upload_requested.connect(self.upload_card)
@@ -86,6 +87,14 @@ class MainMediator(QMainWindow):
 
         self.central_widget.setLayout(self.gen_layout)
         self.setCentralWidget(self.central_widget)
+
+    def center(self):
+        screen = QDesktopWidget().availableGeometry()
+        screen_width = screen.width()
+        screen_height = screen.height()
+        x = (screen_width - 1100) // 2
+        y = (screen_height - 800) // 2
+        self.setGeometry(x, y, 1100, 800)
 
     def on_connection_response_received(self, response: Response):
         if response.ok:
