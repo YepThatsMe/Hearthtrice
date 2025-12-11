@@ -340,14 +340,15 @@ class ArenaView(QFrame):
         if not response.ok:
             QMessageBox.warning(self, "Ошибка", response.msg)
             return
-        
-        if metadata.tokens:
-            token_card_ids = list(map(int, metadata.tokens.split(',')))
-            for card_id in token_card_ids:
-                token_meta = self.library_view.get_card_metadata_by_id(card_id, deck_fields_only=True)
-                if not token_meta:
-                    continue
-                self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, True)
+
+        ### Sideboard is temporarily disabled
+        # if metadata.tokens:
+        #     token_card_ids = list(map(int, metadata.tokens.split(',')))
+        #     for card_id in token_card_ids:
+        #         token_meta = self.library_view.get_card_metadata_by_id(card_id, deck_fields_only=True)
+        #         if not token_meta:
+        #             continue
+        #         self.deck_view.add_item(card_id, token_meta.name, token_meta.manacost, True)
 
         self.round += 1
         self.progress_bar.setValue(self.round)
