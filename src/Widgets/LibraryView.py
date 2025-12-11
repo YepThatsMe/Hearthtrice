@@ -1,7 +1,5 @@
-from genericpath import isdir, isfile
 import os
 import random
-from turtle import isvisible
 from typing import List
 import json
 
@@ -67,6 +65,7 @@ class LibraryView(QFrame):
         self.std_original_positions= {}
         self.deck_view = DeckView()
         self.settings = QSettings("HearthTrice")
+        self.pending_initial_filter = False
         self.set_up_ui()
         self.set_up_connections()
 
@@ -184,7 +183,28 @@ class LibraryView(QFrame):
         else:
             self.stack.setCurrentIndex(0)
 
+    def _apply_initial_filter(self):
+        if not self.isVisible():
+            return
+        self.pending_initial_filter = False
+        for row in range(self.main_gallery_grid.grid_layout.rowCount()):
+            self.main_gallery_grid.grid_layout.setRowMinimumHeight(row, 280)
+        self.main_gallery_grid.updateGeometry()
+        QApplication.processEvents()
+        self.on_filter_changed()
+    
     def on_filter_changed(self):
+        main_scrollbar = self.main_gallery_grid.scrollArea.verticalScrollBar()
+        std_scrollbar = self.std_gallery_grid.scrollArea.verticalScrollBar()
+        
+        main_old_value = main_scrollbar.value()
+        main_old_max = main_scrollbar.maximum()
+        main_ratio = main_old_value / main_old_max if main_old_max > 0 else 0
+        
+        std_old_value = std_scrollbar.value()
+        std_old_max = std_scrollbar.maximum()
+        std_ratio = std_old_value / std_old_max if std_old_max > 0 else 0
+        
         pos = 0
         for card in self.card_widgets:
             if self.filter_is_empty():
@@ -200,6 +220,18 @@ class LibraryView(QFrame):
                     pos+=1
                 else:
                     card.setVisible(False)
+        
+        for row in range(self.main_gallery_grid.grid_layout.rowCount()):
+            self.main_gallery_grid.grid_layout.setRowMinimumHeight(row, 0)
+        
+        max_row_main = -1
+        for i in range(self.main_gallery_grid.grid_layout.count()):
+            item = self.main_gallery_grid.grid_layout.itemAt(i)
+            if item and item.widget() and item.widget().isVisible():
+                row, col, _, _ = self.main_gallery_grid.grid_layout.getItemPosition(i)
+                max_row_main = max(max_row_main, row)
+                self.main_gallery_grid.grid_layout.setRowMinimumHeight(row, 280)
+        
         pos = 0
         for card in self.std_card_widgets:
             if self.filter_is_empty():
@@ -215,10 +247,28 @@ class LibraryView(QFrame):
                     pos+=1
                 else:
                     card.setVisible(False)
+        
+        for row in range(self.std_gallery_grid.grid_layout.rowCount()):
+            self.std_gallery_grid.grid_layout.setRowMinimumHeight(row, 0)
+        
+        max_row_std = -1
+        for i in range(self.std_gallery_grid.grid_layout.count()):
+            item = self.std_gallery_grid.grid_layout.itemAt(i)
+            if item and item.widget() and item.widget().isVisible():
+                row, col, _, _ = self.std_gallery_grid.grid_layout.getItemPosition(i)
+                max_row_std = max(max_row_std, row)
+                self.std_gallery_grid.grid_layout.setRowMinimumHeight(row, 130)
+        
+        QApplication.processEvents()
+        
         if self.standard_only_toggle.isChecked:
-            self.std_gallery_grid.scrollToTop()
+            std_new_max = std_scrollbar.maximum()
+            if std_new_max > 0:
+                std_scrollbar.setValue(int(std_ratio * std_new_max))
         else:
-            self.main_gallery_grid.scrollToTop()
+            main_new_max = main_scrollbar.maximum()
+            if main_new_max > 0:
+                main_scrollbar.setValue(int(main_ratio * main_new_max))
 
     def filter_is_empty(self) -> bool:
         is_empty = True
@@ -323,11 +373,15 @@ class LibraryView(QFrame):
 
             self.card_widgets.append(card_widget)
             pos+=1
-            
+        
         if not self.no_tokens_toggle.isChecked:
+            self.no_tokens_toggle.blockSignals(True)
             self.no_tokens_toggle.toggleState()
-        for row in range(self.main_gallery_grid.grid_layout.rowCount()):
-            self.main_gallery_grid.grid_layout.setRowMinimumHeight(row, 280)
+            self.no_tokens_toggle.blockSignals(False)
+        
+        self.pending_initial_filter = True
+        if self.isVisible():
+            QTimer.singleShot(50, self._apply_initial_filter)
         self.set_loading(False)
         print("LibraryView updated")
 
@@ -612,5 +666,11 @@ class LibraryView(QFrame):
         self.reset_filter()
         return chosen_id
 
+    def showEvent(self, event):
+        super().showEvent(event)
+        if self.pending_initial_filter:
+            self.pending_initial_filter = False
+            QTimer.singleShot(50, self._apply_initial_filter)
+    
     def resizeEvent(self, a0) -> None:
         return super().resizeEvent(a0)
