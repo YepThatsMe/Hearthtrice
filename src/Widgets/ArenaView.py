@@ -53,7 +53,7 @@ class ArenaView(QFrame):
         self.deck_view.load_deck_button.hide()
         self.deck_view.save_button.hide()
 
-        self.max_cards = 40
+        self.max_cards = 30
         self.round = 0
         self.chosen_classtype = None
         self.filtered_library = []
@@ -94,7 +94,7 @@ class ArenaView(QFrame):
         self.card_count_slider = QSlider(self)
         self.card_count_slider.setOrientation(Qt.Horizontal)
         self.card_count_slider.setTickPosition(QSlider.TicksAbove)
-        self.card_count_slider.setRange(30, 60)
+        self.card_count_slider.setRange(10, 60)
         self.card_count_slider.setSingleStep(1)
         self.card_count_slider.setValue(self.max_cards)
         self.card_count_slider.setMaximumWidth(200)
