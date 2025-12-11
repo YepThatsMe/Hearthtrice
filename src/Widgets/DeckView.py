@@ -361,9 +361,11 @@ class DeckView(QWidget):
         new_deck.id = deck_id
         new_deck.name = deck_name
         new_deck.owner = owner
+        new_deck.cards = []
 
         self.current_deck = new_deck
         self.current_deck_label.setText(f"ID: {deck_id}\t {deck_name}\t[{owner}]")
+        self.clear()
 
     def set_updated_decks(self, decks: List[Deck]):
         self.deck_list_dialog.populate_list(decks)

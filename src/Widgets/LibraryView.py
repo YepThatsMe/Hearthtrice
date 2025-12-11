@@ -466,7 +466,7 @@ class LibraryView(QFrame):
         self.deck_view.set_updated_decks(decks)
             
     def get_card_metadata_by_id(self, id: int, deck_fields_only: bool = False) -> CardMetadata:
-        for card_widget in self.card_widgets:
+        for card_widget in self.card_widgets + self.std_card_widgets:
             if card_widget.metadata.id == id:
                 if not deck_fields_only:
                     return card_widget.metadata
