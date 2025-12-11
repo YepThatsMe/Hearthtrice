@@ -8,6 +8,7 @@ import os
 from DataTypes import Deck, DeckCard, Response
 from utils.XMLGenerator import XMLGenerator
 from Widgets.components.DeckListDialog import DeckListDialog
+from Widgets.components.NotificationWidget import NotificationWidget
 
 
 class MyTreeWidgetItem(QTreeWidgetItem):    
@@ -312,7 +313,9 @@ class DeckView(QWidget):
 
     def update_deck(self):
         if not self.current_deck:
-            return QMessageBox.warning(self, "Ошибка", "Колода не выбрана")
+            parent_window = self.window()
+            NotificationWidget(parent_window, "Колода не выбрана", "warning")
+            return
 
         string_deck = self.tree_widget.current_decktree_to_str()
         if(QMessageBox.question(self, "Сохранение", f"Колода {self.current_deck.id}: '{self.current_deck.name.upper()}' будет перезаписана. Сохранить?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes):
@@ -393,7 +396,9 @@ class DeckView(QWidget):
     
     def export_items(self):
         if not self.current_deck:
-            return QMessageBox.warning(self, "Ошибка", "Колода не выбрана")
+            parent_window = self.window()
+            NotificationWidget(parent_window, "Колода не выбрана", "warning")
+            return
         deck = self.get_current_rich_deck()
 
         game_dir  = self.settings.value("path")
@@ -409,7 +414,8 @@ class DeckView(QWidget):
         os.startfile(decks_dir) # Windows only
         XMLGenerator.generate_xml_deck(full_deck_path, deck)
 
-        QMessageBox.information(self, "Готово", f"Колода {deck.name.upper()} выгружена.")
+        parent_window = self.window()
+        NotificationWidget(parent_window, f"Колода {deck.name.upper()} выгружена.", "success")
     
     def clear(self):
         self.tree_widget.clear()

@@ -16,6 +16,7 @@ from Widgets.CardBuilderView import CardBuilderView
 
 from DataTypes import CardMetadata, Deck, Response
 from Widgets.components.ConnectionSettings import ConnectionSettingsDialog
+from Widgets.components.NotificationWidget import NotificationWidget
 
 class MainMediator(QMainWindow):
     def __init__(self):
@@ -101,7 +102,7 @@ class MainMediator(QMainWindow):
         if response.ok:
             self.library_view.update()
         else:
-            QMessageBox.warning(None, "Ошибка", "Не удалось подключиться к серверу: " + response.msg)
+            NotificationWidget(self, f"Ошибка подключения: {response.msg}", "error")
 
     def on_hashes_received(self, hashlist: List[dict]):
         ids_to_request = self.cache_manager.get_discrepant_ids(hashlist)
@@ -131,15 +132,25 @@ class MainMediator(QMainWindow):
 
     def on_deck_updated(self, response: Response):
         if response.ok:
-            QMessageBox.information(None, "Сохранено", "Колода успешно обновлена.")
+            deck_name = ""
+            if self.library_view.deck_view.current_deck:
+                deck_name = self.library_view.deck_view.current_deck.name.upper()
+            
+            if deck_name:
+                NotificationWidget(self, f"Колода {deck_name} успешно обновлена.", "success", deck_name)
+            else:
+                NotificationWidget(self, "Колода успешно обновлена.", "success")
         else:
-            QMessageBox.warning(None, "Ошибка", "Не удалось обновить колоду: " + response.msg)
+            NotificationWidget(self, f"Ошибка: {response.msg}", "error")
 
 
     def on_settings_clicked(self):
         self.connection_settings.show()
 
-    def update_decks(self, decks: List[Deck]):
+    def update_decks(self, decks):
+        if isinstance(decks, Response):
+            NotificationWidget(self, f"Ошибка загрузки колод: {decks.msg}", "error")
+            return
         if not decks:
             return
         self.library_view.set_updated_decks(decks)
@@ -148,9 +159,9 @@ class MainMediator(QMainWindow):
         response = self.data_presenter.upload_card(metadata)
         if response.ok:
             self.library_view.update_uploaded_card(metadata)
-            QMessageBox.information(None, "Информация", "Карта загружена в библиотеку.")
+            NotificationWidget(self, "Карта загружена в библиотеку.", "success")
         else:
-            QMessageBox.warning(None, "Предупреждение", response.msg)
+            NotificationWidget(self, f"Ошибка: {response.msg}", "error")
 
 
     def upload_edit_card(self, metas: Tuple[CardMetadata]):
@@ -158,9 +169,9 @@ class MainMediator(QMainWindow):
         if response.ok:
             self.data_presenter.upload_edit_changelog(metas[0], metas[1])
             self.library_view.update_edited_card(metas[0])
-            QMessageBox.information(None, "Информация", "Карта изменена.")
+            NotificationWidget(self, "Карта изменена.", "success")
         else:
-            QMessageBox.warning(None, "Предупреждение", response.msg)
+            NotificationWidget(self, f"Ошибка: {response.msg}", "error")
 
     def upload_edit_card_changelog(self, metadata: CardMetadata, old_metadata: CardMetadata = None):
         response = self.data_presenter.upload_edit_card(metadata, old_metadata)
@@ -204,9 +215,9 @@ class MainMediator(QMainWindow):
         if response.ok:
             self.cache_manager.delete_from_cache(metadata.id)
             self.library_view.update()
-            QMessageBox.information(None, "Информация", "Карта удалена.")
+            NotificationWidget(self, "Карта удалена.", "success")
         else:
-            QMessageBox.warning(None, "Предупреждение", response.msg)
+            NotificationWidget(self, f"Ошибка: {response.msg}", "error")
 
     # def f(self, c=None, d='r'):
     #     print(c,d)

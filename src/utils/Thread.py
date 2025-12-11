@@ -1,4 +1,5 @@
 from PyQt5.QtCore import QThread, pyqtSignal, QLockFile
+from DataTypes import Response
 
 
 def send_to_thread(parent, func, handler=None, args=None, kwargs=None):
@@ -19,7 +20,11 @@ class Thread(QThread):
         self.kwargs = kwargs if kwargs else {}
 
     def run(self):
-        data = self.to_run(*self.args, **self.kwargs)
-        self.finished.emit(data)
-
-        self.quit()
+        try:
+            data = self.to_run(*self.args, **self.kwargs)
+            self.finished.emit(data)
+        except Exception as e:
+            error_msg = f"Ошибка: {str(e)}"
+            self.finished.emit(Response(False, error_msg))
+        finally:
+            self.quit()

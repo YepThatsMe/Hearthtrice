@@ -14,6 +14,7 @@ from Widgets.components.ScrollableGrid import ScrollableGrid
 
 from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
+from Widgets.components.NotificationWidget import NotificationWidget
 from DataTypes import CardMetadata, ClassType, Deck, Rarity, Response, StdMetadata
 from utils.XMLGenerator import XMLGenerator
 
@@ -338,7 +339,8 @@ class ArenaView(QFrame):
     def on_card_clicked(self, metadata: CardMetadata):
         response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost, metadata.istoken)
         if not response.ok:
-            QMessageBox.warning(self, "Ошибка", response.msg)
+            main_window = self.window()
+            NotificationWidget(main_window, response.msg, "warning")
             return
 
         ### Sideboard is temporarily disabled

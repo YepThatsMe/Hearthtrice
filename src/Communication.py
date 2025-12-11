@@ -18,6 +18,13 @@ class CommunicationPostgres:
         self.connection = None
         self.cursor = None
         self.is_connected = False
+    
+    def _safe_rollback(self):
+        try:
+            if self.connection and not self.connection.closed:
+                self._safe_rollback()
+        except:
+            pass
 
     def set_connection(self, server: str, login: str, password: str, database: str = None, port: str = None) -> Response:
         self.server, self.login, self.password = server, login, password
@@ -63,7 +70,7 @@ class CommunicationPostgres:
             return rows
         except psycopg2.Error as e:
             print(f"Fetch cards error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return []
 
     def fetch_cards_by_ids(self, ids: List[int]) -> List[tuple]:
@@ -83,7 +90,7 @@ class CommunicationPostgres:
             return rows
         except psycopg2.Error as e:
             print(f"Fetch cards error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return []
 
     def fetch_edit_data_by_id(self, id: int) -> tuple:
@@ -103,7 +110,7 @@ class CommunicationPostgres:
             return rows[0] if rows else None
         except psycopg2.Error as e:
             print(f"Fetch cards error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return None
 
     def fetch_all_hashes(self) -> List[tuple]:
@@ -121,7 +128,7 @@ class CommunicationPostgres:
             return rows
         except psycopg2.Error as e:
             print(f"Fetch hashes error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return []
 
     def upload_card(self, metadata: CardMetadata) -> Response:
@@ -160,7 +167,7 @@ class CommunicationPostgres:
             return Response(True)
         except psycopg2.Error as e:
             print(f"Insert error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return Response(False, str(e))
 
     def upload_edit_card(self, metadata: CardMetadata) -> Response:
@@ -219,7 +226,7 @@ class CommunicationPostgres:
             return Response(True)
         except psycopg2.Error as e:
             print(f"Update error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return Response(False, str(e))
 
     def upload_edit_changelog(self, metadata: CardMetadata, old_metadata: CardMetadata) -> Response:
@@ -254,7 +261,7 @@ class CommunicationPostgres:
             return Response(True)
         except psycopg2.Error as e:
             print(f"Update error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return Response(False, str(e))
 
     def delete_card(self, metadata: CardMetadata) -> Response:
@@ -272,7 +279,7 @@ class CommunicationPostgres:
             return Response(True)
         except psycopg2.Error as e:
             print(f"Deletion error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return Response(False, str(e))
 
     def create_new_deck(self, deck_name: str, owner: str) -> int:
@@ -292,7 +299,7 @@ class CommunicationPostgres:
             return int(deck_id)
         except psycopg2.Error as e:
             print(f"Fetch decks error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return None
 
     def fetch_all_decks(self) -> List[tuple]:
@@ -309,7 +316,7 @@ class CommunicationPostgres:
             return rows
         except psycopg2.Error as e:
             print(f"Fetch decks error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return []
 
     def upload_edit_deck(self, id: int, cards_string: str) -> Response:
@@ -329,7 +336,7 @@ class CommunicationPostgres:
             return Response(True)
         except psycopg2.Error as e:
             print(f"Update error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return Response(False, str(e))
 
     def fetch_full_changelog(self, days: int = 0):
@@ -351,7 +358,7 @@ class CommunicationPostgres:
             return rows
         except psycopg2.Error as e:
             print(f"Update error: {e}")
-            self.connection.rollback()
+            self._safe_rollback()
             return []
 
 # Deprecated

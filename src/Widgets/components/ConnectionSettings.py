@@ -3,6 +3,7 @@ from PyQt5.QtCore import QSettings, pyqtSignal, Qt
 from DataPresenter import DataPresenter
 from utils.Thread import send_to_thread
 from Widgets.components.SettingsButton import SettingsButton
+from Widgets.components.NotificationWidget import NotificationWidget
 from DataTypes import Response
 
 class ConnectionSettingsDialog(QDialog):
@@ -70,11 +71,15 @@ class ConnectionSettingsDialog(QDialog):
 
     def on_connect_clicked(self):
         response = self.connect_action()
+        main_window = self.parent()
+        while main_window.parent():
+            main_window = main_window.parent()
+        
         if(response.ok):
-            QMessageBox.information(self, "Подключено", "Соединение установлено.")
+            NotificationWidget(main_window, "Соединение установлено.", "success")
             self.close()
         else:
-            QMessageBox.warning(self, "Ошибка", "Ошибка подключения: " + response.msg)
+            NotificationWidget(main_window, f"Ошибка подключения: {response.msg}", "error")
             
         self.parent().library_view.setEnabled(response.ok)
 
