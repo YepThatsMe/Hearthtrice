@@ -65,12 +65,11 @@ def remote_prepare_build(remote_user, remote_host):
     ]
     subprocess.run(ssh_cmd, check=True)
 
-def remote_clean_app(remote_user, remote_host, app_name):
-    # Очистка только конкретного приложения
+def remote_clean_app(remote_user, remote_host, app_name, version_file):
     ssh_cmd = [
         "ssh",
         f"{remote_user}@{remote_host}",
-        f"rm -rf ~/hearth-build/{app_name} ~/hearth-build/version*.json"
+        f"rm -rf ~/hearth-build/{app_name} ~/hearth-build/{version_file}"
     ]
     subprocess.run(ssh_cmd, check=True)
 
@@ -151,14 +150,11 @@ if __name__ == "__main__":
         print("Неверный ввод. Введите 1, 2 или 3.")
     
     if choice == '3':
-        # Очистка всего hearth-build для обоих приложений
         remote_prepare_build(REMOTE_USER, REMOTE_HOST)
     elif choice == '1':
-        # Очистка только Hearthtrice
-        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Hearthtrice")
+        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Hearthtrice", "version.json")
     elif choice == '2':
-        # Очистка только Cockatrice
-        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Cockatrice")
+        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Cockatrice", "version_cockatrice.json")
 
     if choice in ['1', '3']:
         # Hearthtrice
