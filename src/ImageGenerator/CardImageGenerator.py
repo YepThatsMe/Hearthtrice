@@ -10,6 +10,7 @@ from DataTypes import CardMetadata, CardType, ClassType, Rarity
 from PIL import Image
 from io import BytesIO
 from PyQt5.QtCore import QFile
+import math
 
 import sys, os
 
@@ -42,6 +43,7 @@ class CardImageGenerator:
 
     RESOURCE_FONT_DESCR_PATH = font_base_path + "FRAMDCN.ttf"
     RESOURCE_FONT_DESCR_BOLD_PATH = font_base_path + "FRADMCN.ttf"
+    RESOURCE_FONT_DESCR_ITALIC_PATH = font_base_path + "FRAMDCN.ttf"
 
     BASE_CARD_RESOLUTION = (600,154)
     MAX_NAME_SIZE = 30
@@ -235,6 +237,7 @@ class CardImageGenerator:
 
         font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, 53)
         font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, 53)
+        font_italic = self.get_font_italic(self.RESOURCE_FONT_DESCR_ITALIC_PATH, 53)
 
         lines_of_text = self.text_wrap(text, font_bold, BANNER_WIDTH)
 
@@ -275,12 +278,15 @@ class CardImageGenerator:
 
         font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, FONT_SIZE)
         font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, FONT_SIZE)
+        font_italic = self.get_font_italic(self.RESOURCE_FONT_DESCR_ITALIC_PATH, FONT_SIZE)
 
         W, H = (BANNER_WIDTH, BANNER_HEIGHT)
         image = Image.new('RGBA', (W, H))
 
         next_line_spacing = 0
         current_font = font
+        is_bold = False
+        is_italic = False
         for line in lines_of_text:
 
             limage = Image.new('RGBA', (W, H))
@@ -291,16 +297,54 @@ class CardImageGenerator:
                 if skip_times > 0:
                     skip_times -= 1
                     continue
-                if line[symbol] == '/' and line[symbol+1] == 'b':
-                    skip_times +=1
-                    current_font = font_bold
+                if symbol < len(line) - 1 and line[symbol] == '/' and line[symbol+1] == 'b':
+                    skip_times += 1
+                    is_bold = True
+                    if is_italic:
+                        current_font = font_bold
+                    else:
+                        current_font = font_bold
                     continue
-                if line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == 'b':
-                    skip_times +=2
-                    current_font = font
+                if symbol < len(line) - 2 and line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == 'b':
+                    skip_times += 2
+                    is_bold = False
+                    if is_italic:
+                        current_font = font_italic
+                    else:
+                        current_font = font
+                    continue
+                if symbol < len(line) - 1 and line[symbol] == '/' and line[symbol+1] == 'i':
+                    skip_times += 1
+                    is_italic = True
+                    if is_bold:
+                        current_font = font_bold
+                    else:
+                        current_font = font_italic
+                    continue
+                if symbol < len(line) - 2 and line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == 'i':
+                    skip_times += 2
+                    is_italic = False
+                    if is_bold:
+                        current_font = font_bold
+                    else:
+                        current_font = font
                     continue
                 
-                ldraw.text((next_symbol_spacing, 0), line[symbol], font=current_font, fill='black')
+                if is_italic:
+                    char_width = int(current_font.getlength(line[symbol]))
+                    char_height = int(FONT_SIZE * 1.2)
+                    padding_left = max(int(char_width * 0.6), int(char_height * 0.3))
+                    padding_right = int(char_width * 0.3)
+                    char_img = Image.new('RGBA', (char_width + padding_left + padding_right, char_height))
+                    char_draw = ImageDraw.Draw(char_img)
+                    char_draw.text((padding_left, 0), line[symbol], font=current_font, fill='black')
+                    char_img = char_img.transform(char_img.size, Image.AFFINE, (1, 0.3, 0, 0, 1, 0), fillcolor=(0, 0, 0, 0))
+                    paste_x = int(next_symbol_spacing - padding_left * 0.3)
+                    limage.paste(char_img, (paste_x, 0), mask=char_img)
+                    wSize = current_font.getlength(line[symbol])
+                else:
+                    ldraw.text((next_symbol_spacing, 0), line[symbol], font=current_font, fill='black')
+                    wSize = current_font.getlength(line[symbol])
 
                 wSize = current_font.getlength(line[symbol])
                 next_symbol_spacing += wSize
@@ -423,6 +467,7 @@ class CardImageGenerator:
         
         font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, 40)
         font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, 40)
+        font_italic = self.get_font_italic(self.RESOURCE_FONT_DESCR_ITALIC_PATH, 40)
         
         lines_of_text = self.text_wrap(text, font_bold, max_width)
         
@@ -437,6 +482,7 @@ class CardImageGenerator:
         
         font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, font_size)
         font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, font_size)
+        font_italic = self.get_font_italic(self.RESOURCE_FONT_DESCR_ITALIC_PATH, font_size)
         
         line_height = int(font_size * 1.2)
         total_height = len(lines_of_text) * line_height
@@ -446,6 +492,8 @@ class CardImageGenerator:
         
         current_y = 0
         current_font = font
+        is_bold = False
+        is_italic = False
         for line in lines_of_text:
             line_image = Image.new('RGBA', (max_width, line_height))
             line_draw = ImageDraw.Draw(line_image)
@@ -458,16 +506,53 @@ class CardImageGenerator:
                     continue
                 if symbol < len(line) - 1 and line[symbol] == '/' and line[symbol+1] == 'b':
                     skip_times += 1
-                    current_font = font_bold
+                    is_bold = True
+                    if is_italic:
+                        current_font = font_bold
+                    else:
+                        current_font = font_bold
                     continue
                 if symbol < len(line) - 2 and line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == 'b':
                     skip_times += 2
-                    current_font = font
+                    is_bold = False
+                    if is_italic:
+                        current_font = font_italic
+                    else:
+                        current_font = font
+                    continue
+                if symbol < len(line) - 1 and line[symbol] == '/' and line[symbol+1] == 'i':
+                    skip_times += 1
+                    is_italic = True
+                    if is_bold:
+                        current_font = font_bold
+                    else:
+                        current_font = font_italic
+                    continue
+                if symbol < len(line) - 2 and line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == 'i':
+                    skip_times += 2
+                    is_italic = False
+                    if is_bold:
+                        current_font = font_bold
+                    else:
+                        current_font = font
                     continue
                 
                 text_x_offset, text_y_offset = self.get_description_text_offset()
-                line_draw.text((next_symbol_spacing + text_x_offset, 0 + text_y_offset), line[symbol], font=current_font, fill='white')
-                wSize = current_font.getlength(line[symbol])
+                if is_italic:
+                    char_width = int(current_font.getlength(line[symbol]))
+                    char_height = int(font_size * 1.2)
+                    padding_left = max(int(char_width * 0.6), int(char_height * 0.3))
+                    padding_right = int(char_width * 0.3)
+                    char_img = Image.new('RGBA', (char_width + padding_left + padding_right, char_height))
+                    char_draw = ImageDraw.Draw(char_img)
+                    char_draw.text((padding_left, 0), line[symbol], font=current_font, fill='white')
+                    char_img = char_img.transform(char_img.size, Image.AFFINE, (1, 0.3, 0, 0, 1, 0), fillcolor=(0, 0, 0, 0))
+                    paste_x = int(next_symbol_spacing + text_x_offset - padding_left * 0.3)
+                    line_image.paste(char_img, (paste_x, int(text_y_offset)), mask=char_img)
+                    wSize = current_font.getlength(line[symbol])
+                else:
+                    line_draw.text((next_symbol_spacing + text_x_offset, 0 + text_y_offset), line[symbol], font=current_font, fill='white')
+                    wSize = current_font.getlength(line[symbol])
                 next_symbol_spacing += wSize
             
             line_width = next_symbol_spacing
@@ -575,6 +660,17 @@ class CardImageGenerator:
 
     def get_font(self, font_path: str, size: int):
         cache_key = (font_path, size)
+        if cache_key in CardImageGenerator._font_cache:
+            return CardImageGenerator._font_cache[cache_key]
+        try:
+            font = ImageFont.truetype(font_path, size)
+            CardImageGenerator._font_cache[cache_key] = font
+            return font
+        except OSError as e:
+            raise GenerationError("Отсутствует шрифт " + font_path)
+    
+    def get_font_italic(self, font_path: str, size: int):
+        cache_key = (font_path, size, 'italic')
         if cache_key in CardImageGenerator._font_cache:
             return CardImageGenerator._font_cache[cache_key]
         try:
