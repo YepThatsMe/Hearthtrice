@@ -329,6 +329,12 @@ class CardImageGenerator:
                     else:
                         current_font = font
                     continue
+                if symbol < len(line) - 2 and line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == '0':
+                    skip_times += 2
+                    ldraw.text((next_symbol_spacing, 0), ' ', font=current_font, fill='black')
+                    wSize = current_font.getlength(' ')
+                    next_symbol_spacing += wSize
+                    continue
                 
                 if is_italic:
                     char_width = int(current_font.getlength(line[symbol]))
@@ -536,6 +542,13 @@ class CardImageGenerator:
                     else:
                         current_font = font
                     continue
+                if symbol < len(line) - 2 and line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == '0':
+                    skip_times += 2
+                    text_x_offset, text_y_offset = self.get_description_text_offset()
+                    line_draw.text((next_symbol_spacing + text_x_offset, 0 + text_y_offset), ' ', font=current_font, fill='white')
+                    wSize = current_font.getlength(' ')
+                    next_symbol_spacing += wSize
+                    continue
                 
                 text_x_offset, text_y_offset = self.get_description_text_offset()
                 if is_italic:
@@ -594,27 +607,51 @@ class CardImageGenerator:
         background.paste(image, t_offset, mask=image)
         return background
     
+    def _strip_formatting(self, text: str) -> str:
+        result = text
+        result = result.replace('/b', '')
+        result = result.replace('//b', '')
+        result = result.replace('/i', '')
+        result = result.replace('//i', '')
+        result = result.replace('//0', ' ')
+        return result
+    
     def text_wrap(self, text, font, max_width, strip=False) -> list:
         lines = []
         
-        # If the text width is smaller than the image width, then no need to split
-        # just add it to the line list and return
-        if font.getlength(text)  <= max_width:
+        text_without_formatting = self._strip_formatting(text)
+        if font.getlength(text_without_formatting) <= max_width:
             lines.append(text)
         else:
-            #split the line by spaces to get words
             words = text.split(' ')
             i = 0
-            # append every word to a line while its width is shorter than the image width
             while i < len(words):
                 line = ''
-                while i < len(words) and font.getlength(line + words[i]) <= max_width:
-                    line = line + words[i]+ " "
-                    i += 1
+                line_without_formatting = ''
+                while i < len(words):
+                    word = words[i]
+                    test_line = line + word + " "
+                    test_line_without_formatting = self._strip_formatting(test_line)
+                    if font.getlength(test_line_without_formatting) <= max_width:
+                        line = test_line
+                        line_without_formatting = test_line_without_formatting
+                        i += 1
+                        if word.endswith('//0') and i < len(words):
+                            next_word = words[i]
+                            test_line_with_join = line + next_word + " "
+                            test_line_with_join_without_formatting = self._strip_formatting(test_line_with_join)
+                            if font.getlength(test_line_with_join_without_formatting) <= max_width:
+                                line = test_line_with_join
+                                line_without_formatting = test_line_with_join_without_formatting
+                                i += 1
+                            else:
+                                break
+                    else:
+                        break
                 if not line:
                     line = words[i]
                     i += 1
-                lines.append(line)
+                lines.append(line.rstrip())
 
         # Support \n newline
         # Only one per line TODO: multiple per line
