@@ -76,6 +76,7 @@ class FormView(QFrame):
 
         self.tokenstable_label = FormLabel("Токены", self)
         self.tokenstable_form = TokensTable(self)
+        self.tokenstable_form.setMaximumHeight(150)
 
         self.activation_command_label = FormLabel("Команда активации", self)
         self.activation_command_line = QLineEdit(self)

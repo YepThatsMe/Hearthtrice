@@ -48,9 +48,16 @@ class CardBuilderView(QFrame):
         self.card_preview.picture_imported.connect(self.on_picture_imported)
 
         self.card_preview.picture_moved.connect(self.generate)
-        self.generate_button.clicked.connect(self.generate)
         self.form.class_button_group.button_clicked.connect(self.generate)
         self.form.cardtype_button_group.button_clicked.connect(self.generate)
+        
+        self.form.name_form.textChanged.connect(self.generate)
+        self.form.description_form.textChanged.connect(self.generate)
+        self.form.mana_form.valueChanged.connect(self.generate)
+        self.form.attack_form.valueChanged.connect(self.generate)
+        self.form.health_form.valueChanged.connect(self.generate)
+        self.form.rarity_form.currentIndexChanged.connect(self.generate)
+        self.form.tribe_form.textChanged.connect(self.generate)
 
         self.upload_button.clicked.connect(self.upload_button_clicked)
         self.download_button.clicked.connect(self.download_button_clicked)
@@ -64,7 +71,6 @@ class CardBuilderView(QFrame):
         self.form_layout = QVBoxLayout()
         self.form_layout_inlay1 = QHBoxLayout()
         self.form_layout_inlay2 = QHBoxLayout()
-        self.form_layout_inlay3 = QVBoxLayout()
         self.control_layout = QVBoxLayout()
         self.control_layout_inlay1 = QHBoxLayout()
 
@@ -72,10 +78,6 @@ class CardBuilderView(QFrame):
 
         self.form = FormView(self)
         self.form.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        self.generate_button = QPushButton("Сгенерировать", self)
-        self.generate_button.setFont(QFont("Arial", 16))
-        self.generate_button.setMinimumHeight(35)
 
         self.reset_button = QPushButton("Очистить", self)
         self.reset_button.setFont(QFont("Arial", 16))
@@ -105,11 +107,9 @@ class CardBuilderView(QFrame):
 
         self.form_layout_inlay2.addWidget(self.form)
         self.form_layout_inlay2.addStretch()
-        self.form_layout_inlay3.addWidget(self.generate_button)
 
         self.form_layout.addLayout(self.form_layout_inlay1)
         self.form_layout.addLayout(self.form_layout_inlay2)
-        self.form_layout.addLayout(self.form_layout_inlay3)
 
         self.control_layout.addWidget(self.upload_button)
         self.control_layout.addLayout(self.control_layout_inlay1)
@@ -118,6 +118,17 @@ class CardBuilderView(QFrame):
         self.gen_layout.addLayout(self.form_layout)
 
         self.setLayout(self.gen_layout)
+
+    def block_form_signals(self, block: bool):
+        self.form.name_form.blockSignals(block)
+        self.form.description_form.blockSignals(block)
+        self.form.mana_form.blockSignals(block)
+        self.form.attack_form.blockSignals(block)
+        self.form.health_form.blockSignals(block)
+        self.form.rarity_form.blockSignals(block)
+        self.form.tribe_form.blockSignals(block)
+        self.form.class_button_group.button_group.blockSignals(block)
+        self.form.cardtype_button_group.button_group.blockSignals(block)
 
     def gather_form_data(self):
         meta_data = self.form.get_form_data()
@@ -188,8 +199,12 @@ class CardBuilderView(QFrame):
         return True
 
     def on_edit_card_requested(self, metadata: CardMetadata):
+        self.block_form_signals(True)
+        
         self.upload_mode = CardBuilderView.UploadMode.EDIT
-        self.card_metadata = metadata
+        self.card_metadata = CardMetadata()
+        self.card_metadata.update(metadata.dict())
+        self.card_previous_version = CardMetadata()
         self.card_previous_version.update(metadata.dict())
 
         self.upload_button.setText("Изменить")
@@ -211,6 +226,9 @@ class CardBuilderView(QFrame):
         self.form.activation_command_line.setText(metadata.command)
         self.form.istoken_form.setChecked(metadata.istoken)
         self.form.tokenstable_form.populate_table(metadata.tokens)
+        
+        self.block_form_signals(False)
+        
         self.generate()
     
     def copy_image_to_clipboard(self):
