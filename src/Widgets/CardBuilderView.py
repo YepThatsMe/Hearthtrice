@@ -14,6 +14,7 @@ from Widgets.components.CardPreview import CardPreview
 from ImageGenerator.CardImageGenerator import GenerationError
 from ImageGenerator.MinionImageGenerator import MinionImageGenerator
 from ImageGenerator.SpellImageGenerator import SpellImageGenerator
+from ImageGenerator.WeaponImageGenerator import WeaponImageGenerator
 
 
 class CardBuilderView(QFrame):
@@ -36,6 +37,7 @@ class CardBuilderView(QFrame):
 
         self.card_image_generator = MinionImageGenerator()
         self.card_image_generator_spell = SpellImageGenerator()
+        self.card_image_generator_weapon = WeaponImageGenerator()
 
         self.set_up_ui()
         self.set_up_connections()
@@ -136,6 +138,8 @@ class CardBuilderView(QFrame):
                 card_image = self.card_image_generator.generate(self.card_metadata)
             elif self.card_metadata.cardtype == CardType.SPELL:
                 card_image = self.card_image_generator_spell.generate(self.card_metadata)
+            elif self.card_metadata.cardtype == CardType.WEAPON:
+                card_image = self.card_image_generator_weapon.generate(self.card_metadata)
         except GenerationError as e:
             QMessageBox.warning(None, "Ошибка генерации", str(e))
             return

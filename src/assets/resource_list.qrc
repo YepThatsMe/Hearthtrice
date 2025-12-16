@@ -100,5 +100,26 @@
     <file>Cardbuilder/SPELL/Card_Inhand_SPELL_LegendaryDragon.png</file>
     <file>Cardbuilder/SPELL/manatexture.png</file>
     <file>Cardbuilder/SPELL/mask3.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_HUNTER.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_MAGE.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_NEUTRAL.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_PALADIN.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_PRIEST.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_ROGUE.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_SHAMAN.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_WARLOCK.png</file>
+    <file>Cardbuilder/WEAPON/BASECARDS/Card_Inhand_WEAPON_WARRIOR.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_BannerAtlas_WEAPON_Title.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_WEAPON_DropShadow.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_WEAPON_Gem_Common.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_WEAPON_Gem_Epic.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_WEAPON_Gem_Legendary.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_WEAPON_Gem_Rare.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_WEAPON_LegendaryDragon.png</file>
+    <file>Cardbuilder/WEAPON/Card_Inhand_BannerAtlas_WEAPON_TribePlaque.png</file>
+    <file>Cardbuilder/WEAPON/attacktexture.png</file>
+    <file>Cardbuilder/WEAPON/healthtexture.png</file>
+    <file>Cardbuilder/WEAPON/manatexture.png</file>
+    <file>Cardbuilder/WEAPON/mask3.png</file>
 </qresource>
 </RCC>

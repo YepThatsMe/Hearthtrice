@@ -49,17 +49,20 @@ class CardImageGenerator:
     def __init__(self) -> None:
         cardtype = CardType(self.CARDTYPE).name
         base_path = f":Cardbuilder\\{cardtype}\\"
+        
         self.RESOURCE_BASECARD_PATH = base_path + f"BASECARDS\\Card_Inhand_{cardtype}_"
         self.RESOURCE_MINION_DROPSHADOW = base_path + f"Card_Inhand_{cardtype}_DropShadow.png"
         self.RESOURCE_MINION_FRAME_MASK = base_path + "mask3.png"
-        
         self.RESOURCE_GEM_COMMON_PATH = base_path + f"Card_Inhand_{cardtype}_Gem_Common.png"
         self.RESOURCE_GEM_RARE_PATH = base_path + f"Card_Inhand_{cardtype}_Gem_Rare.png"
         self.RESOURCE_GEM_EPIC_PATH = base_path + f"Card_Inhand_{cardtype}_Gem_Epic.png"
         self.RESOURCE_GEM_LEGENDARY_PATH = base_path + f"Card_Inhand_{cardtype}_Gem_Legendary.png"
         self.RESOURCE_LEGENDARY_DRAGON_PATH = base_path + f"Card_Inhand_{cardtype}_LegendaryDragon.png"
         self.RESOURCE_NAME_BANNER_PATH = base_path + f"Card_Inhand_BannerAtlas_{cardtype}_Title.png"
-        self.RESOURCE_DESCRIPTION_BANNER_PATH = base_path + f"Card_Inhand_BannerAtlas_{cardtype}_Text.png"
+        if cardtype != "WEAPON":
+            self.RESOURCE_DESCRIPTION_BANNER_PATH = base_path + f"Card_Inhand_BannerAtlas_{cardtype}_Text.png"
+        else:
+            self.RESOURCE_DESCRIPTION_BANNER_PATH = None
         self.RESOURCE_TRIBE_PLAQUE_PATH = base_path + f"Card_Inhand_BannerAtlas_{cardtype}_TribePlaque.png"
         self.RESOURCE_MANATEXTURE_PATH = base_path + "manatexture.png"
         self.RESOURCE_ATTACKTEXTURE_PATH = base_path + "attacktexture.png"
@@ -135,9 +138,15 @@ class CardImageGenerator:
 
         bc_w, bc_h = self.base_card.size
         f_w, f_h = self.foundation.size
+        base_x = int((f_w-bc_w)/2) + offset[0]
+        base_y = int((f_h-bc_h)/2) + offset[1]
+        
+        avatar_offset = self.get_framed_picture_avatar_offset((base_x, base_y))
+        shadow_offset = self.get_framed_picture_shadow_offset((base_x, base_y))
+        
         avatar = Image.composite(picture, self.foundation, frame)
-        self.foundation.paste(avatar, (int((f_w-bc_w)/2) + offset[0], int((f_h-bc_h)/2) + offset[1]), mask=avatar)
-        self.foundation.paste(shadow, (int((f_w-bc_w)/2) + offset[0], int((f_h-bc_h)/2) + offset[1]), mask=shadow)
+        self.foundation.paste(avatar, avatar_offset, mask=avatar)
+        self.foundation.paste(shadow, shadow_offset, mask=shadow)
 
         t_offset = ((f_w - bc_w) // 2, ((f_h - bc_h) // 2))
         self.foundation.paste(self.base_card, t_offset, mask=self.base_card)
@@ -175,37 +184,42 @@ class CardImageGenerator:
             
             img.resize(width=width+15, height=height+30)
             
-            # Draw outline 
+            text_x, text_y, outline_start, outline_end = self.get_name_text_offset()
+            
             draw.fill_color = "black"
 
-            for x in range(4, 9):
-                for y in range(4, 9):
+            for x in range(outline_start, outline_end):
+                for y in range(outline_start, outline_end):
                     draw.text(x, height+y, text)
 
             draw.fill_color = "white"
             draw.font_size = font_size
             
-            # Draw name
-            draw.text(6, height+6, text)
+            draw.text(text_x, height+text_y, text)
             draw(img)
             img.virtual_pixel = 'transparent'
 
-            if curve_degree >= 0:
-                img.distort('arc', (curve_degree, 0))
+            final_curve_degree = self.get_name_banner_curve_degree(curve_degree)
+            if final_curve_degree >= 0:
+                img.distort('arc', (final_curve_degree, 0))
 
             img.format = 'png'
             #CLOSE WAND IMAGE
 
         text_arc = Image.open(BytesIO(img.make_blob('png'))).convert('RGBA')
         bg_w, bg_h = background.size
-        img_w, img_h = text_arc.size        
-        t_offset = ((bg_w - img_w) // 2, ((bg_h - img_h) - offset))
+        img_w, img_h = text_arc.size
+        vertical_offset = self.get_name_banner_vertical_offset(img_h, bg_h, offset)
+        t_offset = ((bg_w - img_w) // 2, ((bg_h - img_h) - vertical_offset))
 
         name_banner = self.combine_images(background, text_arc, t_offset)
 
         return name_banner
 
     def generate_description_banner(self, text: str) -> Image:
+        if self.RESOURCE_DESCRIPTION_BANNER_PATH is None:
+            raise GenerationError("Description banner is not supported for this card type")
+                    
         BANNER_WIDTH = 580
         BANNER_HEIGHT = 300
 
@@ -314,6 +328,44 @@ class CardImageGenerator:
     def generate_legendary_dragon(self):
         return self.ImageFromRes(self.RESOURCE_LEGENDARY_DRAGON_PATH, 'r').convert('RGBA')
 
+    def get_mana_text_offset(self, manacost: int, is_double_digit: bool) -> Tuple[int, int, int]:
+        if is_double_digit:
+            return -8, -35, 180
+        return 35, -45, 200
+
+    def get_attack_text_offset(self, attack: int, is_double_digit: bool) -> Tuple[int, int, int]:
+        if is_double_digit:
+            return 55, 30, 150
+        return 90, 20, 170
+
+    def get_health_text_offset(self, health: int, is_double_digit: bool) -> Tuple[int, int, int]:
+        if is_double_digit:
+            return 21, 20, 150
+        return 55, 10, 170
+
+    def get_name_text_offset(self) -> Tuple[int, int, int, int]:
+        return 6, 6, 4, 9
+
+    def get_name_banner_vertical_offset(self, text_arc_height: int, background_height: int, calculated_offset: int) -> int:
+        return calculated_offset
+
+    def get_name_banner_curve_degree(self, calculated_curve_degree: float) -> float:
+        return calculated_curve_degree
+
+    def get_description_text_offset(self) -> Tuple[int, int]:
+        return 0, 0
+
+    def get_framed_picture_shadow_offset(self, base_offset: Tuple[int, int]) -> Tuple[int, int]:
+        return base_offset
+
+    def get_framed_picture_avatar_offset(self, base_offset: Tuple[int, int]) -> Tuple[int, int]:
+        return base_offset
+
+    def get_tribe_text_offset(self, text_length: int) -> Tuple[int, int]:
+        w = 245 + 13.5
+        w -= text_length * 13.5
+        return int(w), 32
+
     def generate_managem(self, manacost: int = None) -> Image:
         managem = self.ImageFromRes(self.RESOURCE_MANATEXTURE_PATH, 'r').convert('RGBA')
 
@@ -323,11 +375,9 @@ class CardImageGenerator:
         draw = ImageDraw.Draw(managem)
         
         if manacost is not None and manacost < 100 and manacost > -1:
-            font= self.get_font(self.RESOURCE_FONT_PATH, 200)
-            w, h = 35, -45
-            if manacost >= 10:
-                w, h = -8, -35
-                font= self.get_font(self.RESOURCE_FONT_PATH, 180)
+            is_double_digit = manacost >= 10
+            w, h, font_size = self.get_mana_text_offset(manacost, is_double_digit)
+            font = self.get_font(self.RESOURCE_FONT_PATH, font_size)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(manacost), font=font, fill='black')
@@ -341,11 +391,9 @@ class CardImageGenerator:
         draw = ImageDraw.Draw(attack_gem)
         
         if attack is not None and attack < 100:
-            font= self.get_font(self.RESOURCE_FONT_PATH, 170)
-            w, h = 90, 20
-            if attack >= 10 or attack < 0:
-                w, h = 55, 30
-                font= self.get_font(self.RESOURCE_FONT_PATH, 150)
+            is_double_digit = attack >= 10 or attack < 0
+            w, h, font_size = self.get_attack_text_offset(attack, is_double_digit)
+            font = self.get_font(self.RESOURCE_FONT_PATH, font_size)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(attack), font=font, fill='black')
@@ -359,17 +407,74 @@ class CardImageGenerator:
         draw = ImageDraw.Draw(health_gem)
         
         if health is not None and health < 100:
-            font= self.get_font(self.RESOURCE_FONT_PATH, 170)
-            w, h = 55, 10
-            if health >= 10 or health < 0:
-                w, h = 21, 20
-                font= self.get_font(self.RESOURCE_FONT_PATH, 150)
+            is_double_digit = health >= 10 or health < 0
+            w, h, font_size = self.get_health_text_offset(health, is_double_digit)
+            font = self.get_font(self.RESOURCE_FONT_PATH, font_size)
             for x in range(-3, 4):
                 for y in range(-3, 4):
                     draw.text((w+x, h+y), str(health), font=font, fill='black')
             draw.text((w, h), str(health), font=font, fill='white')
 
         return health_gem
+    
+    def generate_description_on_card(self, text: str, max_width: int = 500) -> Image:
+        if not text:
+            return Image.new('RGBA', (1, 1))
+        
+        font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, 40)
+        font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, 40)
+        
+        lines_of_text = self.text_wrap(text, font_bold, max_width)
+        
+        if len(lines_of_text) > 6:
+            raise RuntimeError("Card description is too long (max 6 lines for weapon)")
+        
+        font_size = 40
+        if len(lines_of_text) >= 4:
+            font_size = 35
+        if len(lines_of_text) >= 5:
+            font_size = 30
+        
+        font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, font_size)
+        font_bold = self.get_font(self.RESOURCE_FONT_DESCR_BOLD_PATH, font_size)
+        
+        line_height = int(font_size * 1.2)
+        total_height = len(lines_of_text) * line_height
+        
+        text_image = Image.new('RGBA', (max_width, total_height))
+        draw = ImageDraw.Draw(text_image)
+        
+        current_y = 0
+        current_font = font
+        for line in lines_of_text:
+            line_image = Image.new('RGBA', (max_width, line_height))
+            line_draw = ImageDraw.Draw(line_image)
+            next_symbol_spacing = 0
+            skip_times = 0
+            
+            for symbol in range(len(line)):
+                if skip_times > 0:
+                    skip_times -= 1
+                    continue
+                if symbol < len(line) - 1 and line[symbol] == '/' and line[symbol+1] == 'b':
+                    skip_times += 1
+                    current_font = font_bold
+                    continue
+                if symbol < len(line) - 2 and line[symbol] == '/' and line[symbol+1] == '/' and line[symbol+2] == 'b':
+                    skip_times += 2
+                    current_font = font
+                    continue
+                
+                text_x_offset, text_y_offset = self.get_description_text_offset()
+                line_draw.text((next_symbol_spacing + text_x_offset, 0 + text_y_offset), line[symbol], font=current_font, fill='white')
+                wSize = current_font.getlength(line[symbol])
+                next_symbol_spacing += wSize
+            
+            line_width = next_symbol_spacing
+            text_image.paste(line_image, (int((max_width - line_width) / 2), current_y), mask=line_image)
+            current_y += line_height
+        
+        return text_image
     
     def generate_tribe(self, text: str = None) -> Image:
         tribe = self.ImageFromRes(self.RESOURCE_TRIBE_PLAQUE_PATH, 'r').convert('RGBA')
@@ -385,8 +490,7 @@ class CardImageGenerator:
         if Validate.has_cyrillic(text):
             font = self.get_font(self.RESOURCE_FONT_C_PATH, 44)
 
-        w, h = 245 + 13.5, 32
-        w-=len(text) * 13.5
+        w, h = self.get_tribe_text_offset(len(text))
         for x in range(-2, 3):
             for y in range(-2, 3):
                 draw.text((w+x, h+y), text, font=font, fill='black')

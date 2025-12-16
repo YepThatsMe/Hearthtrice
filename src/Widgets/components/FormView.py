@@ -33,7 +33,6 @@ class FormView(QFrame):
         self.cardtype_button_group = ExclusiveButtonGroup(4, r":icons\typeicons", 0, 0, self)
         self.cardtype_button_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         # TODO: implement weapon and hero generator
-        self.cardtype_button_group.buttons[2].setEnabled(False)
         self.cardtype_button_group.buttons[3].setEnabled(False)
 
         self.class_button_group = ExclusiveButtonGroup(10, r":icons\classicons", 0, 1, self)
@@ -166,6 +165,10 @@ class FormView(QFrame):
         elif cardtype == CardType.SPELL:
             self.attack_form.setEnabled(False)
             self.health_form.setEnabled(False)
+        
+        elif cardtype == CardType.WEAPON:
+            self.attack_form.setEnabled(True)
+            self.health_form.setEnabled(True)
 
     def reset(self):
         self.name_form.setText("")
