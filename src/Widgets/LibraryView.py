@@ -5,7 +5,7 @@ import json
 
 from PyQt5.QtWidgets import QFrame, QApplication, QProgressBar, QGridLayout, QLineEdit, QComboBox, QCheckBox, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
 from PyQt5.QtCore import pyqtSignal, Qt, QThread, QTimer, QDir, QByteArray, QFile, QTextStream, QSize, QSettings, QIODevice
-from PyQt5.QtGui import QMovie, QIcon
+from PyQt5.QtGui import QIcon
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
 from Widgets.components.ScrollableGrid import ScrollableGrid
@@ -107,17 +107,12 @@ class LibraryView(QFrame):
         self.export_std_checkbox = ToggleButton("Вместе со стандартными", self)
         self.control_layout.addWidget(self.export_std_checkbox)
 
-        self.loading_label = QLabel(self)
-        self.loading_animation = QMovie(r":loading_animation.gif")
-        self.loading_label.setMovie(self.loading_animation)
-
         self.main_gallery_grid = ScrollableGrid(self)
         self.std_gallery_grid = ScrollableGrid(self)
 
         self.stack = QStackedWidget(self)
         self.stack.addWidget(self.main_gallery_grid)
         self.stack.addWidget(self.std_gallery_grid)
-        self.stack.addWidget(self.loading_label)
 
         self.filter_layout = QHBoxLayout()
 
@@ -337,13 +332,9 @@ class LibraryView(QFrame):
         self.update_library_requested.emit()
 
     def set_loading(self, is_loading: bool):
-        if is_loading:
-            self.loading_animation.start()
-            self.stack.setCurrentIndex(2)
-        else:
+        if not is_loading:
             self.stack.setCurrentIndex(0)
             self.standard_only_toggle.setChecked(False)
-            self.loading_animation.stop()
             self.setEnabled(True)
 
         self.finished_loading.emit(not is_loading)

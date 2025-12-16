@@ -1,6 +1,6 @@
 from typing import List
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QListWidgetItem, QListWidget, QLabel, QPushButton
-from PyQt5.QtGui import QMovie
+from PyQt5.QtCore import Qt
 
 from DataTypes import Deck
 
@@ -13,10 +13,8 @@ class DeckListDialog(QDialog):
     def set_up_ui(self):
         self.setWindowTitle("Выбор колоды")
         self.gen_layout = QVBoxLayout(self)
-        self.loading_label = QLabel(self)
-        self.loading_animation = QMovie(r":loading_animation.gif")
-        self.loading_label.setMovie(self.loading_animation)
-        self.loading_animation.start()
+        self.loading_label = QLabel("Загрузка...", self)
+        self.loading_label.setAlignment(Qt.AlignCenter)
 
         self.list_widget = QListWidget(self)
         self.list_widget.itemDoubleClicked.connect(self.select_deck)

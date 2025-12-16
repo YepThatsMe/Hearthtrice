@@ -17,6 +17,7 @@ from Widgets.CardBuilderView import CardBuilderView
 from DataTypes import CardMetadata, Deck, Response
 from Widgets.components.ConnectionSettings import ConnectionSettingsDialog
 from Widgets.components.NotificationWidget import NotificationWidget
+from Widgets.components.LoadingOverlay import LoadingOverlay
 
 class MainMediator(QMainWindow):
     def __init__(self):
@@ -36,8 +37,8 @@ class MainMediator(QMainWindow):
             #lambda n: send_to_thread(self, self.upload_card, args=(n,), kwargs=()))
         self.card_builder_view.upload_edit_requested.connect(self.upload_edit_card)
 
-        self.library_view.update_library_requested.connect(
-            lambda: send_to_thread(self, self.data_presenter.get_hashes, self.on_hashes_received))
+        self.library_view.update_library_requested.connect(self._on_update_library_requested)
+        self.library_view.finished_loading.connect(self._on_library_finished_loading)
         self.library_view.create_new_deck_requested.connect(
             lambda name: send_to_thread(self, self.data_presenter.create_new_deck, self.on_deck_created, args=(name,)))
         self.library_view.update_deck_requested.connect(
@@ -89,6 +90,9 @@ class MainMediator(QMainWindow):
 
         self.central_widget.setLayout(self.gen_layout)
         self.setCentralWidget(self.central_widget)
+        
+        self.loading_overlay = LoadingOverlay(self)
+        self.loading_overlay.hide()
 
     def center(self):
         screen = QDesktopWidget().availableGeometry()
@@ -191,7 +195,9 @@ class MainMediator(QMainWindow):
             self.card_builder_view.on_edit_card_requested(self.card_to_edit_metadata)
             self.stacked_widget.setCurrentIndex(0)
             self.tab_bar.setCurrentIndex(0)
+            self.hide_loading()
         self.card_to_edit_metadata = metadata
+        self.show_loading("Загрузка данных...")
         send_to_thread(self, self.data_presenter.get_edit_data, callback, args=(metadata.id,))
     
 
@@ -237,7 +243,22 @@ class MainMediator(QMainWindow):
         self.tab_bar.setStyleSheet("QTabBar::tab {min-width: " + tab_width + "px; min-height: 50px; font-family: Arial; font-weight: bold; font-size: 16pt}")
         if self.width() > 1500 and self.bool:
             self.bool = False
-            
-            #self.send_to_thread(self.data_presenter.get_library_decoded, self.update_library)
+
+        self.loading_overlay.setGeometry(self.rect())
 
         return super().resizeEvent(a0)
+    
+    def show_loading(self, text: str = "Загрузка..."):
+        self.loading_overlay.setGeometry(self.rect())
+        self.loading_overlay.show_overlay(text)
+    
+    def hide_loading(self):
+        self.loading_overlay.hide_overlay()
+    
+    def _on_update_library_requested(self):
+        self.show_loading("Загрузка библиотеки...")
+        send_to_thread(self, self.data_presenter.get_hashes, self.on_hashes_received)
+    
+    def _on_library_finished_loading(self, is_finished: bool):
+        if is_finished:
+            self.hide_loading()
