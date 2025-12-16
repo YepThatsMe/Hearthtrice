@@ -240,40 +240,46 @@ class CardImageGenerator:
         font_italic = self.get_font_italic(self.RESOURCE_FONT_DESCR_ITALIC_PATH, 53)
 
         lines_of_text = self.text_wrap(text, font_bold, BANNER_WIDTH)
+        num_lines = len(lines_of_text)
 
-        if len(lines_of_text) == 1:
+        if num_lines >= 5:
+            BANNER_WIDTH = 840
+            lines_of_text = self.text_wrap(text, font_bold, BANNER_WIDTH)
+            num_lines = len(lines_of_text)
+
+        if num_lines == 1:
             HEIGHT_OFFSET = 100
             FONT_SIZE = 53
             LINE_SPACING_INC = 0
-        if len(lines_of_text) == 2:
-            HEIGHT_OFFSET = 110
+        if num_lines == 2:
+            HEIGHT_OFFSET = 95
             FONT_SIZE = 52
             LINE_SPACING_INC = 50
-        if len(lines_of_text) == 3:
-            HEIGHT_OFFSET = 90
+        if num_lines == 3:
+            HEIGHT_OFFSET = 80
             FONT_SIZE = 53
             LINE_SPACING_INC = 50
-        if len(lines_of_text) == 4:
-            HEIGHT_OFFSET = 60
+        if num_lines == 4:
+            HEIGHT_OFFSET = 50
             FONT_SIZE = 43
             LINE_SPACING_INC = 50
-        if len(lines_of_text) == 5:
-            HEIGHT_OFFSET = 60
+        if num_lines == 5:
+            HEIGHT_OFFSET = 50
             FONT_SIZE = 34
             LINE_SPACING_INC = 40
-        if len(lines_of_text) == 6:
+        if num_lines == 6:
             HEIGHT_OFFSET = 35
             FONT_SIZE = 29
             LINE_SPACING_INC = 35
-        if len(lines_of_text) == 7:
+        if num_lines == 7:
             HEIGHT_OFFSET = 35
             FONT_SIZE = 29
             LINE_SPACING_INC = 35
-        if len(lines_of_text) == 8:
+        if num_lines == 8:
             HEIGHT_OFFSET = 16
             FONT_SIZE = 29
             LINE_SPACING_INC = 35
-        if len(lines_of_text) > 8:
+        if num_lines > 8:
             raise RuntimeError("Card description is too long (max 8 lines)")
 
         font = self.get_font(self.RESOURCE_FONT_DESCR_PATH, FONT_SIZE)
