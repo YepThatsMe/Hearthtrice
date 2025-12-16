@@ -385,9 +385,8 @@ class LibraryView(QFrame):
         self.card_widgets.clear()
         self.original_positions.clear()
 
-    def on_export_clicked(self, metas: List[CardMetadata] = None):
-        # Get path
-        if not self.card_widgets:
+    def on_export_clicked(self, metas: List[CardMetadata] = None, all_cached_cards: List[CardMetadata] = None):
+        if not metas and not self.card_widgets:
             print("Empty library")
             return
         game_dir = self.settings.value("path")
@@ -435,10 +434,13 @@ class LibraryView(QFrame):
         dialog.exec_()
 
         # Save custom xml
-        metas_list = []
-        for card_widget in self.card_widgets:
-            meta = card_widget.metadata
-            metas_list.append(meta)
+        if all_cached_cards:
+            metas_list = all_cached_cards
+        else:
+            metas_list = []
+            for card_widget in self.card_widgets:
+                meta = card_widget.metadata
+                metas_list.append(meta)
 
         customsets_dir = os.path.join(game_dir, "data", "customsets")
         if not os.path.isdir(customsets_dir):

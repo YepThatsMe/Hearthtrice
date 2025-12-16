@@ -121,8 +121,12 @@ class MainMediator(QMainWindow):
     def on_library_part_received(self, received_card_metadata: List[CardMetadata]):
         self.cache_manager.save_cache(received_card_metadata)
         print("Updated cards have been cached.")
-        self.update_library_from_cache()
-        self.library_view.on_export_clicked(received_card_metadata)
+        
+        def export_after_update(cached_library):
+            self.library_view.set_updated_library(cached_library)
+            self.library_view.on_export_clicked(received_card_metadata, cached_library)
+        
+        send_to_thread(self, self.cache_manager.get_cache, export_after_update)
 
     def update_library_from_cache(self):
         def callback(cached_library):
