@@ -6,8 +6,6 @@ class MinionImageGenerator(CardImageGenerator):
     CARDTYPE = CardType.MINION
 
     def generate(self, meta: CardMetadata):
-        
-  
         self.generate_base_card(meta.classtype)
 
         # PICTURE

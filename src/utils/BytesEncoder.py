@@ -28,21 +28,34 @@ def bytes_to_pixmap(image_data: bytes) -> QPixmap:
     return pixmap
 
 def pixmap_to_bytes(pixmap: QPixmap) -> bytes:
+    if pixmap.isNull():
+        return b''
     image = pixmap.toImage()
 
     buffer = QBuffer()
     buffer.open(QIODevice.ReadWrite)
-    image.save(buffer, "PNG")
+    image.save(buffer, "BMP")
     bytes_data = bytes(buffer.data())
     buffer.close()
     return bytes_data
 
-def pil_to_bytes(pil_image: Image) -> bytes:
+def pil_to_bytes(pil_image: Image, format='PNG', compress_level=1) -> bytes:
     image_bytes = b''
     with BytesIO() as output:
-        pil_image.save(output, format='PNG')
+        if format == 'PNG':
+            pil_image.save(output, format=format, compress_level=compress_level)
+        else:
+            pil_image.save(output, format=format)
         image_bytes = output.getvalue()
     return image_bytes
+
+def pil_to_pixmap(pil_image: Image) -> QPixmap:
+    if pil_image.mode == 'RGBA':
+        qimage = QImage(pil_image.tobytes(), pil_image.width, pil_image.height, QImage.Format_RGBA8888)
+    else:
+        rgb_image = pil_image.convert('RGB')
+        qimage = QImage(rgb_image.tobytes(), rgb_image.width, rgb_image.height, QImage.Format_RGB888)
+    return QPixmap.fromImage(qimage)
 
 def hash_library(library_json: str):
     hash_obj = hashlib.sha256()

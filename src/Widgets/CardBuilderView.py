@@ -7,7 +7,7 @@ from io import BytesIO
 from PIL import Image
 
 from CacheManager import CacheManager
-from utils.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes
+from utils.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes, pil_to_pixmap
 from DataTypes import CardMetadata, CardType
 from Widgets.components.FormView import FormView
 from Widgets.components.CardPreview import CardPreview
@@ -48,6 +48,7 @@ class CardBuilderView(QFrame):
         self.card_preview.picture_imported.connect(self.on_picture_imported)
 
         self.card_preview.picture_moved.connect(self.generate)
+        self.card_preview.picture_moving.connect(self.generate)
         self.form.class_button_group.button_clicked.connect(self.generate)
         self.form.cardtype_button_group.button_clicked.connect(self.generate)
         
@@ -138,7 +139,6 @@ class CardBuilderView(QFrame):
         self.setCursor(Qt.WaitCursor)
 
         self.gather_form_data()
-
         self.card_metadata.picture = pixmap_to_bytes(self.picture)
 
         self.card_metadata.move_x = self.card_preview.move_x
@@ -146,21 +146,22 @@ class CardBuilderView(QFrame):
         self.card_metadata.zoom = self.card_preview.zoom
         try:
             if self.card_metadata.cardtype == CardType.MINION:
-                card_image = self.card_image_generator.generate(self.card_metadata)
+                self._current_pil_image = self.card_image_generator.generate(self.card_metadata)
             elif self.card_metadata.cardtype == CardType.SPELL:
-                card_image = self.card_image_generator_spell.generate(self.card_metadata)
+                self._current_pil_image = self.card_image_generator_spell.generate(self.card_metadata)
             elif self.card_metadata.cardtype == CardType.WEAPON:
-                card_image = self.card_image_generator_weapon.generate(self.card_metadata)
+                self._current_pil_image = self.card_image_generator_weapon.generate(self.card_metadata)
         except GenerationError as e:
             QMessageBox.warning(None, "Ошибка генерации", str(e))
             return
 
-
-        self.card_metadata.card_image = pil_to_bytes(card_image)
-
-        self.update_card_preview(bytes_to_pixmap(pil_to_bytes(card_image)))
+        self.update_card_preview(pil_to_pixmap(self._current_pil_image))
 
         self.setCursor(Qt.ArrowCursor)
+    
+    def _finalize_card_image(self):
+        if hasattr(self, '_current_pil_image') and self._current_pil_image:
+            self.card_metadata.card_image = pil_to_bytes(self._current_pil_image)
 
     def upload_button_clicked(self):
         self.gather_form_data()
@@ -168,6 +169,7 @@ class CardBuilderView(QFrame):
             QMessageBox.warning(self, "Ошибка", "Имя карты не может быть пустым.")
             return
 
+        self._finalize_card_image()
         self.card_metadata.hash = self.cache_manager.calculate_hash(self.card_metadata)
 
         if self.upload_mode == CardBuilderView.UploadMode.NEW:
@@ -188,11 +190,10 @@ class CardBuilderView(QFrame):
         file_path, _ = QFileDialog.getSaveFileName(None, "Save Image", "Image.png", "Images (*.png *.jpg *.bmp);;All Files (*)")
 
         if file_path:
-            img = bytes_to_pixmap(self.card_metadata.card_image)
-            if not img:
+            if not hasattr(self, '_current_pil_image') or not self._current_pil_image:
                 QMessageBox.warning(self, "Ошибка", "Некорректное изображение.")
                 return False
-            img.save(file_path)
+            self._current_pil_image.save(file_path)
         else:
             QMessageBox.warning(self, "Предупреждение", "Не удалось сохранить изображение.")
             return False
@@ -232,12 +233,10 @@ class CardBuilderView(QFrame):
         self.generate()
     
     def copy_image_to_clipboard(self):
-        img_bytes = self.card_metadata.card_image
-        if not img_bytes:
+        if not hasattr(self, '_current_pil_image') or not self._current_pil_image:
             return
-        image = Image.open(BytesIO(img_bytes))
         output = BytesIO()
-        image.convert("RGB").save(output, "BMP")
+        self._current_pil_image.convert("RGB").save(output, "BMP")
         data = output.getvalue()[14:]
         output.close()
 
@@ -259,3 +258,4 @@ class CardBuilderView(QFrame):
         self.picture = QPixmap()
         self.card_metadata = CardMetadata()
         self.card_previous_version = CardMetadata()
+        self._current_pil_image = None

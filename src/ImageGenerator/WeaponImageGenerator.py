@@ -93,6 +93,4 @@ class WeaponImageGenerator(CardImageGenerator):
                     int(self.base_card.height - 75 - self.FOUNDATION_PADDING_H/2))
         new_card = self.combine_images(new_card, health, t_offset)
 
-
         return new_card
-

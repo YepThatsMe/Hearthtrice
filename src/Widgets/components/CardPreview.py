@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt, QUrl, pyqtSignal, QTimer
 class CardPreview(QLabel):
     picture_imported = pyqtSignal(QPixmap)
     picture_moved = pyqtSignal()
+    picture_moving = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -13,6 +14,9 @@ class CardPreview(QLabel):
         self.move_x = 0
         self.move_y = 0
         self.zoom = 0
+        self._dragging = False
+        self._drag_start_move_x = 0
+        self._drag_start_move_y = 0
 
         self.import_picturef(r":assets/start_card.png")
 
@@ -25,6 +29,10 @@ class CardPreview(QLabel):
         self.scroll_timer = QTimer()
         self.scroll_timer.setSingleShot(True)
         self.scroll_timer.timeout.connect(self.picture_moved)
+        
+        self.move_timer = QTimer()
+        self.move_timer.setSingleShot(True)
+        self.move_timer.timeout.connect(self.picture_moving)
         
     def rescaled(self, pixmap) -> QPixmap:
         if pixmap.width() > self.maximumWidth() or pixmap.height() > self.maximumHeight():
@@ -77,19 +85,24 @@ class CardPreview(QLabel):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
+            self._dragging = True
             self.drag_start_position = event.pos()
+            self._drag_start_move_x = self.move_x
+            self._drag_start_move_y = self.move_y
 
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            # Calculate the distance of the drag
+    def mouseMoveEvent(self, event):
+        if self._dragging:
             distance_x = event.pos().x() - self.drag_start_position.x()
             distance_y = event.pos().y() - self.drag_start_position.y()
+            self.move_x = self._drag_start_move_x - distance_x
+            self.move_y = self._drag_start_move_y - distance_y
+            self.move_timer.start(30)
 
-            self.move_x -= distance_x
-            self.move_y -= distance_y
-
-            if distance_x or distance_y:
-                self.picture_moved.emit()
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton and self._dragging:
+            self._dragging = False
+            self.move_timer.stop()
+            self.picture_moved.emit()
     
     def wheelEvent(self, event):
         if QApplication.keyboardModifiers() == Qt.ControlModifier:

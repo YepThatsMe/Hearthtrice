@@ -27,7 +27,10 @@ class VirtualException(BaseException):
 class CardImageGenerator:
     CARDTYPE = 0
 
-    
+    _image_cache = {}
+    _font_cache = {}
+    _name_banner_cache = {}
+
     font_base_path = ""
     if getattr(sys, 'frozen', False):
         font_base_path = os.path.join(sys._MEIPASS, 'fonts/')
@@ -95,20 +98,17 @@ class CardImageGenerator:
         s_x, s_y = frame.size
 
         def resize(picture: Image, difference: int = 0) -> Image:
-
             k = picture.width/picture.height
             if p_x >= p_y:
                 # For Horizontal/Square images
 
                 picture = picture.resize( (int(picture.width + difference * k),
                                     int(picture.height + difference )), 
-                                    Image.Resampling.LANCZOS)
+                                    Image.Resampling.BILINEAR)
             else:
-                # For Vertical images
                 picture = picture.resize( (int(picture.width + difference), 
                                     int(picture.height + difference/k) ), 
-                                    Image.Resampling.LANCZOS)
-
+                                    Image.Resampling.BILINEAR)
             return picture
 
         ###### I #####
@@ -134,7 +134,7 @@ class CardImageGenerator:
         picture = picture.crop(box=[crop_x1+move_x, crop_y1+move_y, crop_x2+move_x, crop_y2+move_y])
 
         if picture.size != frame.size:
-            picture = picture.resize(frame.size, Image.Resampling.LANCZOS)
+            picture = picture.resize(frame.size, Image.Resampling.BILINEAR)
 
         bc_w, bc_h = self.base_card.size
         f_w, f_h = self.foundation.size
@@ -154,10 +154,8 @@ class CardImageGenerator:
         return self.foundation
 
     def generate_name_banner(self, text: str) -> Image:
-        background = self.ImageFromRes(self.RESOURCE_NAME_BANNER_PATH).convert('RGBA')
-
         if not text:
-            return background
+            return self.ImageFromRes(self.RESOURCE_NAME_BANNER_PATH).convert('RGBA')
         
         if len(text) > self.MAX_NAME_SIZE:
             raise RuntimeError("Card name length cannot exceed 30.")
@@ -165,6 +163,12 @@ class CardImageGenerator:
         font = self.RESOURCE_FONT_PATH
         if Validate.has_cyrillic(text):
             font = self.RESOURCE_FONT_C_PATH
+
+        cache_key = (text, self.CARDTYPE, font)
+        if cache_key in CardImageGenerator._name_banner_cache:
+            return CardImageGenerator._name_banner_cache[cache_key].copy()
+
+        background = self.ImageFromRes(self.RESOURCE_NAME_BANNER_PATH).convert('RGBA')
 
         font_size, curve_degree, offset = self.get_text_adjust_params(
             self.get_text_size_for_12px_font(font, text)
@@ -175,6 +179,7 @@ class CardImageGenerator:
         Uses ImageMagik / wand.
         """
         img = WandImage(width=1, height=1, resolution=self.BASE_CARD_RESOLUTION)
+        
         with Drawing() as draw:
             draw.font = font
             draw.font_size = font_size
@@ -186,25 +191,24 @@ class CardImageGenerator:
             
             text_x, text_y, outline_start, outline_end = self.get_name_text_offset()
             
+            draw.stroke_color = "black"
+            draw.stroke_width = 4
             draw.fill_color = "black"
+            draw.text(text_x, height+text_y, text)
 
-            for x in range(outline_start, outline_end):
-                for y in range(outline_start, outline_end):
-                    draw.text(x, height+y, text)
-
+            draw.stroke_color = "none"
+            draw.stroke_width = 0
             draw.fill_color = "white"
-            draw.font_size = font_size
-            
             draw.text(text_x, height+text_y, text)
             draw(img)
-            img.virtual_pixel = 'transparent'
+        
+        img.virtual_pixel = 'transparent'
 
-            final_curve_degree = self.get_name_banner_curve_degree(curve_degree)
-            if final_curve_degree >= 0:
-                img.distort('arc', (final_curve_degree, 0))
+        final_curve_degree = self.get_name_banner_curve_degree(curve_degree)
+        if final_curve_degree >= 0:
+            img.distort('arc', (final_curve_degree, 0))
 
-            img.format = 'png'
-            #CLOSE WAND IMAGE
+        img.format = 'png'
 
         text_arc = Image.open(BytesIO(img.make_blob('png'))).convert('RGBA')
         bg_w, bg_h = background.size
@@ -214,7 +218,8 @@ class CardImageGenerator:
 
         name_banner = self.combine_images(background, text_arc, t_offset)
 
-        return name_banner
+        CardImageGenerator._name_banner_cache[cache_key] = name_banner
+        return name_banner.copy()
 
     def generate_description_banner(self, text: str) -> Image:
         if self.RESOURCE_DESCRIPTION_BANNER_PATH is None:
@@ -366,6 +371,10 @@ class CardImageGenerator:
         w -= text_length * 13.5
         return int(w), 32
 
+    def _draw_text_with_outline(self, draw: ImageDraw, pos: tuple, text: str, font, fill='white', outline='black', outline_width=3):
+        x, y = pos
+        draw.text((x, y), text, font=font, fill=fill, stroke_width=outline_width, stroke_fill=outline)
+
     def generate_managem(self, manacost: int = None) -> Image:
         managem = self.ImageFromRes(self.RESOURCE_MANATEXTURE_PATH, 'r').convert('RGBA')
 
@@ -378,10 +387,7 @@ class CardImageGenerator:
             is_double_digit = manacost >= 10
             w, h, font_size = self.get_mana_text_offset(manacost, is_double_digit)
             font = self.get_font(self.RESOURCE_FONT_PATH, font_size)
-            for x in range(-3, 4):
-                for y in range(-3, 4):
-                    draw.text((w+x, h+y), str(manacost), font=font, fill='black')
-            draw.text((w, h), str(manacost), font=font, fill='white')
+            self._draw_text_with_outline(draw, (w, h), str(manacost), font)
 
         return managem
 
@@ -394,10 +400,7 @@ class CardImageGenerator:
             is_double_digit = attack >= 10 or attack < 0
             w, h, font_size = self.get_attack_text_offset(attack, is_double_digit)
             font = self.get_font(self.RESOURCE_FONT_PATH, font_size)
-            for x in range(-3, 4):
-                for y in range(-3, 4):
-                    draw.text((w+x, h+y), str(attack), font=font, fill='black')
-            draw.text((w, h), str(attack), font=font, fill='white')
+            self._draw_text_with_outline(draw, (w, h), str(attack), font)
 
         return attack_gem
 
@@ -410,10 +413,7 @@ class CardImageGenerator:
             is_double_digit = health >= 10 or health < 0
             w, h, font_size = self.get_health_text_offset(health, is_double_digit)
             font = self.get_font(self.RESOURCE_FONT_PATH, font_size)
-            for x in range(-3, 4):
-                for y in range(-3, 4):
-                    draw.text((w+x, h+y), str(health), font=font, fill='black')
-            draw.text((w, h), str(health), font=font, fill='white')
+            self._draw_text_with_outline(draw, (w, h), str(health), font)
 
         return health_gem
     
@@ -491,10 +491,7 @@ class CardImageGenerator:
             font = self.get_font(self.RESOURCE_FONT_C_PATH, 44)
 
         w, h = self.get_tribe_text_offset(len(text))
-        for x in range(-2, 3):
-            for y in range(-2, 3):
-                draw.text((w+x, h+y), text, font=font, fill='black')
-        draw.text((w, h), text, font=font, fill='white')
+        self._draw_text_with_outline(draw, (w, h), text, font, outline_width=2)
 
         return tribe
 
@@ -577,12 +574,20 @@ class CardImageGenerator:
         +0.180793592168535*(x**2)-4.461212339169927*x+140.206273116060634
 
     def get_font(self, font_path: str, size: int):
+        cache_key = (font_path, size)
+        if cache_key in CardImageGenerator._font_cache:
+            return CardImageGenerator._font_cache[cache_key]
         try:
-            return ImageFont.truetype(font_path, size)
+            font = ImageFont.truetype(font_path, size)
+            CardImageGenerator._font_cache[cache_key] = font
+            return font
         except OSError as e:
             raise GenerationError("Отсутствует шрифт " + font_path)
         
     def ImageFromRes(self, path: str, mode = 'r') -> Image:
+        if path in CardImageGenerator._image_cache:
+            return CardImageGenerator._image_cache[path].copy()
+        
         file = QFile(path)
         if not file.open(QFile.ReadOnly):
             raise GenerationError("Unable to open resource file")
@@ -590,5 +595,7 @@ class CardImageGenerator:
         data = file.readAll()
         file.close()
 
-        return Image.open(BytesIO(data), mode)
+        img = Image.open(BytesIO(data), mode)
+        CardImageGenerator._image_cache[path] = img
+        return img.copy()
 
