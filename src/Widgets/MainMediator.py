@@ -159,6 +159,9 @@ class MainMediator(QMainWindow):
         response = self.data_presenter.upload_card(metadata)
         if response.ok:
             self.library_view.update_uploaded_card(metadata)
+            self.library_view.on_export_clicked([metadata])
+            if hasattr(metadata, 'id') and metadata.id:
+                self.cache_manager.save_cache([metadata])
             NotificationWidget(self, "Карта загружена в библиотеку.", "success")
         else:
             NotificationWidget(self, f"Ошибка: {response.msg}", "error")
@@ -169,6 +172,9 @@ class MainMediator(QMainWindow):
         if response.ok:
             self.data_presenter.upload_edit_changelog(metas[0], metas[1])
             self.library_view.update_edited_card(metas[0])
+            self.library_view.on_export_clicked([metas[0]])
+            if hasattr(metas[0], 'id') and metas[0].id:
+                self.cache_manager.save_cache([metas[0]])
             NotificationWidget(self, "Карта изменена.", "success")
         else:
             NotificationWidget(self, f"Ошибка: {response.msg}", "error")
