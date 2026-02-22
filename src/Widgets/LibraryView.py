@@ -9,6 +9,7 @@ from PyQt5.QtGui import QIcon
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
 from Widgets.components.ScrollableGrid import ScrollableGrid
+from Widgets.InfoBase import InfoBaseWidget
 
 from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
@@ -56,6 +57,8 @@ class LibraryView(QFrame):
     update_deck_requested = pyqtSignal(tuple)
 
     finished_loading = pyqtSignal(bool)
+    infobase_load_requested = pyqtSignal()
+    infobase_save_requested = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -99,6 +102,12 @@ class LibraryView(QFrame):
 
         self.refresh_button = QPushButton("Refresh", self)
         self.control_layout.addWidget(self.refresh_button)
+        self.infobase_toggle = ToggleButton("", self, icon=":icons/info_icon.png")
+        self.infobase_toggle.setFixedSize(36, 36)
+        self.infobase_toggle.setIconSize(QSize(32, 32))
+        self.infobase_toggle.setToolTip("База знаний")
+        self.infobase_toggle.toggled.connect(self.on_infobase_toggled)
+        self.control_layout.addWidget(self.infobase_toggle)
         self.control_layout.addStretch()
 
         self.export_button = QPushButton("Экспорт библиотеки", self)
@@ -113,6 +122,13 @@ class LibraryView(QFrame):
         self.stack = QStackedWidget(self)
         self.stack.addWidget(self.main_gallery_grid)
         self.stack.addWidget(self.std_gallery_grid)
+
+        self.infobase_widget = InfoBaseWidget(self)
+        self.infobase_widget.save_requested.connect(self.infobase_save_requested.emit)
+
+        self.content_stack = QStackedWidget(self)
+        self.content_stack.addWidget(self.stack)
+        self.content_stack.addWidget(self.infobase_widget)
 
         self.filter_layout = QHBoxLayout()
 
@@ -161,9 +177,12 @@ class LibraryView(QFrame):
         self.filter_layout.addWidget(self.no_tokens_toggle)
         self.filter_layout.addWidget(self.standard_only_toggle)
 
+        self.filter_container = QWidget(self)
+        self.filter_container.setLayout(self.filter_layout)
+
         self.sub_gen_layout.addLayout(self.control_layout)
-        self.sub_gen_layout.addWidget(self.stack)
-        self.sub_gen_layout.addLayout(self.filter_layout)
+        self.sub_gen_layout.addWidget(self.content_stack)
+        self.sub_gen_layout.addWidget(self.filter_container)
 
         self.sub_gen_layout_2.addWidget(self.deck_view)
         self.sub_gen_layout_2.addWidget(self.launch_button)
@@ -177,6 +196,23 @@ class LibraryView(QFrame):
             self.stack.setCurrentIndex(1)
         else:
             self.stack.setCurrentIndex(0)
+
+    def on_infobase_toggled(self, checked: bool):
+        if checked:
+            self.content_stack.setCurrentIndex(1)
+            self.filter_container.hide()
+            self.refresh_button.setEnabled(False)
+            self.export_button.setEnabled(False)
+            self.infobase_load_requested.emit()
+        else:
+            self.content_stack.setCurrentIndex(0)
+            self.filter_container.show()
+            self.refresh_button.setEnabled(True)
+            self.export_button.setEnabled(True)
+            self.infobase_widget.ensure_read_only()
+
+    def set_infobase_content(self, html: str):
+        self.infobase_widget.set_content(html or "")
 
     def _apply_initial_filter(self):
         if not self.isVisible():
@@ -340,8 +376,9 @@ class LibraryView(QFrame):
         self.finished_loading.emit(not is_loading)
 
         self.deck_view.setEnabled(not is_loading)
-        self.refresh_button.setEnabled(not is_loading)
-        self.export_button.setEnabled(not is_loading)
+        infobase_on = self.infobase_toggle.isChecked
+        self.refresh_button.setEnabled(not is_loading and not infobase_on)
+        self.export_button.setEnabled(not is_loading and not infobase_on)
 
     def set_updated_library(self, cards: List[CardMetadata]):
         if not cards:

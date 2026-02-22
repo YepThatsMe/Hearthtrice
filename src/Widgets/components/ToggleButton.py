@@ -1,11 +1,17 @@
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QIcon
 
 class ToggleButton(QPushButton):
     toggled = pyqtSignal(bool)
 
-    def __init__(self, text="", parent=None):
+    def __init__(self, text="", parent=None, icon=None):
         super().__init__(text, parent)
+        if icon is not None:
+            if isinstance(icon, str):
+                self.setIcon(QIcon(icon))
+            else:
+                self.setIcon(icon)
         self.setCheckable(True)
         self.isChecked = False
         self.updateStyle()

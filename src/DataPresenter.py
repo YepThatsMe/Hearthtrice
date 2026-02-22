@@ -164,3 +164,11 @@ class DataPresenter(QObject):
         
     def delete_card(self, metadata: CardMetadata) -> Response:
         return self.comm.delete_card(metadata)
+
+    def get_infobase(self) -> str:
+        if not self.comm.is_connected:
+            return ""
+        return self.comm.fetch_infobase()
+
+    def save_infobase(self, info: str) -> Response:
+        return self.comm.update_infobase(info)

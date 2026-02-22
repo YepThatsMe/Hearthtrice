@@ -47,6 +47,8 @@ class MainMediator(QMainWindow):
             lambda: send_to_thread(self, self.data_presenter.get_decks, self.update_decks))
         self.library_view.edit_card_requested.connect(self.on_edit_card_requested_A)
         self.library_view.delete_card_requested.connect(self.on_delete_card_requested)
+        self.library_view.infobase_load_requested.connect(self._on_infobase_load_requested)
+        self.library_view.infobase_save_requested.connect(self._on_infobase_save_requested)
 
         self.game_listener.switch_to_library.connect(
             lambda: self.stacked_widget.setCurrentIndex(1))
@@ -266,3 +268,15 @@ class MainMediator(QMainWindow):
     def _on_library_finished_loading(self, is_finished: bool):
         if is_finished:
             self.hide_loading()
+
+    def _on_infobase_load_requested(self):
+        def callback(content: str):
+            self.library_view.set_infobase_content(content or "")
+        send_to_thread(self, self.data_presenter.get_infobase, callback)
+
+    def _on_infobase_save_requested(self, content: str):
+        response = self.data_presenter.save_infobase(content)
+        if response.ok:
+            NotificationWidget(self, "Текст InfoBase сохранен.", "success")
+        else:
+            NotificationWidget(self, f"Ошибка сохранения: {response.msg}", "error")

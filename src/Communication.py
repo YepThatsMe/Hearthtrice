@@ -339,6 +339,33 @@ class CommunicationPostgres:
             self._safe_rollback()
             return Response(False, str(e))
 
+    def fetch_infobase(self) -> str:
+        if not self.is_connected:
+            return ""
+        query = "SELECT info FROM infobase LIMIT 1;"
+        try:
+            self.cursor.execute(query)
+            row = self.cursor.fetchone()
+            return row[0] if row and row[0] is not None else ""
+        except psycopg2.Error as e:
+            print(f"Fetch infobase error: {e}")
+            self._safe_rollback()
+            return ""
+
+    def update_infobase(self, info: str) -> Response:
+        if not self.is_connected:
+            return Response(False, "Подключение не установлено.")
+        try:
+            self.cursor.execute("UPDATE infobase SET info = %s;", (info,))
+            if self.cursor.rowcount == 0:
+                self.cursor.execute("INSERT INTO infobase (info) VALUES (%s);", (info,))
+            self.connection.commit()
+            return Response(True)
+        except psycopg2.Error as e:
+            print(f"Update infobase error: {e}")
+            self._safe_rollback()
+            return Response(False, str(e))
+
     def fetch_full_changelog(self, days: int = 0):
         query = f"""
         SELECT * FROM {CHANGELOG_TABLE} order by change_date DESC;
