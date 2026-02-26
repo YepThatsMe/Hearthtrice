@@ -374,17 +374,20 @@ class CommunicationPostgres:
         if days:
             query = f"""
             SELECT *
-            FROM CardsLogDbg
-            WHERE change_date >= NOW() - INTERVAL '%s days'
+            FROM {CHANGELOG_TABLE}
+            WHERE change_date >= NOW() - (%s * INTERVAL '1 day')
             order by change_date ASC;
             """
             params = (days,)
+        print("fetch_full_changelog query:", query.strip())
+        print("fetch_full_changelog params:", params)
         try:
             self.cursor.execute(query, params)
             rows = self.cursor.fetchall()
+            print("fetch_full_changelog rows:", len(rows))
             return rows
         except psycopg2.Error as e:
-            print(f"Update error: {e}")
+            print("fetch_full_changelog error:", e)
             self._safe_rollback()
             return []
 
