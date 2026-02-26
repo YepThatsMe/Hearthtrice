@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 import sys
 
 VERSION_MAJOR = 2
-VERSION_MINOR = 9
+VERSION_MINOR = 10
 
 DEBUG = 0
 
