@@ -37,7 +37,7 @@ class DeckListDialog(QDialog):
         self.list_widget.clear()
         deck: Deck
         for deck in decks:
-            label = f"ID: {deck.id}\t {deck.name}\t[{deck.owner}]"
+            label = f"ID: {deck.id}\t {deck.name}"
             self.list_widget.addItem(label)
         if self.list_widget.count():
             self.list_widget.setCurrentRow(0)

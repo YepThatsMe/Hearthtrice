@@ -56,6 +56,8 @@ class LibraryView(QFrame):
     create_new_deck_requested = pyqtSignal(str)
     update_deck_requested = pyqtSignal(tuple)
     rename_deck_requested = pyqtSignal(tuple)
+    duplicate_deck_requested = pyqtSignal()
+    delete_deck_requested = pyqtSignal(int)
 
     finished_loading = pyqtSignal(bool)
     infobase_load_requested = pyqtSignal()
@@ -88,6 +90,8 @@ class LibraryView(QFrame):
         self.deck_view.create_new_deck_requested.connect(self.create_new_deck_requested)
         self.deck_view.update_deck_requested.connect(self.update_deck_requested)
         self.deck_view.rename_deck_requested.connect(self.rename_deck_requested)
+        self.deck_view.duplicate_deck_requested.connect(self.duplicate_deck_requested)
+        self.deck_view.delete_deck_requested.connect(self.delete_deck_requested)
 
     def set_up_ui(self):
         self.setEnabled(False)

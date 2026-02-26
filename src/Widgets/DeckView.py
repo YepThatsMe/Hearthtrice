@@ -260,6 +260,8 @@ class DeckView(QWidget):
     create_new_deck_requested = pyqtSignal(str)
     update_deck_requested = pyqtSignal(tuple)
     rename_deck_requested = pyqtSignal(tuple)
+    duplicate_deck_requested = pyqtSignal()
+    delete_deck_requested = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
@@ -297,6 +299,27 @@ class DeckView(QWidget):
         deck_name_row = QHBoxLayout()
         deck_name_row.addWidget(self.current_deck_label)
         deck_name_row.addWidget(self.edit_deck_name_button)
+        self.duplicate_deck_button = QPushButton(self)
+        self.duplicate_deck_button.setIcon(QIcon(":icons/duplicate-icon.png"))
+        self.duplicate_deck_button.setFixedSize(28, 28)
+        self.duplicate_deck_button.setToolTip("Дублировать колоду")
+        self.duplicate_deck_button.clicked.connect(self.duplicate_deck)
+        self.duplicate_deck_button.hide()
+        deck_name_row.addWidget(self.duplicate_deck_button)
+        self.clear_deck_button = QPushButton(self)
+        self.clear_deck_button.setIcon(QIcon(":icons/erase-icon.png"))
+        self.clear_deck_button.setFixedSize(28, 28)
+        self.clear_deck_button.setToolTip("Очистить колоду")
+        self.clear_deck_button.clicked.connect(self.clear_deck)
+        self.clear_deck_button.hide()
+        deck_name_row.addWidget(self.clear_deck_button)
+        self.delete_deck_button = QPushButton(self)
+        self.delete_deck_button.setIcon(QIcon(":icons/delete-icon.png"))
+        self.delete_deck_button.setFixedSize(28, 28)
+        self.delete_deck_button.setToolTip("Удалить колоду")
+        self.delete_deck_button.clicked.connect(self.delete_deck)
+        self.delete_deck_button.hide()
+        deck_name_row.addWidget(self.delete_deck_button)
         deck_name_row.addStretch()
 
         self.save_button = QPushButton("Сохранить")
@@ -364,6 +387,63 @@ class DeckView(QWidget):
             deck_name = line_edit.text()
             self.create_new_deck_requested.emit(deck_name)
 
+    def duplicate_deck(self):
+        if not self.current_deck:
+            NotificationWidget(self.window(), "Колода не выбрана", "warning")
+            return
+        self.duplicate_deck_requested.emit()
+
+    def clear_deck(self):
+        if not self.current_deck:
+            NotificationWidget(self.window(), "Колода не выбрана", "warning")
+            return
+        self.tree_widget.clear()
+
+    def delete_deck(self):
+        if not self.current_deck:
+            NotificationWidget(self.window(), "Колода не выбрана", "warning")
+            return
+        if self.current_deck.id < 0:
+            self._deselect_deck()
+            return
+        if QMessageBox.question(self, "Удалить колоду", f"Колода «{self.current_deck.name}» будет удалена. Продолжить?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+            return
+        self.delete_deck_requested.emit(self.current_deck.id)
+
+    def _show_deck_actions(self):
+        self.edit_deck_name_button.show()
+        self.duplicate_deck_button.show()
+        self.clear_deck_button.show()
+        self.delete_deck_button.show()
+
+    def _deselect_deck(self):
+        self.current_deck = None
+        self.current_deck_label.setText("")
+        self.tree_widget.clear()
+        self.edit_deck_name_button.hide()
+        self.duplicate_deck_button.hide()
+        self.clear_deck_button.hide()
+        self.delete_deck_button.hide()
+
+    def on_deck_deleted(self):
+        self._deselect_deck()
+
+    def set_duplicated_deck(self, deck_id: int, deck_name: str, owner: str, cards_list: list):
+        new_deck = Deck()
+        new_deck.id = deck_id
+        new_deck.name = deck_name
+        new_deck.owner = owner
+        new_deck.cards = cards_list
+        self.current_deck = new_deck
+        self.current_deck_label.setText(f"ID: {deck_id}\t {deck_name}")
+        self.clear()
+        for card in cards_list:
+            for _ in range(card.count):
+                sideboard = card.side == DeckCard.Side.SIDEBOARD
+                istoken = card.side == DeckCard.Side.TOKENS
+                self.tree_widget.add_item(card.id, card.name, card.manacost, istoken, sideboard)
+        self._show_deck_actions()
+
     def edit_deck_name(self):
         if not self.current_deck:
             parent_window = self.window()
@@ -402,14 +482,14 @@ class DeckView(QWidget):
             new_name = line_edit.text().strip()
             if self.current_deck.id < 0:
                 self.current_deck.name = new_name
-                self.current_deck_label.setText(f"ID: {self.current_deck.id}\t {new_name}\t[{self.current_deck.owner}]")
+                self.current_deck_label.setText(f"ID: {self.current_deck.id}\t {new_name}")
             else:
                 self.rename_deck_requested.emit((self.current_deck.id, new_name))
 
     def on_deck_name_renamed(self, new_name: str):
         if self.current_deck:
             self.current_deck.name = new_name
-            self.current_deck_label.setText(f"ID: {self.current_deck.id}\t {new_name}\t[{self.current_deck.owner}]")
+            self.current_deck_label.setText(f"ID: {self.current_deck.id}\t {new_name}")
 
     def new_virtual_deck(self):
         virtual_deck = Deck()
@@ -417,7 +497,7 @@ class DeckView(QWidget):
         virtual_deck.name = "Arena"
         virtual_deck.owner = ""
         self.current_deck = virtual_deck
-        self.edit_deck_name_button.show()
+        self._show_deck_actions()
 
     def on_new_deck_data_received(self, new_deck_data: tuple):
         deck_id, deck_name, owner = new_deck_data
@@ -428,8 +508,8 @@ class DeckView(QWidget):
         new_deck.cards = []
 
         self.current_deck = new_deck
-        self.current_deck_label.setText(f"ID: {deck_id}\t {deck_name}\t[{owner}]")
-        self.edit_deck_name_button.show()
+        self.current_deck_label.setText(f"ID: {deck_id}\t {deck_name}")
+        self._show_deck_actions()
         self.clear()
 
     def set_updated_decks(self, decks: List[Deck]):
@@ -439,7 +519,7 @@ class DeckView(QWidget):
         current_deck_label = self.deck_list_dialog.selected_label
         if selected_deck_id == -1:
             return
-        self.edit_deck_name_button.show()
+        self._show_deck_actions()
         self.current_deck = decks[selected_deck_id]
         self.current_deck_label.setText(current_deck_label)
         self.clear()

@@ -47,6 +47,9 @@ class MainMediator(QMainWindow):
             lambda tid_name: send_to_thread(self, self.data_presenter.rename_deck,
                 lambda resp: self.on_deck_renamed(resp, tid_name[0], tid_name[1]),
                 args=(tid_name[0], tid_name[1])))
+        self.library_view.duplicate_deck_requested.connect(self.on_duplicate_deck_requested)
+        self.library_view.delete_deck_requested.connect(
+            lambda deck_id: send_to_thread(self, self.data_presenter.delete_deck, self.on_deck_deleted, args=(deck_id,)))
         self.library_view.get_decks_requsted.connect(
             lambda: send_to_thread(self, self.data_presenter.get_decks, self.update_decks))
         self.library_view.edit_card_requested.connect(self.on_edit_card_requested_A)
@@ -163,6 +166,38 @@ class MainMediator(QMainWindow):
             NotificationWidget(self, f"Колода переименована: {new_name}", "success")
         else:
             NotificationWidget(self, f"Ошибка переименования: {response.msg}", "error")
+
+    def on_duplicate_deck_requested(self):
+        dv = self.library_view.deck_view
+        if not dv.current_deck:
+            return
+        name = dv.current_deck.name + " (копия)"
+        cards_str = dv.tree_widget.current_decktree_to_str()
+        rich_cards = dv.get_current_rich_deck().cards
+        send_to_thread(self, self.data_presenter.create_new_deck,
+            lambda data: self._on_duplicate_created(data, cards_str, rich_cards), args=(name,))
+
+    def _on_duplicate_created(self, new_deck_data, cards_str, rich_cards):
+        if not new_deck_data:
+            return
+        deck_id, deck_name, owner = new_deck_data
+        send_to_thread(self, self.data_presenter.update_deck,
+            lambda resp: self._on_duplicate_updated(resp, new_deck_data, rich_cards), args=(deck_id, cards_str))
+
+    def _on_duplicate_updated(self, response: Response, new_deck_data, rich_cards):
+        if not response.ok:
+            NotificationWidget(self, f"Ошибка дублирования: {response.msg}", "error")
+            return
+        deck_id, deck_name, owner = new_deck_data
+        self.library_view.deck_view.set_duplicated_deck(deck_id, deck_name, owner, rich_cards or [])
+        NotificationWidget(self, f"Колода «{deck_name}» создана.", "success")
+
+    def on_deck_deleted(self, response: Response):
+        if response.ok:
+            self.library_view.deck_view.on_deck_deleted()
+            NotificationWidget(self, "Колода удалена.", "success")
+        else:
+            NotificationWidget(self, f"Ошибка удаления: {response.msg}", "error")
 
 
     def on_settings_clicked(self):

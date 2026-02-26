@@ -106,6 +106,9 @@ class DataPresenter(QObject):
     def rename_deck(self, deck_id: int, new_name: str) -> Response:
         return self.comm.rename_deck(deck_id, new_name)
 
+    def delete_deck(self, deck_id: int) -> Response:
+        return self.comm.delete_deck(deck_id)
+
     def get_decks(self) -> List[Deck]:
         if not self.comm.is_connected:
             print("Connection is not established")

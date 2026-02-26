@@ -356,6 +356,19 @@ class CommunicationPostgres:
             self._safe_rollback()
             return Response(False, str(e))
 
+    def delete_deck(self, deck_id: int) -> Response:
+        if not self.is_connected:
+            return Response(False, "Подключение не установлено.")
+        query = "DELETE FROM Decks WHERE id = %s;"
+        try:
+            self.cursor.execute(query, (deck_id,))
+            self.connection.commit()
+            return Response(True)
+        except psycopg2.Error as e:
+            print(f"Delete deck error: {e}")
+            self._safe_rollback()
+            return Response(False, str(e))
+
     def fetch_infobase(self) -> str:
         if not self.is_connected:
             return ""
@@ -753,6 +766,18 @@ class CommunicationMS:
             return Response(True)
         except pyodbc.Error as e:
             print(f"Rename deck error: {e}")
+            return Response(False, str(e))
+
+    def delete_deck(self, deck_id: int) -> Response:
+        if not self.is_connected:
+            return Response(False, "Подключение не установлено.")
+        query = "DELETE FROM Decks WHERE id = ?"
+        try:
+            self.cursor.execute(query, (deck_id,))
+            self.connection.commit()
+            return Response(True)
+        except pyodbc.Error as e:
+            print(f"Delete deck error: {e}")
             return Response(False, str(e))
 
     def fetch_full_changelog(self, days: int = 0):
