@@ -243,7 +243,7 @@ class CardImageGenerator:
         num_lines = len(lines_of_text)
 
         if num_lines >= 5:
-            BANNER_WIDTH = 840
+            BANNER_WIDTH = 700
             lines_of_text = self.text_wrap(text, font_bold, BANNER_WIDTH)
             num_lines = len(lines_of_text)
 
