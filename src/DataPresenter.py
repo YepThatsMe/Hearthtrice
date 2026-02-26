@@ -103,6 +103,9 @@ class DataPresenter(QObject):
     def update_deck(self, id: int, cards_string: str) -> Response:
         return self.comm.upload_edit_deck(id, cards_string)
 
+    def rename_deck(self, deck_id: int, new_name: str) -> Response:
+        return self.comm.rename_deck(deck_id, new_name)
+
     def get_decks(self) -> List[Deck]:
         if not self.comm.is_connected:
             print("Connection is not established")

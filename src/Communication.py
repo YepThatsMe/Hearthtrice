@@ -339,6 +339,23 @@ class CommunicationPostgres:
             self._safe_rollback()
             return Response(False, str(e))
 
+    def rename_deck(self, deck_id: int, new_name: str) -> Response:
+        if not self.is_connected:
+            return Response(False, "Подключение не установлено.")
+        query = """
+            UPDATE Decks
+            SET name = %s
+            WHERE id = %s;
+        """
+        try:
+            self.cursor.execute(query, (new_name, deck_id))
+            self.connection.commit()
+            return Response(True)
+        except psycopg2.Error as e:
+            print(f"Rename deck error: {e}")
+            self._safe_rollback()
+            return Response(False, str(e))
+
     def fetch_infobase(self) -> str:
         if not self.is_connected:
             return ""
@@ -721,6 +738,22 @@ class CommunicationMS:
         except pyodbc.Error as e:
             print(f"Update error: {e}")
             return Response(False, e)
+
+    def rename_deck(self, deck_id: int, new_name: str) -> Response:
+        if not self.is_connected:
+            return Response(False, "Подключение не установлено.")
+        query = """
+            UPDATE Decks
+            SET name = ?
+            WHERE id = ?
+        """
+        try:
+            self.cursor.execute(query, (new_name, deck_id))
+            self.connection.commit()
+            return Response(True)
+        except pyodbc.Error as e:
+            print(f"Rename deck error: {e}")
+            return Response(False, str(e))
 
     def fetch_full_changelog(self, days: int = 0):
         # SQL-запрос

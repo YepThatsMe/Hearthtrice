@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMenu, QMessageBox, QDialog, QHBoxLayout, QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel, QLineEdit, \
     QPushButton
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtCore import QSettings, pyqtSignal, Qt
 from typing import List
 
@@ -253,10 +253,13 @@ class MyTreeWidget(QTreeWidget):
 
 
 
+FORBIDDEN_FILENAME_CHARS = r'\/:*?"<>|'
+
 class DeckView(QWidget):
     get_decks_requested = pyqtSignal(str)
     create_new_deck_requested = pyqtSignal(str)
     update_deck_requested = pyqtSignal(tuple)
+    rename_deck_requested = pyqtSignal(tuple)
 
     def __init__(self):
         super().__init__()
@@ -285,6 +288,16 @@ class DeckView(QWidget):
 
         self.current_deck_label = QLabel("", self)
         self.current_deck_label.setStyleSheet("font-size: 10pt; font-weight: bold")
+        self.edit_deck_name_button = QPushButton(self)
+        self.edit_deck_name_button.setIcon(QIcon(":icons/pencil-icon.png"))
+        self.edit_deck_name_button.setFixedSize(28, 28)
+        self.edit_deck_name_button.setToolTip("Редактировать название колоды")
+        self.edit_deck_name_button.clicked.connect(self.edit_deck_name)
+        self.edit_deck_name_button.hide()
+        deck_name_row = QHBoxLayout()
+        deck_name_row.addWidget(self.current_deck_label)
+        deck_name_row.addWidget(self.edit_deck_name_button)
+        deck_name_row.addStretch()
 
         self.save_button = QPushButton("Сохранить")
         self.save_button.clicked.connect(self.update_deck)
@@ -297,7 +310,7 @@ class DeckView(QWidget):
         control_layout.addLayout(control_layout_inlay1)
     
         layout.addLayout(control_layout)
-        layout.addWidget(self.current_deck_label)
+        layout.addLayout(deck_name_row)
         layout.addWidget(self.tree_widget)
         layout.addWidget(self.save_button)
         layout.addWidget(export_button)
@@ -350,13 +363,61 @@ class DeckView(QWidget):
         if result == QDialog.Accepted:
             deck_name = line_edit.text()
             self.create_new_deck_requested.emit(deck_name)
-    
+
+    def edit_deck_name(self):
+        if not self.current_deck:
+            parent_window = self.window()
+            NotificationWidget(parent_window, "Колода не выбрана", "warning")
+            return
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Редактирование названия колоды")
+        label = QLabel("Название:")
+        line_edit = QLineEdit(dialog)
+        line_edit.setText(self.current_deck.name)
+        line_edit.setMaxLength(35)
+        ok_button = QPushButton("ОК", dialog)
+        cancel_button = QPushButton("Отмена", dialog)
+        def on_accept():
+            name = line_edit.text().strip()
+            if not name:
+                NotificationWidget(dialog, "Название не может быть пустым", "warning")
+                return
+            for c in FORBIDDEN_FILENAME_CHARS:
+                if c in name:
+                    NotificationWidget(dialog, f'Недопустимый символ в названии: {c}', "warning")
+                    return
+            dialog.done(QDialog.Accepted)
+        ok_button.clicked.connect(on_accept)
+        cancel_button.clicked.connect(dialog.reject)
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(label)
+        layout.addWidget(line_edit)
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(ok_button)
+        btn_layout.addWidget(cancel_button)
+        layout.addLayout(btn_layout)
+        dialog.setLayout(layout)
+        result = dialog.exec_()
+        if result == QDialog.Accepted:
+            new_name = line_edit.text().strip()
+            if self.current_deck.id < 0:
+                self.current_deck.name = new_name
+                self.current_deck_label.setText(f"ID: {self.current_deck.id}\t {new_name}\t[{self.current_deck.owner}]")
+            else:
+                self.rename_deck_requested.emit((self.current_deck.id, new_name))
+
+    def on_deck_name_renamed(self, new_name: str):
+        if self.current_deck:
+            self.current_deck.name = new_name
+            self.current_deck_label.setText(f"ID: {self.current_deck.id}\t {new_name}\t[{self.current_deck.owner}]")
+
     def new_virtual_deck(self):
         virtual_deck = Deck()
         virtual_deck.id = -2
         virtual_deck.name = "Arena"
         virtual_deck.owner = ""
         self.current_deck = virtual_deck
+        self.edit_deck_name_button.show()
 
     def on_new_deck_data_received(self, new_deck_data: tuple):
         deck_id, deck_name, owner = new_deck_data
@@ -368,6 +429,7 @@ class DeckView(QWidget):
 
         self.current_deck = new_deck
         self.current_deck_label.setText(f"ID: {deck_id}\t {deck_name}\t[{owner}]")
+        self.edit_deck_name_button.show()
         self.clear()
 
     def set_updated_decks(self, decks: List[Deck]):
@@ -377,7 +439,7 @@ class DeckView(QWidget):
         current_deck_label = self.deck_list_dialog.selected_label
         if selected_deck_id == -1:
             return
-        
+        self.edit_deck_name_button.show()
         self.current_deck = decks[selected_deck_id]
         self.current_deck_label.setText(current_deck_label)
         self.clear()
