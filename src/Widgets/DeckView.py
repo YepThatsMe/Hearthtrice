@@ -80,13 +80,13 @@ class MyTreeWidget(QTreeWidget):
     def clear(self):
         super().clear()
 
-        self.parent_item1 = MyTreeWidgetItem(["", "", "Deck", ""])
+        self.parent_item1 = MyTreeWidgetItem(["0", "", "Deck", ""])
         self.addTopLevelItem(self.parent_item1)
 
-        self.parent_item2 = MyTreeWidgetItem(["", "", "Sideboard", ""])
+        self.parent_item2 = MyTreeWidgetItem(["0", "", "Sideboard", ""])
         self.addTopLevelItem(self.parent_item2)
 
-        self.parent_item3 = MyTreeWidgetItem(["", "", "Tokens", ""])
+        self.parent_item3 = MyTreeWidgetItem(["0", "", "Tokens", ""])
         self.addTopLevelItem(self.parent_item3)
 
         self.expandItem(self.parent_item1)
@@ -109,7 +109,14 @@ class MyTreeWidget(QTreeWidget):
 
         # id: item
         self.items_by_id = {}
+        self._update_section_counts()
 
+    def _update_section_counts(self):
+        for parent in (self.parent_item1, self.parent_item2, self.parent_item3):
+            total = 0
+            for i in range(parent.childCount()):
+                total += int(parent.child(i).text(0))
+            parent.setText(0, str(total))
 
     def add_item(self, id: int, name: str, manacost: int, istoken: bool = 0, sideboard: bool = 0):
         level = "Deck"
@@ -124,6 +131,9 @@ class MyTreeWidget(QTreeWidget):
             quantity = int(existing_item.text(0)) + 1
             existing_item.setText(0, str(quantity))
             existing_item.setSortData(3, existing_item.text(3))
+            self._update_section_counts()
+            self.sortItems(3, 0)
+            return
         else:
             new_item = MyTreeWidgetItem(["1", str(id), str(name), str(manacost)])
             new_item.setSortData(3, new_item.text(3))
@@ -136,6 +146,7 @@ class MyTreeWidget(QTreeWidget):
             self.items_by_id[id] = new_item
             self.levels[level].addChild(new_item)
 
+        self._update_section_counts()
         self.sortItems(3, 0)
 
     def get_name_by_id(self, id_value):
@@ -202,6 +213,7 @@ class MyTreeWidget(QTreeWidget):
                     break
         else:
             item.setText(0, str(new_count))
+        self._update_section_counts()
         self.sortItems(3, 0)
 
     def delete_item(self, item):
@@ -215,8 +227,8 @@ class MyTreeWidget(QTreeWidget):
             if item == dict_item:
                 self.items_by_id.pop(id)
                 break
+        self._update_section_counts()
         self.sortItems(3, 0)
-
 
     def on_item_double_clicked(self, item, column):
         if item in [self.parent_item1, self.parent_item2, self.parent_item3]:
@@ -232,6 +244,7 @@ class MyTreeWidget(QTreeWidget):
         index = current_parent.indexOfChild(item)
         current_parent.takeChild(index)
         new_parent.addChild(item)
+        self._update_section_counts()
         self.sortItems(3, 0)
 
     def startDrag(self, supportedActions):
@@ -248,8 +261,9 @@ class MyTreeWidget(QTreeWidget):
             text = target_item.text(2)
             if text  == "Deck" or text == "Sideboard" or text == "Tokens":
                 super().dropEvent(event)
+                self._update_section_counts()
                 return
-        event.ignore()  # Игнорируем сброс в неподходящий элемент
+        event.ignore()
 
 
 
