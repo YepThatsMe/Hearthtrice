@@ -52,6 +52,7 @@ class ArenaView(QFrame):
         self.deck_view.new_deck_button.hide()
         self.deck_view.load_deck_button.hide()
         self.deck_view.save_button.hide()
+        self.deck_view.hide_deck_action_buttons = True
 
         self.max_cards = 30
         self.round = 0

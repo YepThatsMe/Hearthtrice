@@ -425,6 +425,12 @@ class DeckView(QWidget):
         self.delete_deck_requested.emit(self.current_deck.id)
 
     def _show_deck_actions(self):
+        if getattr(self, 'hide_deck_action_buttons', False):
+            self.edit_deck_name_button.hide()
+            self.duplicate_deck_button.hide()
+            self.clear_deck_button.hide()
+            self.delete_deck_button.hide()
+            return
         self.edit_deck_name_button.show()
         self.duplicate_deck_button.show()
         self.clear_deck_button.show()
