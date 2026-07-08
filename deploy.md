@@ -29,9 +29,12 @@ sudo systemctl restart hearth-update-server.service
 ```
 
 Запустить скрипт 
+
 ```
 .venv\Scripts\python.exe deploy.py
 ```
+
+
 
 # Развертывание БД POSTGRE SQL
 
@@ -47,15 +50,20 @@ echo "host all all 0.0.0.0/0 md5"| tee -a /etc/postgresql/16/main/pg_hba.conf
 sudo -i -u postgres
 createuser --pwprompt --superuser --createdb --createrole --login --echo [NAME]
 # [ввести пароль]
+
+sudo systemctl restart postgresql
 ```
 
 В PgAdmin:
+
 - Server Name:          Ubuntu
 - Host name/address:    [IP]
 - Port:                 5432
 - Database:             postgres
 - User:                 [NAME]
 - Password:             [password]
+
+
 
 ### Экспорт/импорт БД
 
@@ -68,29 +76,57 @@ sudo apt update
 sudo apt install -y postgresql-client-17
 ```
 
-Экспорт:
+
+
+### Экспорт
+
+.bk для `pg_restore`:
 
 ```bash
 sudo -u postgres /usr/lib/postgresql/17/bin/pg_dump --dbname=hearth_db --format=custom --file=/var/lib/postgresql/hearth_db_$(date +%Y%m%d).bk
 ```
 
-Импорт:
-1. Создать базу данных (если не существует): 
-```
-sudo -u postgres createdb hearth_db
-````
-2. Восстановить из бэкапа:
+(запасной способ — plain SQL для `psql`):
 
 ```bash
-sudo -u postgres /usr/lib/postgresql/17/bin/pg_restore --dbname=hearth_db --verbose --clean --if-exists "/var/lib/postgresql/hearth_db_.bk"
+sudo -u postgres /usr/lib/postgresql/17/bin/pg_dump --dbname=hearth_db --file=/var/lib/postgresql/hearth_db_$(date +%Y%m%d).sql
 ```
 
-Файл бэкапа должен лежать в `/var/lib/postgresql/` (у пользователя postgres есть доступ). Версия pg_restore должна быть не ниже версии, которой делали бэкап.
 
 
+#### Через pgAdmin: ПКМ по БД → Backup → вкладка General → поле **Format**:
+
+- **Custom** — основной способ (файл `.backup` / `.bk`), восстановление через `pg_restore`
+- **Plain** — запасной (файл `.sql`), восстановление через `psql`
+
+### Импорт:
+
+1. Создать базу данных (если не существует):
+
+```
+sudo -u postgres createdb hearth_db
+```
+
+1. Восстановить из бэкапа  `.bk` через `pg_restore`:
+
+```bash
+sudo -u postgres /usr/lib/postgresql/17/bin/pg_restore --dbname=hearth_db --verbose --clean --if-exists "/var/lib/postgresql/hearth_db_YYYYMMDD.bk"
+```
+
+(запасной способ — из `.sql` через `psql`):
+
+```bash
+sudo -u postgres psql -d hearth_db -f /var/lib/postgresql/hearth_db_YYYYMMDD.sql
+```
+
+Файл бэкапа должен лежать в `/var/lib/postgresql/` (у пользователя postgres есть доступ). Для `.bk` версия `pg_restore` должна быть не ниже версии, которой делали бэкап. Форматы не смешивать: `.bk` — только `pg_restore`, `.sql` — только `psql`.
 
 # Установка сервера Cockatrice
+
+
+
 ## Сборка
+
 ```
 sudo apt-get update
 sudo apt-get install -y build-essential cmake git libprotobuf-dev protobuf-compiler \
@@ -114,19 +150,26 @@ cp ../servatrice/servatrice.ini.example servatrice/servatrice.ini
 ```
 
 (если есть ufw)
+
 ```
 sudo ufw allow 4747/tcp
 sudo ufw allow 4748/tcp
 sudo ufw reload
 ```
 
+
+
 ## Запуск:
+
 ```
 cd servatrice 
 ./servatrice --config servatrice.ini
 ```
 
+
+
 ## Сервис:
+
 ```
 mkdir /opt/servatrice
 sudo cp /root/Cockatrice/build/servatrice/servatrice /opt/servatrice
@@ -137,6 +180,7 @@ ls -l /opt/servatrice
 ```
 sudo vim /etc/systemd/system/servatrice.service
 ```
+
 ```
 [Unit]
 Description=Cockatrice Servatrice game server
@@ -164,7 +208,11 @@ sudo chown -R servatrice:servatrice /opt/servatrice
 sudo systemctl daemon-reload && sudo systemctl enable --now servatrice
 sudo systemctl start servatrice
 ```
-## Подключение 
+
+
+
+## Подключение
+
 ```
 Cockatrice -> Connect
 Server: New Host
@@ -176,3 +224,4 @@ Login:
 Player Name: [Имя игрока]
 Password: не нужен
 ```
+

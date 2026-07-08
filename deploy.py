@@ -53,23 +53,27 @@ def generate_version_json(directory: str, output_file: str) -> None:
 
     print(f"Хэш успешно записан в {output_file}")
 
-def remote_prepare_build(remote_user, remote_host):
-    ssh_cmd = [
-        "ssh",
+def remote_prepare_build(remote_user, remote_host, remote_port=None):
+    ssh_cmd = ["ssh"]
+    if remote_port:
+        ssh_cmd.extend(["-p", str(remote_port)])
+    ssh_cmd.extend([
         f"{remote_user}@{remote_host}",
         "rm -rf ~/hearth-build/*"
-    ]
+    ])
     subprocess.run(ssh_cmd, check=True)
 
-def remote_clean_app(remote_user, remote_host, app_name, version_file):
-    ssh_cmd = [
-        "ssh",
+def remote_clean_app(remote_user, remote_host, app_name, version_file, remote_port=None):
+    ssh_cmd = ["ssh"]
+    if remote_port:
+        ssh_cmd.extend(["-p", str(remote_port)])
+    ssh_cmd.extend([
         f"{remote_user}@{remote_host}",
         f"rm -rf ~/hearth-build/{app_name} ~/hearth-build/{version_file}"
-    ]
+    ])
     subprocess.run(ssh_cmd, check=True)
 
-def scp_deploy(source_dir, arcname, version_json, remote_user="user", remote_host="host"):
+def scp_deploy(source_dir, arcname, version_json, remote_user="user", remote_host="host", remote_port=None):
     """
     Архивирует всю папку source_dir в tar.gz (arcname - имя подпапки), отправляет архив и version.json на сервер,
     распаковывает архив в ~/hearth-build/, очищает временные файлы.
@@ -85,33 +89,41 @@ def scp_deploy(source_dir, arcname, version_json, remote_user="user", remote_hos
     with tarfile.open(archive_path, "w:gz") as tar:
         tar.add(source_dir, arcname=arcname)
 
-    scp_tar_cmd = [
-        "scp",
+    scp_tar_cmd = ["scp"]
+    if remote_port:
+        scp_tar_cmd.extend(["-P", str(remote_port)])
+    scp_tar_cmd.extend([
         archive_path,
         f"{remote_user}@{remote_host}:~/hearth-build/"
-    ]
+    ])
     subprocess.run(scp_tar_cmd, check=True)
 
-    ssh_untar_cmd = [
-        "ssh",
+    ssh_untar_cmd = ["ssh"]
+    if remote_port:
+        ssh_untar_cmd.extend(["-p", str(remote_port)])
+    ssh_untar_cmd.extend([
         f"{remote_user}@{remote_host}",
         f"tar -xzf ~/hearth-build/{archive_name} -C ~/hearth-build/"
-    ]
+    ])
     subprocess.run(ssh_untar_cmd, check=True)
 
-    ssh_rm_tar_cmd = [
-        "ssh",
+    ssh_rm_tar_cmd = ["ssh"]
+    if remote_port:
+        ssh_rm_tar_cmd.extend(["-p", str(remote_port)])
+    ssh_rm_tar_cmd.extend([
         f"{remote_user}@{remote_host}",
         f"rm ~/hearth-build/{archive_name}"
-    ]
+    ])
     subprocess.run(ssh_rm_tar_cmd, check=True)
 
     if os.path.exists(version_json):
-        scp_json_cmd = [
-            "scp",
+        scp_json_cmd = ["scp"]
+        if remote_port:
+            scp_json_cmd.extend(["-P", str(remote_port)])
+        scp_json_cmd.extend([
             version_json,
             f"{remote_user}@{remote_host}:~/hearth-build/"
-        ]
+        ])
         subprocess.run(scp_json_cmd, check=True)
         os.remove(version_json)
     else:
@@ -125,6 +137,7 @@ def scp_deploy(source_dir, arcname, version_json, remote_user="user", remote_hos
 if __name__ == "__main__":
     REMOTE_USER = "root"
     REMOTE_HOST = credentials.IP
+    REMOTE_PORT = getattr(credentials, "SSH_PORT", None)
 
     print("[1] - только Hearthtrice")
     print("[2] - только Cockatrice")
@@ -138,25 +151,25 @@ if __name__ == "__main__":
         print("Неверный ввод. Введите 1, 2, 3 или 4.")
 
     if choice == '4':
-        remote_prepare_build(REMOTE_USER, REMOTE_HOST)
+        remote_prepare_build(REMOTE_USER, REMOTE_HOST, REMOTE_PORT)
     elif choice == '1':
-        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Hearthtrice", "version.json")
+        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Hearthtrice", "version.json", REMOTE_PORT)
     elif choice == '2':
-        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Cockatrice", "version_cockatrice.json")
+        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Cockatrice", "version_cockatrice.json", REMOTE_PORT)
     elif choice == '3':
-        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Launcher", LAUNCHER_VERSION_JSON)
+        remote_clean_app(REMOTE_USER, REMOTE_HOST, "Launcher", LAUNCHER_VERSION_JSON, REMOTE_PORT)
 
     if choice in ['1', '4']:
         SOURCE_DIR_1 = os.path.join(ROOT, "dist", "HearthTrice")
         VERSION_JSON_1 = os.path.join(ROOT, "dist", "version.json")
         generate_version_json(SOURCE_DIR_1, VERSION_JSON_1)
-        scp_deploy(SOURCE_DIR_1, "Hearthtrice", VERSION_JSON_1, REMOTE_USER, REMOTE_HOST)
+        scp_deploy(SOURCE_DIR_1, "Hearthtrice", VERSION_JSON_1, REMOTE_USER, REMOTE_HOST, REMOTE_PORT)
 
     if choice in ['2', '4']:
         SOURCE_DIR_2 = os.path.join(ROOT, "dist", "Cockatrice")
         VERSION_JSON_2 = os.path.join(ROOT, "dist", "version_cockatrice.json")
         generate_version_json(SOURCE_DIR_2, VERSION_JSON_2)
-        scp_deploy(SOURCE_DIR_2, "Cockatrice", VERSION_JSON_2, REMOTE_USER, REMOTE_HOST)
+        scp_deploy(SOURCE_DIR_2, "Cockatrice", VERSION_JSON_2, REMOTE_USER, REMOTE_HOST, REMOTE_PORT)
 
     if choice in ['3', '4']:
         launcher_exe = os.path.join(ROOT, "dist", LAUNCHER_EXE_NAME)
@@ -170,4 +183,4 @@ if __name__ == "__main__":
                 shutil.copy2(launcher_exe, dest_exe)
             VERSION_JSON_LAUNCHER = os.path.join(ROOT, "dist", LAUNCHER_VERSION_JSON)
             generate_version_json(launcher_dir, VERSION_JSON_LAUNCHER)
-            scp_deploy(launcher_dir, "Launcher", VERSION_JSON_LAUNCHER, REMOTE_USER, REMOTE_HOST)
+            scp_deploy(launcher_dir, "Launcher", VERSION_JSON_LAUNCHER, REMOTE_USER, REMOTE_HOST, REMOTE_PORT)
