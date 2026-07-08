@@ -23,35 +23,35 @@ def calculate_file_hash(file_path: str, hash_algorithm="sha256") -> str:
             hasher.update(chunk)
     return hasher.hexdigest()
 
-def generate_version_json(directory: str, output_file: str) -> None:
-    """
-    Генерирует JSON с хешами всех файлов в директории.
-    Формат:
-    {
-      "version": "1.0",
-      "files": {
-        "file1.exe": "a1b2c3...",
-        "subdir/file2.dll": "d4e5f6..."
-      }
-    }
-    """
-    version_data = {
-        "version": f"{VERSION_MAJOR}.{VERSION_MINOR}",
-        "files": {}
-    }
 
-    for root, _, files in os.walk(directory):
-        for filename in files:
+def compute_manifest_hash(files: dict) -> str:
+    hasher = hashlib.sha256()
+    for path in sorted(files.keys()):
+        hasher.update(f"{path}:{files[path]}\n".encode("utf-8"))
+    return hasher.hexdigest()
+
+
+def generate_manifest(directory: str, output_file: str, version: str = None) -> None:
+    """Генерирует манифест приложения для лаунчера."""
+    files = {}
+    for root, _, filenames in os.walk(directory):
+        for filename in filenames:
+            if filename in (".manifest.json", ".launcher_manifest.json"):
+                continue
             file_path = os.path.join(root, filename)
-            rel_path = os.path.relpath(file_path, directory)
-            rel_path = rel_path.replace("\\", "/")
-            file_hash = calculate_file_hash(file_path)
-            version_data["files"][rel_path] = file_hash
+            rel_path = os.path.relpath(file_path, directory).replace("\\", "/")
+            files[rel_path] = calculate_file_hash(file_path)
+
+    manifest = {
+        "version": version or f"{VERSION_MAJOR}.{VERSION_MINOR}",
+        "files": files,
+    }
+    manifest["manifest_hash"] = compute_manifest_hash(files)
 
     with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(version_data, f, indent=4, ensure_ascii=False)
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
 
-    print(f"Хэш успешно записан в {output_file}")
+    print(f"Манифест записан в {output_file} ({len(files)} файлов)")
 
 def remote_prepare_build(remote_user, remote_host, remote_port=None):
     ssh_cmd = ["ssh"]
@@ -162,13 +162,13 @@ if __name__ == "__main__":
     if choice in ['1', '4']:
         SOURCE_DIR_1 = os.path.join(ROOT, "dist", "HearthTrice")
         VERSION_JSON_1 = os.path.join(ROOT, "dist", "version.json")
-        generate_version_json(SOURCE_DIR_1, VERSION_JSON_1)
+        generate_manifest(SOURCE_DIR_1, VERSION_JSON_1)
         scp_deploy(SOURCE_DIR_1, "Hearthtrice", VERSION_JSON_1, REMOTE_USER, REMOTE_HOST, REMOTE_PORT)
 
     if choice in ['2', '4']:
         SOURCE_DIR_2 = os.path.join(ROOT, "dist", "Cockatrice")
         VERSION_JSON_2 = os.path.join(ROOT, "dist", "version_cockatrice.json")
-        generate_version_json(SOURCE_DIR_2, VERSION_JSON_2)
+        generate_manifest(SOURCE_DIR_2, VERSION_JSON_2)
         scp_deploy(SOURCE_DIR_2, "Cockatrice", VERSION_JSON_2, REMOTE_USER, REMOTE_HOST, REMOTE_PORT)
 
     if choice in ['3', '4']:
@@ -182,5 +182,5 @@ if __name__ == "__main__":
             if dest_exe != launcher_exe:
                 shutil.copy2(launcher_exe, dest_exe)
             VERSION_JSON_LAUNCHER = os.path.join(ROOT, "dist", LAUNCHER_VERSION_JSON)
-            generate_version_json(launcher_dir, VERSION_JSON_LAUNCHER)
+            generate_manifest(launcher_dir, VERSION_JSON_LAUNCHER)
             scp_deploy(launcher_dir, "Launcher", VERSION_JSON_LAUNCHER, REMOTE_USER, REMOTE_HOST, REMOTE_PORT)

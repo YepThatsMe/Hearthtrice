@@ -1,4 +1,5 @@
 import os
+import json
 import hashlib
 import requests
 from pathlib import Path
@@ -18,19 +19,18 @@ else:
     BASE_DIR = SCRIPT_ROOT / "dist"
 
 LAUNCHER_EXE_NAME = "HearthtriceLauncher.exe"
-LAUNCHER_VERSION_JSON = "launcher_version.json"
-
-LOCAL_DIR = BASE_DIR / "Hearthtrice"
+LAUNCHER_MANIFEST_NAME = "launcher_version.json"
+MANIFEST_DIR_NAME = "launcher"
 
 APPS = [
     {
         "name": "Hearthtrice",
-        "version_json": "version.json",
+        "manifest": "version.json",
         "exe": "Hearthtrice.exe"
     },
     {
         "name": "Cockatrice",
-        "version_json": "version_cockatrice.json",
+        "manifest": "version_cockatrice.json",
         "exe": "Cockatrice.exe"
     }
 ]
@@ -97,7 +97,7 @@ def ping_server(ip):
 def test_server_connection(server_url):
     log_step(f"Проверка сервера обновлений {server_url}...")
     try:
-        response = requests.get(f"{server_url}/{LAUNCHER_VERSION_JSON}", timeout=10)
+        response = requests.get(f"{server_url}/{LAUNCHER_MANIFEST_NAME}", timeout=10)
         response.raise_for_status()
         log_ok("Сервер обновлений доступен")
         return True
@@ -146,12 +146,72 @@ def resolve_server_url():
         log_err("Подключение не удалось, проверьте данные и попробуйте снова")
 
 
-def get_file_hash(file_path: Path) -> str:
-    """Вычисляет SHA-256 хеш файла (если файл существует)."""
-    if not file_path.exists():
+def get_manifest_dir() -> Path:
+    local_app_data = os.getenv("LOCALAPPDATA")
+    if local_app_data:
+        return Path(local_app_data) / "Hearthtrice" / MANIFEST_DIR_NAME
+    return BASE_DIR / MANIFEST_DIR_NAME
+
+
+def get_app_manifest_path(app_name: str) -> Path:
+    return get_manifest_dir() / f"{app_name.lower()}.manifest.json"
+
+
+def get_launcher_manifest_path() -> Path:
+    return get_manifest_dir() / "launcher.manifest.json"
+
+
+def migrate_legacy_manifest(new_path: Path, legacy_path: Path):
+    if new_path.exists() or not legacy_path.exists():
+        return
+    try:
+        data = json.loads(legacy_path.read_text(encoding="utf-8"))
+        save_manifest(new_path, data)
+        legacy_path.unlink()
+    except Exception:
+        pass
+
+
+def load_manifest(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def save_manifest(path: Path, manifest: dict):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def fetch_manifest(server_url: str, manifest_name: str) -> dict:
+    response = requests.get(f"{server_url}/{manifest_name}", timeout=30)
+    response.raise_for_status()
+    return response.json()
+
+
+def manifests_match(server_manifest: dict, local_manifest: dict) -> bool:
+    server_hash = server_manifest.get("manifest_hash")
+    local_hash = local_manifest.get("manifest_hash")
+    if server_hash and local_hash:
+        return server_hash == local_hash
+    return server_manifest.get("files") == local_manifest.get("files")
+
+
+def manifest_files_present(manifest: dict, base_dir: Path) -> bool:
+    for rel_path in manifest.get("files", {}):
+        if not (base_dir / rel_path).exists():
+            return False
+    return True
+
+
+def file_sha256(path: Path) -> str:
+    if not path.exists():
         return ""
     hasher = hashlib.sha256()
-    with open(file_path, "rb") as f:
+    with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hasher.update(chunk)
     return hasher.hexdigest()
@@ -179,6 +239,35 @@ def download_file(url: str, save_path: Path):
     log_ok(f"Загружено: {save_path.name}")
 
 
+def sync_from_manifest(server_url: str, app_name: str, manifest_name: str, app_dir: Path):
+    server_manifest = fetch_manifest(server_url, manifest_name)
+    manifest_path = get_app_manifest_path(app_name)
+    migrate_legacy_manifest(manifest_path, app_dir / ".manifest.json")
+    local_manifest = load_manifest(manifest_path)
+
+    if app_name == "Hearthtrice" and "version" in server_manifest:
+        log_ok(f"{app_name}: версия на сервере {server_manifest['version']}")
+
+    if not local_manifest and manifest_files_present(server_manifest, app_dir):
+        save_manifest(manifest_path, server_manifest)
+        log_ok(f"{app_name}: актуально")
+        return
+
+    if manifests_match(server_manifest, local_manifest) and manifest_files_present(server_manifest, app_dir):
+        log_ok(f"{app_name}: актуально")
+        return
+
+    server_files = server_manifest.get("files", {})
+    local_files = local_manifest.get("files", {})
+    for rel_path, server_hash in server_files.items():
+        local_path = app_dir / rel_path
+        if local_files.get(rel_path) == server_hash and local_path.exists():
+            continue
+        download_file(f"{server_url}/{app_name}/{rel_path}", local_path)
+
+    save_manifest(manifest_path, server_manifest)
+
+
 def check_launcher_update(server_url):
     """Если есть новая версия лаунчера на сервере — скачивает, запускает bat-апдейтер и выходит."""
     if not getattr(sys, "frozen", False):
@@ -186,24 +275,29 @@ def check_launcher_update(server_url):
         return
     log_step("Проверка обновления лаунчера...")
     try:
-        response = requests.get(f"{server_url}/{LAUNCHER_VERSION_JSON}", timeout=10)
-        response.raise_for_status()
-        server_data = response.json()
+        server_manifest = fetch_manifest(server_url, LAUNCHER_MANIFEST_NAME)
     except Exception as e:
         log_warn(f"Не удалось проверить версию лаунчера: {e}")
         return
-    files = server_data.get("files", {})
-    server_hash = files.get(LAUNCHER_EXE_NAME)
-    if not server_hash:
-        log_ok("Обновление лаунчера не требуется")
+
+    manifest_path = get_launcher_manifest_path()
+    migrate_legacy_manifest(manifest_path, BASE_DIR / ".launcher_manifest.json")
+    local_manifest = load_manifest(manifest_path)
+    launcher_path = Path(sys.executable)
+    if launcher_path.name != LAUNCHER_EXE_NAME:
         return
-    current_exe = Path(sys.executable)
-    if current_exe.name != LAUNCHER_EXE_NAME:
-        return
-    local_hash = get_file_hash(current_exe)
-    if local_hash == server_hash:
+
+    if not local_manifest and launcher_path.exists():
+        server_hash = server_manifest.get("files", {}).get(LAUNCHER_EXE_NAME)
+        if server_hash and file_sha256(launcher_path) == server_hash:
+            save_manifest(manifest_path, server_manifest)
+            log_ok("Лаунчер актуален")
+            return
+
+    if manifests_match(server_manifest, local_manifest) and launcher_path.exists():
         log_ok("Лаунчер актуален")
         return
+
     log_warn("Доступна новая версия лаунчера, загрузка...")
     new_exe_path = BASE_DIR / "HearthtriceLauncher_new.exe"
     try:
@@ -211,6 +305,8 @@ def check_launcher_update(server_url):
     except Exception as e:
         log_err(f"Не удалось скачать новый лаунчер: {e}")
         return
+
+    save_manifest(manifest_path, server_manifest)
     log_step("Запуск обновления лаунчера...")
     bat = BASE_DIR / "launcher_updater.bat"
     bat.write_text(
@@ -234,7 +330,7 @@ def check_launcher_update(server_url):
 
 
 def check_updates():
-    """Сравнивает файлы с сервером и качает обновления для всех приложений."""
+    """Сравнивает манифесты с сервером и качает обновления для всех приложений."""
     enable_ansi()
     if not getattr(sys, "frozen", False):
         BASE_DIR.mkdir(parents=True, exist_ok=True)
@@ -245,23 +341,9 @@ def check_updates():
     had_error = False
     for app in APPS:
         app_dir = BASE_DIR / app["name"]
-        log_step(f"Проверка обновлений {app['name']}...")
+        log_step(f"Проверка манифеста {app['name']}...")
         try:
-            response = requests.get(f"{server_url}/{app['version_json']}", timeout=30)
-            response.raise_for_status()
-            server_data = response.json()
-
-            if 'version' in server_data and app['name'] == 'Hearthtrice':
-                log_ok(f"{app['name']}: версия на сервере {server_data['version']}")
-
-            files = server_data.get("files", {})
-            for filename, server_hash in files.items():
-                local_path = app_dir / filename
-                local_path.parent.mkdir(parents=True, exist_ok=True)
-                local_hash = get_file_hash(local_path)
-                if not local_hash or local_hash != server_hash:
-                    download_file(f"{server_url}/{app['name']}/{filename}", local_path)
-
+            sync_from_manifest(server_url, app["name"], app["manifest"], app_dir)
         except requests.exceptions.RequestException as e:
             log_err(f"Ошибка подключения к серверу для {app['name']}: {e}")
             os.system('pause')
