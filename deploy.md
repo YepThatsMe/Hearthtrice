@@ -99,6 +99,8 @@ sudo -u postgres /usr/lib/postgresql/17/bin/pg_dump --dbname=hearth_db --file=/v
 - **Custom** — основной способ (файл `.backup` / `.bk`), восстановление через `pg_restore`
 - **Plain** — запасной (файл `.sql`), восстановление через `psql`
 
+
+
 ### Импорт:
 
 1. Создать базу данных (если не существует):
@@ -135,6 +137,16 @@ sudo apt-get install -y build-essential cmake git libprotobuf-dev protobuf-compi
 
 ```
 git clone git@github.com:YepThatsMe/Cockatrice.git
+```
+
+Добавить ключ при необходимости:  [https://github.com/YepThatsMe/Cockatrice/settings/keys](https://github.com/YepThatsMe/Cockatrice/settings/keys)
+
+```
+ssh-keygen -t ed25519
+cat ~/.ssh/id_ed25519.pub 
+```
+
+```
 cd Cockatrice && git checkout hearthtrice
 ```
 
