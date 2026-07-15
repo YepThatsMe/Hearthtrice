@@ -80,7 +80,7 @@ class CacheManager:
             local_hahslist = self.__read_local_hashlist()
 
             metadata_list = []
-            for id, meta in local_hahslist.items():
+            for id, meta in sorted(local_hahslist.items()):
                 metadata = CardMetadata()
                 metadata.id = id
                 metadata.update(meta)
