@@ -74,6 +74,7 @@ class CacheManager:
                                             "attack": meta.attack,
                                             "health": meta.health,
                                             "tribe": meta.tribe,
+                                            "set": meta.dict().get("set") or "",
                                             "istoken": meta.istoken,
                                             "tokens": meta.tokens,
                                             "wip": bool(getattr(meta, "wip", False)),

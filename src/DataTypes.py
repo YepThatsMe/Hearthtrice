@@ -84,6 +84,7 @@ class CardMetadata:
     attack: int
     health: int
     tribe: str
+    set: str
 
     istoken: bool
     tokens: str

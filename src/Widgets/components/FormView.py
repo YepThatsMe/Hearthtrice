@@ -92,6 +92,10 @@ class FormView(QFrame):
         self.tribe_form = QLineEdit(self)
         self.tribe_form.setPlaceholderText("Раса")
 
+        self.set_label = FormLabel("Набор", self)
+        self.set_form = QLineEdit(self)
+        self.set_form.setPlaceholderText("Набор")
+
         self.comment_label = FormLabel("Заметка", self)
         self.comment_form = QTextEdit(self)
         self.comment_form.setPlaceholderText('Техническая заметка')
@@ -153,6 +157,10 @@ class FormView(QFrame):
         self.form_layout2.addWidget(self.comment_label)
         self.form_layout2.addWidget(self.comment_form)
 
+        self.form_layout2.addWidget(self.set_label)
+        self.form_layout2.addWidget(self.set_form)
+        self.form_layout2.addSpacing(15)
+
         self.form_layout2.addWidget(self.istoken_form)
 
         self.form_layout2.addWidget(self.wip_form)
@@ -185,6 +193,7 @@ class FormView(QFrame):
             "attack": self.attack_form.value(),
             "health": self.health_form.value(),
             "tribe": self.tribe_form.text(),
+            "set": self.set_form.text(),
             "comment": self.comment_form.toPlainText(),
             "command": self.activation_command_line.text(),
             "istoken": self.istoken_form.isChecked,
@@ -217,6 +226,7 @@ class FormView(QFrame):
         self.mana_form.setValue(0)
         self.rarity_form.set_checked_button_index(0)
         self.tribe_form.setText("")
+        self.set_form.setText("")
         self.comment_form.setText("")
         self.activation_command_line.setText("")
         self.tokenstable_form.clear()

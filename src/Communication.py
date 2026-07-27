@@ -60,7 +60,7 @@ class CommunicationPostgres:
             print("Connection is not established.")
             return []
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", card_image, hash
         FROM {TABLE}
         WHERE card_image IS NOT NULL;
         """
@@ -82,7 +82,7 @@ class CommunicationPostgres:
             return []
         placeholders = ', '.join(['%s'] * len(ids))
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash 
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", card_image, hash 
         FROM {TABLE} WHERE id IN ({placeholders}) AND card_image IS NOT NULL;
         """
         try:
@@ -103,7 +103,7 @@ class CommunicationPostgres:
             return None
         table = STD_TABLE if from_std else TABLE
         query = f"""
-        SELECT id, picture, move_x, move_y, zoom
+        SELECT id, picture, move_x, move_y, zoom, wip, "set"
         FROM {table} WHERE id = %s AND card_image IS NOT NULL;
         """
         try:
@@ -138,7 +138,7 @@ class CommunicationPostgres:
             print("Connection is not established.")
             return []
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", card_image, hash
         FROM {STD_TABLE}
         WHERE card_image IS NOT NULL;
         """
@@ -160,7 +160,7 @@ class CommunicationPostgres:
             return []
         placeholders = ', '.join(['%s'] * len(ids))
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", card_image, hash
         FROM {STD_TABLE} WHERE id IN ({placeholders}) AND card_image IS NOT NULL;
         """
         try:
@@ -195,8 +195,8 @@ class CommunicationPostgres:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
         query = f"""
-        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, picture, move_x, move_y, zoom, card_image, hash)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", picture, move_x, move_y, zoom, card_image, hash)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         params = (
             metadata.name,
@@ -213,6 +213,7 @@ class CommunicationPostgres:
             metadata.comment,
             metadata.command,
             bool(getattr(metadata, "wip", False)),
+            metadata.dict().get("set") or "",
             metadata.picture,
             metadata.move_x,
             metadata.move_y,
@@ -237,6 +238,7 @@ class CommunicationPostgres:
         table = STD_TABLE if isinstance(metadata, StdMetadata) else TABLE
         istoken = bool(metadata.istoken) if table == STD_TABLE else metadata.istoken
         wip = bool(getattr(metadata, "wip", False))
+        card_set = metadata.dict().get("set") or ""
         query = f"""
             UPDATE {table}
             SET name = %s,
@@ -253,6 +255,7 @@ class CommunicationPostgres:
                 comment = %s,
                 command = %s,
                 wip = %s,
+                "set" = %s,
                 picture = %s,
                 move_x = %s,
                 move_y = %s,
@@ -276,6 +279,7 @@ class CommunicationPostgres:
             metadata.comment,
             metadata.command,
             wip,
+            card_set,
             metadata.picture,
             metadata.move_x,
             metadata.move_y,
@@ -546,7 +550,7 @@ class CommunicationMS:
             print("Connection is not established.")
             return
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash FROM {TABLE} where card_image is not null;
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", card_image, hash FROM {TABLE} where card_image is not null;
         """
 
         try:
@@ -566,7 +570,7 @@ class CommunicationMS:
             return Response(False, "Empty ID list")
         
         placeholders = ", ".join("?" for _ in ids)
-        query = f"SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash FROM {TABLE} WHERE id IN ({placeholders}) and card_image is not null"
+        query = f'SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", card_image, hash FROM {TABLE} WHERE id IN ({placeholders}) and card_image is not null'
 
         try:
             self.cursor.execute(query, ids)
@@ -585,7 +589,7 @@ class CommunicationMS:
             return Response(False, "Empty ID")
         
         params = ( id )
-        query = f"SELECT id, picture, move_x, move_y, zoom FROM {TABLE} WHERE id IN (?) and card_image is not null"
+        query = f'SELECT id, picture, move_x, move_y, zoom, wip, "set" FROM {TABLE} WHERE id IN (?) and card_image is not null'
 
         try:
             self.cursor.execute(query, params)
@@ -615,8 +619,8 @@ class CommunicationMS:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
         query = f"""
-        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, picture, move_x, move_y, zoom, card_image, hash)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, "set", picture, move_x, move_y, zoom, card_image, hash)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
         # Параметры (кроме id) передаются в execute в виде кортежа
         params = (  metadata.name,
@@ -633,6 +637,7 @@ class CommunicationMS:
                     metadata.comment,
                     metadata.command,
                     bool(getattr(metadata, "wip", False)),
+                    metadata.dict().get("set") or "",
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,
@@ -671,6 +676,7 @@ class CommunicationMS:
                 comment = ?,
                 command = ?,
                 wip = ?,
+                "set" = ?,
                 picture = ?,
                 move_x = ?,
                 move_y = ?,
@@ -693,6 +699,7 @@ class CommunicationMS:
                     metadata.comment,
                     metadata.command,
                     bool(getattr(metadata, "wip", False)),
+                    metadata.dict().get("set") or "",
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,

@@ -230,11 +230,12 @@ class CardBuilderView(QFrame):
         self.form.mana_form.setValue(metadata.manacost or 0)
         self.form.rarity_form.set_checked_button_index((metadata.rarity or 1) - 1)
         self.form.tribe_form.setText(metadata.tribe or "")
+        self.form.set_form.setText(metadata.dict().get("set") or "")
         self.form.comment_form.setText(metadata.comment or "")
         self.form.activation_command_line.setText(metadata.command or "")
         self.form.istoken_form.setChecked(bool(metadata.istoken))
         self.form.tokenstable_form.populate_table(metadata.tokens or "")
-        self.form.wip_form.setChecked(bool(getattr(metadata, "wip", False)))
+        self.form.wip_form.setChecked(bool(metadata.dict().get("wip", False)))
         
         self.block_form_signals(False)
         

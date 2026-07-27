@@ -264,6 +264,9 @@ class LibraryView(QFrame):
                 self.no_tokens_toggle.blockSignals(False)
         else:
             self.stack.setCurrentIndex(0)
+            self.classtype_filter.blockSignals(True)
+            self.classtype_filter.setCurrentIndex(0)
+            self.classtype_filter.blockSignals(False)
         self.on_filter_changed()
 
     def _ensure_std_default_class(self):

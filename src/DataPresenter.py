@@ -32,8 +32,9 @@ class DataPresenter(QObject):
         meta.comment = params_list[12]
         meta.command = params_list[13]
         meta.wip = bool(params_list[14]) if params_list[14] is not None else False
-        meta.card_image = params_list[15]
-        meta.hash = params_list[16]
+        meta.__dict__["set"] = params_list[15] or ""
+        meta.card_image = params_list[16]
+        meta.hash = params_list[17]
         return meta
 
     def get_library(self, ids: List[int] = None) -> List[CardMetadata]:
@@ -89,6 +90,8 @@ class DataPresenter(QObject):
         meta.move_x = raw_edit_data[2]
         meta.move_y = raw_edit_data[3]
         meta.zoom = raw_edit_data[4]
+        meta.wip = bool(raw_edit_data[5]) if len(raw_edit_data) > 5 and raw_edit_data[5] is not None else False
+        meta.__dict__["set"] = (raw_edit_data[6] or "") if len(raw_edit_data) > 6 else ""
         
         return meta 
 
