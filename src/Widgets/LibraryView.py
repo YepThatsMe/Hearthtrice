@@ -8,6 +8,7 @@ from PyQt5.QtGui import QIcon
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
 from Widgets.components.ScrollableGrid import ScrollableGrid
+from Widgets.components.IconFilterGroup import IconFilterGroup
 from Widgets.InfoBase import InfoBaseWidget
 
 from utils.BytesEncoder import bytes_to_pixmap
@@ -128,7 +129,18 @@ class LibraryView(QFrame):
         self.content_stack.addWidget(self.stack)
         self.content_stack.addWidget(self.infobase_widget)
 
-        self.filter_layout = QHBoxLayout()
+        self.filter_outer = QHBoxLayout()
+        self.filter_outer.setContentsMargins(0, 0, 0, 0)
+        self.filter_outer.setSpacing(6)
+
+        self.filter_layout = QVBoxLayout()
+        self.filter_layout.setContentsMargins(8, 8, 0, 8)
+        self.filter_layout.setSpacing(6)
+
+        self.filter_top_row = QHBoxLayout()
+        self.filter_mana_row = QHBoxLayout()
+        self.filter_class_row = QHBoxLayout()
+        self.filter_rarity_row = QHBoxLayout()
 
         self.reset_filter_button = QPushButton("Очистить", self)
         self.reset_filter_button.clicked.connect(self.reset_filter)
@@ -143,44 +155,97 @@ class LibraryView(QFrame):
         self.name_filter.setPlaceholderText("Поиск...")
         self.name_filter.textChanged.connect(self.on_filter_changed)
 
-        self.cardtype_filter = QComboBox(self)
-        self.cardtype_filter.addItems(["Тип", "Minion", "Spell", "Weapon", "Hero"])
-        self.cardtype_filter.currentIndexChanged.connect(self.on_filter_changed)
+        self.manacost_filter = IconFilterGroup(
+            IconFilterGroup.make_mana_icons(44),
+            button_width=48,
+            button_height=48,
+            tooltips=[str(i) for i in range(10)] + ["10+"],
+            parent=self,
+        )
+        self.manacost_filter.currentIndexChanged.connect(self.on_filter_changed)
 
-        self.rarity_filter = QComboBox(self)
-        self.rarity_filter.addItems(["Редкость", "None", "Common", "Rare", "Epic", "Legendary"])
-        self.rarity_filter.currentIndexChanged.connect(self.on_filter_changed)
-
-        self.classtype_filter = QComboBox(self)
-        self.classtype_filter.addItems(["Класс", "Neutral", "Mage", "Hunter", "Paladin", "Warrior", "Druid", "Rogue", "Priest", "Warlock", "Shaman"])
+        self.classtype_filter = IconFilterGroup(
+            [f":icons/classicons/icon_{i}.png" for i in range(10)],
+            button_width=56,
+            button_height=52,
+            tooltips=["Neutral", "Mage", "Hunter", "Paladin", "Warrior",
+                      "Druid", "Rogue", "Priest", "Warlock", "Shaman"],
+            parent=self,
+        )
         self.classtype_filter.currentIndexChanged.connect(self.on_filter_changed)
 
-        self.manacost_filter = QComboBox(self)
-        self.manacost_filter.addItems(["Мана", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"])
-        self.manacost_filter.currentIndexChanged.connect(self.on_filter_changed)
+        self.rarity_filter = IconFilterGroup(
+            [
+                None,
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Common.png",
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Rare.png",
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Epic.png",
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Legendary.png",
+            ],
+            button_width=64,
+            button_height=48,
+            tooltips=["None", "Common", "Rare", "Epic", "Legendary"],
+            parent=self,
+        )
+        self.rarity_filter.currentIndexChanged.connect(self.on_filter_changed)
+
+        self.cardtype_filter = IconFilterGroup(
+            [
+                "icons/minion_icon.png",
+                "icons/spell_icon.png",
+                "icons/weapon_icon.png",
+                "icons/hero_icon.png",
+            ],
+            button_width=64,
+            button_height=56,
+            tooltips=["Minion", "Spell", "Weapon", "Hero"],
+            vertical=True,
+            parent=self,
+        )
+        self.cardtype_filter.currentIndexChanged.connect(self.on_filter_changed)
 
         self.no_tokens_toggle = ToggleButton("Без токенов", self)
         self.no_tokens_toggle.toggled.connect(self.on_filter_changed)
-        
+
         self.standard_only_toggle = ToggleButton("Стандартные", self)
         self.standard_only_toggle.toggled.connect(self.switch_to_standard_grid)
-        
-        self.filter_layout.addWidget(self.reset_filter_button)
-        self.filter_layout.addWidget(self.name_filter)
-        self.filter_layout.addWidget(self.roll_button)
-        self.filter_layout.addWidget(self.manacost_filter)
-        self.filter_layout.addWidget(self.rarity_filter)
-        self.filter_layout.addWidget(self.classtype_filter)
-        self.filter_layout.addWidget(self.cardtype_filter)
-        self.filter_layout.addWidget(self.no_tokens_toggle)
-        self.filter_layout.addWidget(self.standard_only_toggle)
+
+        self.filter_top_row.addWidget(self.reset_filter_button)
+        self.filter_top_row.addWidget(self.name_filter, stretch=1)
+        self.filter_top_row.addWidget(self.roll_button)
+        self.filter_top_row.addWidget(self.no_tokens_toggle)
+        self.filter_top_row.addWidget(self.standard_only_toggle)
+
+        self.filter_mana_row.addWidget(self.manacost_filter, stretch=1)
+        self.filter_class_row.addWidget(self.classtype_filter, stretch=1)
+        self.filter_rarity_row.addWidget(self.rarity_filter, stretch=1)
+
+        self.filter_layout.addLayout(self.filter_top_row)
+        self.filter_layout.addLayout(self.filter_mana_row)
+        self.filter_layout.addLayout(self.filter_class_row)
+        self.filter_layout.addLayout(self.filter_rarity_row)
+
+        self.filter_outer.addLayout(self.filter_layout, stretch=1)
+        self.filter_outer.addWidget(self.cardtype_filter)
 
         self.filter_container = QWidget(self)
-        self.filter_container.setLayout(self.filter_layout)
+        self.filter_container.setLayout(self.filter_outer)
+        self.filter_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.filter_container.setMinimumHeight(230)
 
-        self.sub_gen_layout.addLayout(self.control_layout)
-        self.sub_gen_layout.addWidget(self.content_stack)
-        self.sub_gen_layout.addWidget(self.filter_container)
+        gallery_min_h = 280 * 2 + 24
+        self.content_stack.setMinimumHeight(gallery_min_h)
+        self.content_stack.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.main_gallery_grid.setMinimumHeight(gallery_min_h)
+        self.std_gallery_grid.setMinimumHeight(gallery_min_h)
+        self.stack.setMinimumHeight(gallery_min_h)
+
+        self.sub_gen_layout.addLayout(self.control_layout, stretch=0)
+        self.sub_gen_layout.addWidget(self.content_stack, stretch=1)
+        self.sub_gen_layout.addWidget(self.filter_container, stretch=0)
+        self.sub_gen_layout.setStretch(0, 0)
+        self.sub_gen_layout.setStretch(1, 1)
+        self.sub_gen_layout.setStretch(2, 0)
 
         self.sub_gen_layout_2.addWidget(self.deck_view)
         self.sub_gen_layout_2.addWidget(self.launch_button)
@@ -354,6 +419,7 @@ class LibraryView(QFrame):
         self.cardtype_filter.setCurrentIndex(0)
         self.classtype_filter.setCurrentIndex(0)
         self.manacost_filter.setCurrentIndex(0)
+        self.rarity_filter.setCurrentIndex(0)
         if self.standard_only_toggle.isChecked:
             self.standard_only_toggle.toggleState()
 

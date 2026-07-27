@@ -26,6 +26,10 @@
     <file>icons/typeicons/icon_1.png</file>
     <file>icons/typeicons/icon_2.png</file>
     <file>icons/typeicons/icon_3.png</file>
+    <file>icons/minion_icon.png</file>
+    <file>icons/spell_icon.png</file>
+    <file>icons/weapon_icon.png</file>
+    <file>icons/hero_icon.png</file>
     <file>start_card.png</file>
     <file>Cardbuilder/card_scheme.png</file>
     <file>Cardbuilder/custom classes/card_minion_archmage.png</file>

@@ -112,9 +112,12 @@ class MainMediator(QMainWindow):
         screen = QDesktopWidget().availableGeometry()
         screen_width = screen.width()
         screen_height = screen.height()
-        x = (screen_width - 1100) // 2
-        y = (screen_height - 800) // 2
-        self.setGeometry(x, y, 1100, 800)
+        win_w, win_h = 1280, 940
+        x = max(0, (screen_width - win_w) // 2)
+        y = max(0, (screen_height - win_h) // 2)
+        self.setMinimumSize(1200, 900)
+        self.resize(win_w, win_h)
+        self.move(x, y)
 
     def on_connection_response_received(self, response: Response):
         if response.ok:

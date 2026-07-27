@@ -31,8 +31,16 @@ class FormView(QFrame):
         self.layout_inlay_health = QVBoxLayout()
         
 
-        self.cardtype_button_group = ExclusiveButtonGroup(4, r":icons\typeicons", 0, 0, self)
-        self.cardtype_button_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.cardtype_button_group = ExclusiveButtonGroup(
+            4, None, 0, 1, self,
+            icon_files=[
+                "icons/minion_icon.png",
+                "icons/spell_icon.png",
+                "icons/weapon_icon.png",
+                "icons/hero_icon.png",
+            ],
+        )
+        self.cardtype_button_group.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
         # TODO: implement weapon and hero generator
         self.cardtype_button_group.buttons[3].setEnabled(False)
 

@@ -1,18 +1,26 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QScrollArea, QWidget, QGridLayout, QPushButton, QLabel
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QScrollArea, QWidget, QGridLayout, QSizePolicy
+from PyQt5.QtCore import Qt
+
 
 class ScrollableGrid(QFrame):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.initUI()
 
     def initUI(self):
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
         self.scrollArea = QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scrollArea.setFrameShape(QFrame.NoFrame)
+
         self.scrollAreaWidgetContents = QWidget()
         self.grid_layout = QGridLayout(self.scrollAreaWidgetContents)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.scrollArea.setWidgetResizable(True)
 
         self.layout.addWidget(self.scrollArea)
 
