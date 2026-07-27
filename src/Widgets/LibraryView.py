@@ -155,6 +155,13 @@ class LibraryView(QFrame):
         self.name_filter.setPlaceholderText("Поиск...")
         self.name_filter.textChanged.connect(self.on_filter_changed)
 
+        self.set_filter = QComboBox(self)
+        self.set_filter.addItem("Набор")
+        self.set_filter.setMinimumWidth(140)
+        self.set_filter.currentIndexChanged.connect(self.on_filter_changed)
+        self.custom_sets: List[str] = []
+        self.std_sets: List[str] = []
+
         self.manacost_filter = IconFilterGroup(
             IconFilterGroup.make_mana_icons(44),
             button_width=48,
@@ -212,6 +219,7 @@ class LibraryView(QFrame):
 
         self.filter_top_row.addWidget(self.reset_filter_button)
         self.filter_top_row.addWidget(self.name_filter, stretch=1)
+        self.filter_top_row.addWidget(self.set_filter)
         self.filter_top_row.addWidget(self.roll_button)
         self.filter_top_row.addWidget(self.no_tokens_toggle)
         self.filter_top_row.addWidget(self.standard_only_toggle)
@@ -267,7 +275,45 @@ class LibraryView(QFrame):
             self.classtype_filter.blockSignals(True)
             self.classtype_filter.setCurrentIndex(0)
             self.classtype_filter.blockSignals(False)
+        self._reload_set_filter_items()
         self.on_filter_changed()
+
+    def set_available_sets(self, custom_sets: List[str], std_sets: List[str],
+                           custom_map: dict = None, std_map: dict = None):
+        if custom_map:
+            self._apply_set_map(self.card_widgets, custom_map)
+        if std_map:
+            self._apply_set_map(self.std_card_widgets, std_map)
+        self.custom_sets = list(custom_sets or [])
+        self.std_sets = list(std_sets or [])
+        if not self.custom_sets and custom_map:
+            self.custom_sets = sorted({v for v in custom_map.values() if v})
+        if not self.std_sets and std_map:
+            self.std_sets = sorted({v for v in std_map.values() if v})
+        self._reload_set_filter_items()
+        if self.set_filter.currentIndex():
+            self.on_filter_changed()
+
+    def _apply_set_map(self, widgets: List[CardWidget], set_map: dict):
+        for widget in widgets:
+            card_id = getattr(widget.metadata, "id", None)
+            if card_id is None:
+                continue
+            if int(card_id) in set_map:
+                widget.metadata.__dict__["set"] = set_map[int(card_id)] or ""
+
+    def _reload_set_filter_items(self):
+        current = self.set_filter.currentText() if self.set_filter.currentIndex() > 0 else ""
+        sets = self.std_sets if self.standard_only_toggle.isChecked else self.custom_sets
+        self.set_filter.blockSignals(True)
+        self.set_filter.clear()
+        self.set_filter.addItem("Набор")
+        self.set_filter.addItems(sets)
+        if current and current in sets:
+            self.set_filter.setCurrentText(current)
+        else:
+            self.set_filter.setCurrentIndex(0)
+        self.set_filter.blockSignals(False)
 
     def _ensure_std_default_class(self):
         if not self.standard_only_toggle.isChecked:
@@ -390,6 +436,7 @@ class LibraryView(QFrame):
         is_empty = is_empty & ( not self.cardtype_filter.currentIndex() )
         is_empty = is_empty & ( not self.classtype_filter.currentIndex() )
         is_empty = is_empty & ( not self.manacost_filter.currentIndex() )
+        is_empty = is_empty & ( not self.set_filter.currentIndex() )
         is_empty = is_empty & ( not self.no_tokens_toggle.isChecked )
         is_empty = is_empty & ( not self.standard_only_toggle.isChecked )
         return is_empty
@@ -412,6 +459,9 @@ class LibraryView(QFrame):
                 match = match & ( card.metadata.manacost >= 10 )
             else:
                 match = match & ( self.manacost_filter.currentIndex() == card.metadata.manacost + 1 )
+        if self.set_filter.currentIndex():
+            card_set = card.metadata.dict().get("set") or ""
+            match = match & ( card_set == self.set_filter.currentText() )
         if self.no_tokens_toggle.isChecked:
             match = match & ( not card.metadata.istoken )
 
@@ -423,6 +473,7 @@ class LibraryView(QFrame):
         self.classtype_filter.setCurrentIndex(0)
         self.manacost_filter.setCurrentIndex(0)
         self.rarity_filter.setCurrentIndex(0)
+        self.set_filter.setCurrentIndex(0)
         if self.standard_only_toggle.isChecked:
             self.standard_only_toggle.toggleState()
 

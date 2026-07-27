@@ -132,6 +132,22 @@ class DataPresenter(QObject):
             })
         return hashes_by_ids
 
+    def get_card_sets(self) -> dict:
+        if not self.comm.is_connected:
+            print("Connection is not established")
+            return {"custom": [], "std": [], "custom_map": {}, "std_map": {}}
+        custom_map = self.comm.fetch_set_map(False)
+        std_map = self.comm.fetch_set_map(True)
+        custom_sets = sorted({v for v in custom_map.values() if v})
+        std_sets = sorted({v for v in std_map.values() if v})
+        print(f"Sets loaded: custom={len(custom_sets)} std={len(std_sets)}")
+        return {
+            "custom": custom_sets,
+            "std": std_sets,
+            "custom_map": custom_map,
+            "std_map": std_map,
+        }
+
     def create_new_deck(self, deck_name: str) -> Tuple:
         if not self.comm.is_connected:
             print("Connection is not established")

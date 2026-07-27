@@ -219,12 +219,30 @@ class MainMediator(QMainWindow):
 
         def callback(cached_library):
             self.library_view.set_updated_std_library(cached_library)
+            self._refresh_set_filters()
         send_to_thread(self, self.std_cache_manager.get_cache, callback)
 
     def update_std_library_from_cache(self):
         def callback(cached_library):
             self.library_view.set_updated_std_library(cached_library)
+            self._refresh_set_filters()
         send_to_thread(self, self.std_cache_manager.get_cache, callback)
+
+    def _refresh_set_filters(self):
+        def callback(sets_data):
+            if not sets_data:
+                return
+            custom_map = sets_data.get("custom_map") or {}
+            std_map = sets_data.get("std_map") or {}
+            self.cache_manager.patch_sets(custom_map)
+            self.std_cache_manager.patch_sets(std_map)
+            self.library_view.set_available_sets(
+                sets_data.get("custom", []),
+                sets_data.get("std", []),
+                custom_map,
+                std_map,
+            )
+        send_to_thread(self, self.data_presenter.get_card_sets, callback)
 
     def on_deck_created(self, new_deck_data: tuple):
         if not new_deck_data:
@@ -303,6 +321,7 @@ class MainMediator(QMainWindow):
             if hasattr(metadata, 'id') and metadata.id:
                 self.cache_manager.save_cache([metadata])
             NotificationWidget(self, "Карта загружена в библиотеку.", "success")
+            self._refresh_set_filters()
         else:
             NotificationWidget(self, f"Ошибка: {response.msg}", "error")
 
@@ -321,6 +340,7 @@ class MainMediator(QMainWindow):
                 else:
                     self.cache_manager.save_cache([metas[0]])
             NotificationWidget(self, "Карта изменена.", "success")
+            self._refresh_set_filters()
         else:
             NotificationWidget(self, f"Ошибка: {response.msg}", "error")
 

@@ -231,6 +231,7 @@ class CardBuilderView(QFrame):
         self.form.rarity_form.set_checked_button_index((metadata.rarity or 1) - 1)
         self.form.tribe_form.setText(metadata.tribe or "")
         self.form.set_form.setText(metadata.dict().get("set") or "")
+        self.form.set_form.setReadOnly(isinstance(metadata, StdMetadata))
         self.form.comment_form.setText(metadata.comment or "")
         self.form.activation_command_line.setText(metadata.command or "")
         self.form.istoken_form.setChecked(bool(metadata.istoken))
@@ -256,6 +257,7 @@ class CardBuilderView(QFrame):
 
     def reset(self):
         self.form.reset()
+        self.form.set_form.setReadOnly(False)
 
         self.upload_mode = CardBuilderView.UploadMode.NEW
         self.upload_button.setText("Загрузить в библиотеку")

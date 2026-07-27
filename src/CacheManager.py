@@ -121,6 +121,28 @@ class CacheManager:
             print(f"get_cache error: {e}")
             return []
 
+    def patch_sets(self, set_map: dict):
+        if not set_map:
+            return
+        try:
+            local_hashlist = self.__read_local_hashlist()
+            changed = 0
+            for card_id, card_set in set_map.items():
+                key = int(card_id)
+                if key not in local_hashlist:
+                    continue
+                old = local_hashlist[key].get("set") or ""
+                new = card_set or ""
+                if old != new:
+                    local_hashlist[key]["set"] = new
+                    changed += 1
+            if changed:
+                self.__save_local_hashlist(local_hashlist)
+                print(f"Patched set field in cache: {changed} cards ({os.path.basename(self.cache_dir)})")
+        except Exception as e:
+            traceback.print_exc()
+            print(f"patch_sets error: {e}")
+
     def _resolve_image_path(self, card_id: int, name: str, name_counts: Optional[dict] = None) -> Optional[str]:
         new_path = self._image_path(card_id, name)
         if os.path.isfile(new_path):

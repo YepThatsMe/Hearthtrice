@@ -190,6 +190,51 @@ class CommunicationPostgres:
             self._safe_rollback()
             return []
 
+    def fetch_distinct_sets(self, from_std: bool = False) -> List[str]:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return []
+        table = STD_TABLE if from_std else TABLE
+        query = f"""
+        SELECT DISTINCT "set"
+        FROM {table}
+        WHERE "set" IS NOT NULL AND BTRIM("set") <> ''
+        ORDER BY "set";
+        """
+        try:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            return [row[0] for row in rows if row and row[0]]
+        except psycopg2.Error as e:
+            print(f"Fetch sets error ({table}): {e}")
+            self._safe_rollback()
+            return []
+
+    def fetch_set_map(self, from_std: bool = False) -> dict:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return {}
+        table = STD_TABLE if from_std else TABLE
+        query = f"""
+        SELECT id, "set"
+        FROM {table}
+        WHERE card_image IS NOT NULL;
+        """
+        try:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            result = {}
+            for row in rows:
+                if not row:
+                    continue
+                card_id, card_set = row[0], row[1]
+                result[int(card_id)] = card_set or ""
+            return result
+        except psycopg2.Error as e:
+            print(f"Fetch set map error ({table}): {e}")
+            self._safe_rollback()
+            return {}
+
     def upload_card(self, metadata: CardMetadata) -> Response:
         if not self.is_connected:
             print('Connection is not established.')

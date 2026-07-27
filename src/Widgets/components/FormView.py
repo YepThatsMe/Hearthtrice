@@ -22,8 +22,11 @@ class FormView(QFrame):
         self.gen_layout = QVBoxLayout()
         self.subgen_layout = QVBoxLayout()
         self.form_layout = QHBoxLayout()
+        self.form_layout.setAlignment(Qt.AlignTop)
         self.form_layout1 = QVBoxLayout()
+        self.form_layout1.setAlignment(Qt.AlignTop)
         self.form_layout2 = QVBoxLayout()
+        self.form_layout2.setAlignment(Qt.AlignTop)
         self.layout_inlay1 = QHBoxLayout()
 
         self.layout_inlay_mana = QVBoxLayout()
@@ -156,6 +159,7 @@ class FormView(QFrame):
 
         self.form_layout2.addWidget(self.comment_label)
         self.form_layout2.addWidget(self.comment_form)
+        self.form_layout2.addSpacing(15)
 
         self.form_layout2.addWidget(self.set_label)
         self.form_layout2.addWidget(self.set_form)
@@ -164,6 +168,7 @@ class FormView(QFrame):
         self.form_layout2.addWidget(self.istoken_form)
 
         self.form_layout2.addWidget(self.wip_form)
+        self.form_layout2.addSpacing(15)
 
         self.form_layout2.addWidget(self.tokenstable_label)
         self.form_layout2.addWidget(self.tokenstable_form)
@@ -171,8 +176,10 @@ class FormView(QFrame):
         self.form_layout2.addWidget(self.activation_command_label)
         self.form_layout2.addWidget(self.activation_command_line)
 
-        self.form_layout.addLayout(self.form_layout1)
-        self.form_layout.addLayout(self.form_layout2)
+        self.form_layout2.addStretch()
+
+        self.form_layout.addLayout(self.form_layout1, stretch=1)
+        self.form_layout.addLayout(self.form_layout2, stretch=1)
 
         self.subgen_layout.addWidget(self.cardtype_button_group)
         self.subgen_layout.addWidget(self.class_button_group)
