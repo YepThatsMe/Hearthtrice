@@ -8,7 +8,7 @@ from PIL import Image
 
 from CacheManager import CacheManager
 from utils.BytesEncoder import bytes_to_pixmap, pil_to_bytes, pixmap_to_bytes, pil_to_pixmap
-from DataTypes import CardMetadata, CardType
+from DataTypes import CardMetadata, CardType, StdMetadata
 from Widgets.components.FormView import FormView
 from Widgets.components.CardPreview import CardPreview
 from ImageGenerator.CardImageGenerator import GenerationError
@@ -203,30 +203,37 @@ class CardBuilderView(QFrame):
         self.block_form_signals(True)
         
         self.upload_mode = CardBuilderView.UploadMode.EDIT
-        self.card_metadata = CardMetadata()
+        if isinstance(metadata, StdMetadata):
+            self.card_metadata = StdMetadata()
+            self.card_previous_version = StdMetadata()
+        else:
+            self.card_metadata = CardMetadata()
+            self.card_previous_version = CardMetadata()
         self.card_metadata.update(metadata.dict())
-        self.card_previous_version = CardMetadata()
         self.card_previous_version.update(metadata.dict())
 
         self.upload_button.setText("Изменить")
         self.upload_button.setStyleSheet('QPushButton{background-color: #FFF68F;}')
-        self.picture = bytes_to_pixmap(metadata.picture)
-        self.card_preview.move_x = metadata.move_x
-        self.card_preview.move_y = metadata.move_y
-        self.card_preview.zoom = metadata.zoom
-        self.form.class_button_group.set_checked_button_index(metadata.classtype-1)
-        self.form.cardtype_button_group.set_checked_button_index(metadata.cardtype-1)
-        self.form.name_form.setText(metadata.name)
-        self.form.description_form.setText(metadata.description)
-        self.form.attack_form.setValue(metadata.attack)
-        self.form.health_form.setValue(metadata.health)
-        self.form.mana_form.setValue(metadata.manacost)
-        self.form.rarity_form.setCurrentIndex(metadata.rarity-1)
-        self.form.tribe_form.setText(metadata.tribe)
-        self.form.comment_form.setText(metadata.comment)
-        self.form.activation_command_line.setText(metadata.command)
-        self.form.istoken_form.setChecked(metadata.istoken)
-        self.form.tokenstable_form.populate_table(metadata.tokens)
+        if metadata.picture:
+            self.picture = bytes_to_pixmap(metadata.picture)
+        else:
+            self.picture = QPixmap()
+        self.card_preview.move_x = metadata.move_x or 0
+        self.card_preview.move_y = metadata.move_y or 0
+        self.card_preview.zoom = metadata.zoom or 0
+        self.form.class_button_group.set_checked_button_index((metadata.classtype or 1) - 1)
+        self.form.cardtype_button_group.set_checked_button_index((metadata.cardtype or 1) - 1)
+        self.form.name_form.setText(metadata.name or "")
+        self.form.description_form.setText(metadata.description or "")
+        self.form.attack_form.setValue(metadata.attack or 0)
+        self.form.health_form.setValue(metadata.health or 0)
+        self.form.mana_form.setValue(metadata.manacost or 0)
+        self.form.rarity_form.setCurrentIndex((metadata.rarity or 1) - 1)
+        self.form.tribe_form.setText(metadata.tribe or "")
+        self.form.comment_form.setText(metadata.comment or "")
+        self.form.activation_command_line.setText(metadata.command or "")
+        self.form.istoken_form.setChecked(bool(metadata.istoken))
+        self.form.tokenstable_form.populate_table(metadata.tokens or "")
         
         self.block_form_signals(False)
         

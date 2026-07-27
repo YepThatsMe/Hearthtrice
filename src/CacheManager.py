@@ -3,7 +3,7 @@ import hashlib
 import json
 import shutil
 import traceback
-from typing import List, Type
+from typing import List, Type, Optional
 from datetime import timedelta
 
 from DataPresenter import DataPresenter
@@ -51,7 +51,10 @@ class CacheManager:
         with open(self.index_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-    def _image_path(self, name: str) -> str:
+    def _image_path(self, card_id: int, name: str = "") -> str:
+        return os.path.join(self.images_dir, f"{int(card_id)}.png")
+
+    def _legacy_image_path(self, name: str) -> str:
         return os.path.join(self.images_dir, sanitize(name) + ".png")
 
     def save_cache(self, card_metadata: List[CardMetadata]):
@@ -60,7 +63,7 @@ class CacheManager:
             local_hahslist = self.__read_local_hashlist()
             for meta in card_metadata:
                 img = bytes_to_pixmap(meta.card_image)
-                img.save(self._image_path(meta.name))
+                img.save(self._image_path(meta.id, meta.name))
 
                 local_hahslist[meta.id] = { "name": meta.name,
                                             "description": meta.description,
@@ -87,13 +90,17 @@ class CacheManager:
             local_hahslist = self.__read_local_hashlist()
             metadata_list = []
             broken_ids = []
+            name_counts = {}
+            for meta in local_hahslist.values():
+                name = meta.get("name") or ""
+                name_counts[name] = name_counts.get(name, 0) + 1
 
             for id, meta in sorted(local_hahslist.items()):
                 metadata = self.meta_cls()
                 metadata.id = id
                 metadata.update(meta)
-                image_path = self._image_path(metadata.name)
-                if not os.path.isfile(image_path):
+                image_path = self._resolve_image_path(id, metadata.name, name_counts)
+                if not image_path:
                     print(f"Cache image missing for id={id} ({metadata.name}), will redownload")
                     broken_ids.append(id)
                     continue
@@ -112,6 +119,23 @@ class CacheManager:
             print(f"get_cache error: {e}")
             return []
 
+    def _resolve_image_path(self, card_id: int, name: str, name_counts: Optional[dict] = None) -> Optional[str]:
+        new_path = self._image_path(card_id, name)
+        if os.path.isfile(new_path):
+            return new_path
+
+        legacy = self._legacy_image_path(name) if name else ""
+        if legacy and os.path.isfile(legacy):
+            if name_counts is None or name_counts.get(name, 0) <= 1:
+                try:
+                    shutil.copyfile(legacy, new_path)
+                    return new_path
+                except Exception as e:
+                    print(f"Failed to migrate cache image {legacy} -> {new_path}: {e}")
+                    return legacy
+            return None
+        return None
+
     def delete_from_cache(self, id: int):
         try:
             local_hahslist = self.__read_local_hashlist()
@@ -121,14 +145,31 @@ class CacheManager:
                 name = local_hahslist[id]["name"]
                 del local_hahslist[id]
 
-            image = self._image_path(name) if name else ""
-            if image and os.path.exists(image):
+            image = self._image_path(id, name)
+            if os.path.exists(image):
                 os.remove(image)
 
             self.__save_local_hashlist(local_hahslist)
         except Exception as e:
             traceback.print_exc()
             print(f"delete_from_cache error: {e}")
+
+    def invalidate_ids(self, ids: List[int]):
+        try:
+            local_hahslist = self.__read_local_hashlist()
+            for card_id in ids:
+                item = local_hahslist.pop(int(card_id), None)
+                image = self._image_path(card_id)
+                if os.path.exists(image):
+                    os.remove(image)
+                if item:
+                    legacy = self._legacy_image_path(item.get("name") or "")
+                    if legacy and os.path.exists(legacy):
+                        os.remove(legacy)
+            self.__save_local_hashlist(local_hahslist)
+        except Exception as e:
+            traceback.print_exc()
+            print(f"invalidate_ids error: {e}")
 
     def get_discrepant_ids(self, remote_hashlist: List[dict]) -> List[int]:
         """
@@ -138,6 +179,11 @@ class CacheManager:
         """
         try:
             local_hahslist = self.__read_local_hashlist()
+            name_counts = {}
+            for meta in local_hahslist.values():
+                name = meta.get("name") or ""
+                name_counts[name] = name_counts.get(name, 0) + 1
+
             mismatched_ids = []
 
             for remote_dict_item in remote_hashlist:
@@ -151,8 +197,8 @@ class CacheManager:
                     mismatched_ids.append(id)
                     continue
 
-                image_path = self._image_path(local_item.get("name", ""))
-                if not os.path.isfile(image_path):
+                name = local_item.get("name") or ""
+                if not self._resolve_image_path(id, name, name_counts):
                     mismatched_ids.append(id)
 
             return mismatched_ids

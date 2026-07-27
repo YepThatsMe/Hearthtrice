@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIcon, QMouseEvent, QPixmap, QColor, QPainter, QCursor
 from PyQt5.QtCore import pyqtSignal
 from utils.BytesEncoder import bytes_to_pixmap
 
-from DataTypes import CardMetadata, StdMetadata
+from DataTypes import CardMetadata
 
 class PreviewPopup(QWidget):
     def __init__(self, parent=None):
@@ -90,11 +90,6 @@ class CardWidget(QWidget):
         self.context_menu.addAction(edit_action)
         self.context_menu.addAction(self.delete_action)
 
-        if isinstance(self.metadata, StdMetadata):
-            edit_action.setEnabled(False)
-            self.delete_action.setEnabled(False)
-
-        # Подключаем обработчики событий для контекстного меню
         edit_action.triggered.connect(self.editActionClicked)
         self.delete_action.triggered.connect(self.deleteActionClicked)
 

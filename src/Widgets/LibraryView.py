@@ -453,6 +453,8 @@ class LibraryView(QFrame):
                 card = std_meta
             card_widget = CardWidget(card, self)
             card_widget.card_clicked_event.connect(self.on_card_clicked)
+            card_widget.edit_card_requested.connect(self.edit_card_requested)
+            card_widget.delete_card_requested.connect(self.delete_card_requested)
             card_widget.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
             self.std_gallery_grid.grid_layout.addWidget(card_widget, pos // 4, pos % 4)
             self.std_original_positions[card_widget] = (pos // 4, pos % 4)
@@ -655,7 +657,7 @@ class LibraryView(QFrame):
 
     def update_edited_card(self, card_metadata: CardMetadata):
         for i, card_widget in enumerate(self.card_widgets):
-            if card_widget.metadata.id == card_metadata.id:
+            if card_widget.metadata.id == card_metadata.id and not isinstance(card_widget.metadata, StdMetadata):
                 new_card = CardWidget(card_metadata, self)
                 new_card.card_clicked_event.connect(self.on_card_clicked)
                 new_card.edit_card_requested.connect(self.edit_card_requested)
@@ -664,7 +666,7 @@ class LibraryView(QFrame):
                 self.original_positions.pop(card_widget)
                 self.original_positions[new_card] = x, y
 
-                new_x, new_y = x,y
+                new_x, new_y = x, y
                 if self.no_tokens_toggle.isChecked:
                     for j in range(self.main_gallery_grid.grid_layout.count()):
                         item = self.main_gallery_grid.grid_layout.itemAt(j)
@@ -673,8 +675,36 @@ class LibraryView(QFrame):
 
                 self.main_gallery_grid.grid_layout.removeWidget(card_widget)
                 self.main_gallery_grid.grid_layout.addWidget(new_card, new_x, new_y)
-                
+
                 self.card_widgets[i] = new_card
+                card_widget.deleteLater()
+                return
+
+        for i, card_widget in enumerate(self.std_card_widgets):
+            if card_widget.metadata.id == card_metadata.id:
+                if not isinstance(card_metadata, StdMetadata):
+                    std_meta = StdMetadata()
+                    std_meta.__dict__ = dict(card_metadata.__dict__)
+                    card_metadata = std_meta
+                new_card = CardWidget(card_metadata, self)
+                new_card.card_clicked_event.connect(self.on_card_clicked)
+                new_card.edit_card_requested.connect(self.edit_card_requested)
+                new_card.delete_card_requested.connect(self.delete_card_requested)
+                x, y = self.std_original_positions[card_widget]
+                self.std_original_positions.pop(card_widget)
+                self.std_original_positions[new_card] = x, y
+
+                new_x, new_y = x, y
+                if self.no_tokens_toggle.isChecked:
+                    for j in range(self.std_gallery_grid.grid_layout.count()):
+                        item = self.std_gallery_grid.grid_layout.itemAt(j)
+                        if item.widget() == card_widget:
+                            new_x, new_y, _, _ = self.std_gallery_grid.grid_layout.getItemPosition(j)
+
+                self.std_gallery_grid.grid_layout.removeWidget(card_widget)
+                self.std_gallery_grid.grid_layout.addWidget(new_card, new_x, new_y)
+
+                self.std_card_widgets[i] = new_card
                 card_widget.deleteLater()
                 return
 

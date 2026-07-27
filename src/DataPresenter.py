@@ -72,17 +72,17 @@ class DataPresenter(QObject):
             library.append(self._map_card_row(params_list, StdMetadata))
         return library
     
-    def get_edit_data(self, id: int) -> CardMetadata:
+    def get_edit_data(self, id: int, from_std: bool = False) -> CardMetadata:
         if not self.comm.is_connected:
             print("Connection is not established")
             return 
 
-        raw_edit_data = self.comm.fetch_edit_data_by_id(id)
+        raw_edit_data = self.comm.fetch_edit_data_by_id(id, from_std=from_std)
         if not raw_edit_data:
             print("Fetch error: empty list")
             return
         
-        meta = CardMetadata()
+        meta = StdMetadata() if from_std else CardMetadata()
         meta.id = raw_edit_data[0]
         meta.picture = raw_edit_data[1]
         meta.move_x = raw_edit_data[2]

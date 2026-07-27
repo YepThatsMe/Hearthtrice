@@ -2,7 +2,7 @@ from datetime import datetime
 import pyodbc
 import psycopg2
 from typing import List, Tuple
-from DataTypes import CardMetadata, Deck, Response
+from DataTypes import CardMetadata, Deck, Response, StdMetadata
 
 from main import DEBUG
 TABLE = "Cards" if not DEBUG else "CardsDbg"
@@ -94,16 +94,17 @@ class CommunicationPostgres:
             self._safe_rollback()
             return []
 
-    def fetch_edit_data_by_id(self, id: int) -> tuple:
+    def fetch_edit_data_by_id(self, id: int, from_std: bool = False) -> tuple:
         if not self.is_connected:
             print("Connection is not established.")
             return None
         if not id:
             print("fetch_edit_data_by_ids: Empty ID")
             return None
+        table = STD_TABLE if from_std else TABLE
         query = f"""
         SELECT id, picture, move_x, move_y, zoom
-        FROM {TABLE} WHERE id = %s AND card_image IS NOT NULL;
+        FROM {table} WHERE id = %s AND card_image IS NOT NULL;
         """
         try:
             self.cursor.execute(query, (id,))
@@ -232,8 +233,10 @@ class CommunicationPostgres:
         if not self.is_connected:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
+        table = STD_TABLE if isinstance(metadata, StdMetadata) else TABLE
+        istoken = bool(metadata.istoken) if table == STD_TABLE else metadata.istoken
         query = f"""
-            UPDATE {TABLE}
+            UPDATE {table}
             SET name = %s,
                 description = %s,
                 manacost = %s,
@@ -265,7 +268,7 @@ class CommunicationPostgres:
             metadata.attack,
             metadata.health,
             metadata.tribe,
-            metadata.istoken,
+            istoken,
             metadata.tokens,
             metadata.comment,
             metadata.command,
@@ -280,7 +283,7 @@ class CommunicationPostgres:
         try:
             self.cursor.execute(query, params)
             self.connection.commit()
-            print(f"Card {metadata.name} has been updated in PostgreSQL.")
+            print(f"Card {metadata.name} has been updated in PostgreSQL ({table}).")
             return Response(True)
         except psycopg2.Error as e:
             print(f"Update error: {e}")
@@ -326,14 +329,15 @@ class CommunicationPostgres:
         if not self.is_connected:
             print("Connection is not established.")
             return Response(False, "Подключение не установлено.")
+        table = STD_TABLE if isinstance(metadata, StdMetadata) else TABLE
         sql_query = f"""
-            DELETE FROM {TABLE}
+            DELETE FROM {table}
             WHERE id = %s;
         """
         try:
             self.cursor.execute(sql_query, (metadata.id,))
             self.connection.commit()
-            print(f"Card {metadata.name} has been deleted from PostgreSQL.")
+            print(f"Card {metadata.name} has been deleted from PostgreSQL ({table}).")
             return Response(True)
         except psycopg2.Error as e:
             print(f"Deletion error: {e}")

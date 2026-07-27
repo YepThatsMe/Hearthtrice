@@ -307,11 +307,16 @@ class MainMediator(QMainWindow):
     def upload_edit_card(self, metas: Tuple[CardMetadata]):
         response = self.data_presenter.upload_edit_card(metas[0])
         if response.ok:
-            self.data_presenter.upload_edit_changelog(metas[0], metas[1])
+            is_std = isinstance(metas[0], StdMetadata)
+            if not is_std:
+                self.data_presenter.upload_edit_changelog(metas[0], metas[1])
             self.library_view.update_edited_card(metas[0])
             self.library_view.on_export_clicked([metas[0]])
             if hasattr(metas[0], 'id') and metas[0].id:
-                self.cache_manager.save_cache([metas[0]])
+                if is_std:
+                    self.std_cache_manager.save_cache([metas[0]])
+                else:
+                    self.cache_manager.save_cache([metas[0]])
             NotificationWidget(self, "Карта изменена.", "success")
         else:
             NotificationWidget(self, f"Ошибка: {response.msg}", "error")
@@ -323,15 +328,20 @@ class MainMediator(QMainWindow):
             print("Logs updated")
 
     def on_edit_card_requested_A(self, metadata: CardMetadata):
-        def callback(metadata: CardMetadata):
-            self.card_to_edit_metadata.update(metadata.dict())
+        def callback(edit_data: CardMetadata):
+            if not edit_data:
+                self.hide_loading()
+                NotificationWidget(self, "Не удалось загрузить данные карты.", "error")
+                return
+            self.card_to_edit_metadata.update(edit_data.dict())
             self.card_builder_view.on_edit_card_requested(self.card_to_edit_metadata)
             self.stacked_widget.setCurrentIndex(0)
             self.tab_bar.setCurrentIndex(0)
             self.hide_loading()
         self.card_to_edit_metadata = metadata
         self.show_loading("Загрузка данных...")
-        send_to_thread(self, self.data_presenter.get_edit_data, callback, args=(metadata.id,))
+        from_std = isinstance(metadata, StdMetadata)
+        send_to_thread(self, self.data_presenter.get_edit_data, callback, args=(metadata.id, from_std))
     
 
     def on_delete_card_requested(self, metadata: CardMetadata):
@@ -358,7 +368,10 @@ class MainMediator(QMainWindow):
         
         response = self.data_presenter.delete_card(metadata)
         if response.ok:
-            self.cache_manager.delete_from_cache(metadata.id)
+            if isinstance(metadata, StdMetadata):
+                self.std_cache_manager.delete_from_cache(metadata.id)
+            else:
+                self.cache_manager.delete_from_cache(metadata.id)
             self.library_view.update()
             NotificationWidget(self, "Карта удалена.", "success")
         else:

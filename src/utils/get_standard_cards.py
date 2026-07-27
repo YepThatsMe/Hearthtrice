@@ -225,8 +225,10 @@ def safe_filename(name: str) -> str:
     return re.sub(r'[<>:"/\\|?*]', "_", name)
 
 
-def save_card_image(name: str, card_image: bytes, img_path: str):
+def save_card_image(name: str, card_image: bytes, img_path: str, unique_key=None):
     safe_name = safe_filename(name)
+    if unique_key is not None:
+        safe_name = f"{safe_name}__{unique_key}"
     with Image.open(BytesIO(card_image)) as img:
         img_resized = img.resize((769, 1107), Image.LANCZOS)
         img_resized.save(os.path.join(img_path, safe_name + ".png"))
@@ -509,7 +511,7 @@ class StandardCardsImporter:
                 print(f"Skip #{i} {card['name']}: no image")
                 continue
 
-            safe_name = save_card_image(card["name"], image, self.img_path)
+            safe_name = save_card_image(card["name"], image, self.img_path, unique_key=card.get("dbfId"))
             art_path = None
             art = self.download_art(card)
             if art:
