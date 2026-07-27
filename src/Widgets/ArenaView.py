@@ -285,6 +285,8 @@ class ArenaView(QFrame):
         for card_widget in self.library_view.card_widgets + self.library_view.std_card_widgets:
             if card_widget.metadata.istoken:
                 continue
+            if getattr(card_widget.metadata, "wip", False):
+                continue
             
             if (type(card_widget.metadata) == StdMetadata):
                 if card_widget.metadata.classtype == self.chosen_classtype \
@@ -338,6 +340,9 @@ class ArenaView(QFrame):
                 child.widget().deleteLater()
 
     def on_card_clicked(self, metadata: CardMetadata):
+        if getattr(metadata, "wip", False):
+            NotificationWidget(self.window(), "Карта в разработке и не может быть добавлена в колоду.", "error")
+            return
         response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost, metadata.istoken)
         if not response.ok:
             main_window = self.window()

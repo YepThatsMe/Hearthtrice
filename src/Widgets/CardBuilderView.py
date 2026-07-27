@@ -234,6 +234,7 @@ class CardBuilderView(QFrame):
         self.form.activation_command_line.setText(metadata.command or "")
         self.form.istoken_form.setChecked(bool(metadata.istoken))
         self.form.tokenstable_form.populate_table(metadata.tokens or "")
+        self.form.wip_form.setChecked(bool(getattr(metadata, "wip", False)))
         
         self.block_form_signals(False)
         

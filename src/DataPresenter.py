@@ -31,8 +31,9 @@ class DataPresenter(QObject):
         meta.tokens = params_list[11]
         meta.comment = params_list[12]
         meta.command = params_list[13]
-        meta.card_image = params_list[14]
-        meta.hash = params_list[15]
+        meta.wip = bool(params_list[14]) if params_list[14] is not None else False
+        meta.card_image = params_list[15]
+        meta.hash = params_list[16]
         return meta
 
     def get_library(self, ids: List[int] = None) -> List[CardMetadata]:

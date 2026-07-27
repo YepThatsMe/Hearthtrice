@@ -5,8 +5,9 @@ from PyQt5.QtGui import QIcon
 class ToggleButton(QPushButton):
     toggled = pyqtSignal(bool)
 
-    def __init__(self, text="", parent=None, icon=None):
+    def __init__(self, text="", parent=None, icon=None, accent="green"):
         super().__init__(text, parent)
+        self.accent = accent
         if icon is not None:
             if isinstance(icon, str):
                 self.setIcon(QIcon(icon))
@@ -30,18 +31,32 @@ class ToggleButton(QPushButton):
 
     def updateStyle(self):
         if self.isChecked:
-            self.setStyleSheet("""
-                QPushButton {
-                    background-color: lightgreen;
-                    border: 2px solid green;
-                }
-                QPushButton:hover {
-                    background-color: lightblue;
-                }
-                QPushButton:pressed {
-                    background-color: darkgreen;
-                }
-            """)
+            if self.accent == "yellow":
+                self.setStyleSheet("""
+                    QPushButton {
+                        background-color: #ffe566;
+                        border: 2px solid #c9a000;
+                    }
+                    QPushButton:hover {
+                        background-color: #ffef99;
+                    }
+                    QPushButton:pressed {
+                        background-color: #e6c200;
+                    }
+                """)
+            else:
+                self.setStyleSheet("""
+                    QPushButton {
+                        background-color: lightgreen;
+                        border: 2px solid green;
+                    }
+                    QPushButton:hover {
+                        background-color: lightblue;
+                    }
+                    QPushButton:pressed {
+                        background-color: darkgreen;
+                    }
+                """)
         else:
             self.setStyleSheet("""
                 QPushButton {

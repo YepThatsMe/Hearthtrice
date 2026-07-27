@@ -60,7 +60,7 @@ class CommunicationPostgres:
             print("Connection is not established.")
             return []
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash
         FROM {TABLE}
         WHERE card_image IS NOT NULL;
         """
@@ -82,7 +82,7 @@ class CommunicationPostgres:
             return []
         placeholders = ', '.join(['%s'] * len(ids))
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash 
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash 
         FROM {TABLE} WHERE id IN ({placeholders}) AND card_image IS NOT NULL;
         """
         try:
@@ -138,7 +138,7 @@ class CommunicationPostgres:
             print("Connection is not established.")
             return []
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash
         FROM {STD_TABLE}
         WHERE card_image IS NOT NULL;
         """
@@ -160,7 +160,7 @@ class CommunicationPostgres:
             return []
         placeholders = ', '.join(['%s'] * len(ids))
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash
         FROM {STD_TABLE} WHERE id IN ({placeholders}) AND card_image IS NOT NULL;
         """
         try:
@@ -195,8 +195,8 @@ class CommunicationPostgres:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
         query = f"""
-        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, picture, move_x, move_y, zoom, card_image, hash)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, picture, move_x, move_y, zoom, card_image, hash)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         params = (
             metadata.name,
@@ -212,6 +212,7 @@ class CommunicationPostgres:
             metadata.tokens,
             metadata.comment,
             metadata.command,
+            bool(getattr(metadata, "wip", False)),
             metadata.picture,
             metadata.move_x,
             metadata.move_y,
@@ -235,6 +236,7 @@ class CommunicationPostgres:
             return Response(False, "Подключение не установлено.")
         table = STD_TABLE if isinstance(metadata, StdMetadata) else TABLE
         istoken = bool(metadata.istoken) if table == STD_TABLE else metadata.istoken
+        wip = bool(getattr(metadata, "wip", False))
         query = f"""
             UPDATE {table}
             SET name = %s,
@@ -250,6 +252,7 @@ class CommunicationPostgres:
                 tokens = %s,
                 comment = %s,
                 command = %s,
+                wip = %s,
                 picture = %s,
                 move_x = %s,
                 move_y = %s,
@@ -272,6 +275,7 @@ class CommunicationPostgres:
             metadata.tokens,
             metadata.comment,
             metadata.command,
+            wip,
             metadata.picture,
             metadata.move_x,
             metadata.move_y,
@@ -542,7 +546,7 @@ class CommunicationMS:
             print("Connection is not established.")
             return
         query = f"""
-        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash FROM {TABLE} where card_image is not null;
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash FROM {TABLE} where card_image is not null;
         """
 
         try:
@@ -562,7 +566,7 @@ class CommunicationMS:
             return Response(False, "Empty ID list")
         
         placeholders = ", ".join("?" for _ in ids)
-        query = f"SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash FROM {TABLE} WHERE id IN ({placeholders}) and card_image is not null"
+        query = f"SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, card_image, hash FROM {TABLE} WHERE id IN ({placeholders}) and card_image is not null"
 
         try:
             self.cursor.execute(query, ids)
@@ -611,8 +615,8 @@ class CommunicationMS:
             print('Connection is not established.')
             return Response(False, "Подключение не установлено.")
         query = f"""
-        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, picture, move_x, move_y, zoom, card_image, hash)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO {TABLE} (name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, wip, picture, move_x, move_y, zoom, card_image, hash)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
         # Параметры (кроме id) передаются в execute в виде кортежа
         params = (  metadata.name,
@@ -628,6 +632,7 @@ class CommunicationMS:
                     metadata.tokens,
                     metadata.comment,
                     metadata.command,
+                    bool(getattr(metadata, "wip", False)),
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,
@@ -665,6 +670,7 @@ class CommunicationMS:
                 tokens = ?,
                 comment = ?,
                 command = ?,
+                wip = ?,
                 picture = ?,
                 move_x = ?,
                 move_y = ?,
@@ -686,6 +692,7 @@ class CommunicationMS:
                     metadata.tokens,
                     metadata.comment,
                     metadata.command,
+                    bool(getattr(metadata, "wip", False)),
                     metadata.picture,
                     metadata.move_x,
                     metadata.move_y,

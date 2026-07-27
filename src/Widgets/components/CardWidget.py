@@ -74,7 +74,10 @@ class CardWidget(QWidget):
     def set_up_ui(self):
         pixmap = bytes_to_pixmap(self.metadata.card_image)
         w, h = int(pixmap.width()/5), int(pixmap.height()/5)
-        self.pixmap_small = pixmap.scaled(w, h, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # Подгонка размера
+        self.pixmap_small = pixmap.scaled(w, h, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        if getattr(self.metadata, "wip", False):
+            self.pixmap_small = self.addColorMask(self.pixmap_small, QColor(255, 255, 150, 110))
 
         self.card_label = QLabel(self)
         self.card_label.setPixmap(self.pixmap_small)
@@ -170,13 +173,12 @@ class CardWidget(QWidget):
         self.pressPos = None
 
     def addHighlightRectangle(self, pixmap):
-        # Метод для добавления прозрачного белого прямоугольника
-        highlight_pixmap = QPixmap(pixmap)
-        painter = QPainter(highlight_pixmap)
+        return self.addColorMask(pixmap, QColor(255, 255, 255, 100))
 
-        # Рисуем прозрачный белый прямоугольник поверх всего изображения
+    def addColorMask(self, pixmap, color: QColor):
+        masked = QPixmap(pixmap)
+        painter = QPainter(masked)
         painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
-        painter.fillRect(QRect(0, 0, highlight_pixmap.width(), highlight_pixmap.height()), QColor(255, 255, 255, 100))
-
+        painter.fillRect(QRect(0, 0, masked.width(), masked.height()), color)
         painter.end()
-        return highlight_pixmap
+        return masked

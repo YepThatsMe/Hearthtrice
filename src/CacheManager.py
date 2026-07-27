@@ -76,6 +76,7 @@ class CacheManager:
                                             "tribe": meta.tribe,
                                             "istoken": meta.istoken,
                                             "tokens": meta.tokens,
+                                            "wip": bool(getattr(meta, "wip", False)),
                                             "comment": meta.comment,
                                             "command": meta.command,
                                             "hash": meta.hash }

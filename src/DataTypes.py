@@ -87,6 +87,7 @@ class CardMetadata:
 
     istoken: bool
     tokens: str
+    wip: bool
     comment: str
     command: str
 

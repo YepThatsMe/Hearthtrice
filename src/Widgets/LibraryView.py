@@ -427,7 +427,7 @@ class LibraryView(QFrame):
         card_widgets = self.std_card_widgets if self.standard_only_toggle.isChecked else self.card_widgets
         filtered_cards = []
         for card_widget in card_widgets:
-            if card_widget.isVisible():
+            if card_widget.isVisible() and not getattr(card_widget.metadata, "wip", False):
                 filtered_cards.append(card_widget)
 
         if not filtered_cards:
@@ -654,6 +654,9 @@ class LibraryView(QFrame):
         QApplication.instance().activeWindow()
 
     def on_card_clicked(self, metadata: CardMetadata):
+        if getattr(metadata, "wip", False):
+            NotificationWidget(self.window(), "Карта в разработке и не может быть добавлена в колоду.", "error")
+            return
         response = self.deck_view.add_item(metadata.id, metadata.name, metadata.manacost, metadata.istoken)
         if not response.ok:
             main_window = self.window()

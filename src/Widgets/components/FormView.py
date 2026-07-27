@@ -103,6 +103,12 @@ class FormView(QFrame):
         self.tokenstable_label = FormLabel("Токены", self)
         self.tokenstable_form = TokensTable(self)
         self.tokenstable_form.setMaximumHeight(150)
+        self.tokenstable_label.hide()
+        self.tokenstable_form.hide()
+
+        self.wip_form = ToggleButton("В разработке", self, accent="yellow")
+        self.wip_form.setMaximumWidth(150)
+        self.wip_form.setChecked(True)
 
         self.activation_command_label = FormLabel("Команда активации", self)
         self.activation_command_line = QLineEdit(self)
@@ -149,6 +155,8 @@ class FormView(QFrame):
 
         self.form_layout2.addWidget(self.istoken_form)
 
+        self.form_layout2.addWidget(self.wip_form)
+
         self.form_layout2.addWidget(self.tokenstable_label)
         self.form_layout2.addWidget(self.tokenstable_form)
 
@@ -180,7 +188,8 @@ class FormView(QFrame):
             "comment": self.comment_form.toPlainText(),
             "command": self.activation_command_line.text(),
             "istoken": self.istoken_form.isChecked,
-            "tokens": self.tokenstable_form.get_tokens_string()
+            "tokens": self.tokenstable_form.get_tokens_string(),
+            "wip": self.wip_form.isChecked,
         }
 
         return data
@@ -212,3 +221,4 @@ class FormView(QFrame):
         self.activation_command_line.setText("")
         self.tokenstable_form.clear()
         self.istoken_form.setChecked(False)
+        self.wip_form.setChecked(True)
