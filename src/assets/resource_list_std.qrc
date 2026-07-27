@@ -1,632 +1,1105 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>std/img/Ancestral Healing.png</file>
-    <file>std/img/Avatar of the Coin.png</file>
-    <file>std/img/Backstab.png</file>
-    <file>std/img/Bottled Madness.png</file>
-    <file>std/img/Chicken.png</file>
-    <file>std/img/Crackling Doom.png</file>
-    <file>std/img/Excess Mana.png</file>
-    <file>std/img/Frog.png</file>
-    <file>std/img/Innervate.png</file>
-    <file>std/img/Mirror Image.png</file>
-    <file>std/img/Moonfire.png</file>
-    <file>std/img/Murloc.png</file>
-    <file>std/img/Ritual of Doom.png</file>
-    <file>std/img/Sacrificial Pact.png</file>
-    <file>std/img/Totemic Might.png</file>
-    <file>std/img/Arcane Missiles.png</file>
-    <file>std/img/Arcane Shot.png</file>
-    <file>std/img/Blessing of Might.png</file>
-    <file>std/img/Bloodsail Deckhand.png</file>
-    <file>std/img/Boar.png</file>
-    <file>std/img/Call of the Void.png</file>
-    <file>std/img/Claw.png</file>
-    <file>std/img/Corruption.png</file>
-    <file>std/img/Crimson Clergy.png</file>
-    <file>std/img/Deadly Poison.png</file>
-    <file>std/img/Elven Archer.png</file>
-    <file>std/img/Emboldener 3000.png</file>
-    <file>std/img/Emerald Skytalon.png</file>
-    <file>std/img/Execute.png</file>
-    <file>std/img/Focused Will.png</file>
-    <file>std/img/Frost Shock.png</file>
-    <file>std/img/Goldshire Footman.png</file>
-    <file>std/img/Grimscale Oracle.png</file>
-    <file>std/img/Hand of Protection.png</file>
-    <file>std/img/Hand of Salvation.png</file>
-    <file>std/img/Healing Totem.png</file>
-    <file>std/img/Holy Smite.png</file>
-    <file>std/img/Holy Smite.png</file>
-    <file>std/img/Homing Chicken.png</file>
-    <file>std/img/Humility.png</file>
-    <file>std/img/Hunter's Mark.png</file>
-    <file>std/img/Light's Justice.png</file>
-    <file>std/img/Mechanical Dragonling.png</file>
-    <file>std/img/Mind Vision.png</file>
-    <file>std/img/Mirror Image.png</file>
-    <file>std/img/Mortal Coil.png</file>
-    <file>std/img/Murloc Raider.png</file>
-    <file>std/img/Murloc Scout.png</file>
-    <file>std/img/Northshire Cleric.png</file>
-    <file>std/img/Pilfer.png</file>
-    <file>std/img/Poultryizer.png</file>
-    <file>std/img/Power Word: Shield.png</file>
-    <file>std/img/Power Word: Shield.png</file>
-    <file>std/img/Psychic Conjurer.png</file>
-    <file>std/img/Radiance.png</file>
-    <file>std/img/Reckoning.png</file>
-    <file>std/img/Repair Bot.png</file>
-    <file>std/img/Scarlet Subjugator.png</file>
-    <file>std/img/Searing Totem.png</file>
-    <file>std/img/Sheep.png</file>
-    <file>std/img/Silver Hand Recruit.png</file>
-    <file>std/img/Silver Hand Recruit.png</file>
-    <file>std/img/Silver Hand Recruit.png</file>
-    <file>std/img/Silver Hand Recruit.png</file>
-    <file>std/img/Silver Hand Recruit.png</file>
-    <file>std/img/Silver Hand Recruit.png</file>
-    <file>std/img/Silver Hand Recruit.png</file>
-    <file>std/img/Sinister Strike.png</file>
-    <file>std/img/Smoke Bomb.png</file>
-    <file>std/img/Soulfire.png</file>
-    <file>std/img/Stoneclaw Totem.png</file>
-    <file>std/img/Stonetusk Boar.png</file>
-    <file>std/img/Strength Totem.png</file>
-    <file>std/img/Timber Wolf.png</file>
-    <file>std/img/Tome of Intellect.png</file>
-    <file>std/img/Tracking.png</file>
-    <file>std/img/Voidwalker.png</file>
-    <file>std/img/Voodoo Doctor.png</file>
-    <file>std/img/Whirlwind.png</file>
-    <file>std/img/Wicked Knife.png</file>
-    <file>std/img/Wrath of Air Totem.png</file>
-    <file>std/img/Acidic Swamp Ooze.png</file>
-    <file>std/img/Arcane Explosion.png</file>
-    <file>std/img/Armor Up!.png</file>
-    <file>std/img/Armor Up!.png</file>
-    <file>std/img/Ballista Shot.png</file>
-    <file>std/img/Bloodfen Raptor.png</file>
-    <file>std/img/Bluegill Warrior.png</file>
-    <file>std/img/Captain's Parrot.png</file>
-    <file>std/img/Cleave.png</file>
-    <file>std/img/Dagger Mastery.png</file>
-    <file>std/img/Deadeye.png</file>
-    <file>std/img/Dire Shapeshift.png</file>
-    <file>std/img/Divine Spirit.png</file>
-    <file>std/img/Fan of Knives.png</file>
-    <file>std/img/Felstalker.png</file>
-    <file>std/img/Fiery War Axe.png</file>
-    <file>std/img/Fireblast.png</file>
-    <file>std/img/Fireblast Rank 2.png</file>
-    <file>std/img/Flametongue Totem.png</file>
-    <file>std/img/Frostbolt.png</file>
-    <file>std/img/Frostwolf Grunt.png</file>
-    <file>std/img/Generous Spirit.png</file>
-    <file>std/img/Heroic Strike.png</file>
-    <file>std/img/Holy Light.png</file>
-    <file>std/img/Icicle.png</file>
-    <file>std/img/Kobold Geomancer.png</file>
-    <file>std/img/Kul Tiran Chaplain.png</file>
-    <file>std/img/Life Tap.png</file>
-    <file>std/img/Mark of the Wild.png</file>
-    <file>std/img/Mind Blast.png</file>
-    <file>std/img/Murloc Tidehunter.png</file>
-    <file>std/img/NOOOOOOOOOOOO.png</file>
-    <file>std/img/Novice Engineer.png</file>
-    <file>std/img/Poisoned Daggers.png</file>
-    <file>std/img/Pursuit of Justice.png</file>
-    <file>std/img/Pursuit of Justice.png</file>
-    <file>std/img/Reinforce.png</file>
-    <file>std/img/River Crocolisk.png</file>
-    <file>std/img/Rockbiter Weapon.png</file>
-    <file>std/img/Sap.png</file>
-    <file>std/img/Selective Breeder.png</file>
-    <file>std/img/Shadow Word: Death.png</file>
-    <file>std/img/Shadow Word: Pain.png</file>
-    <file>std/img/Shapeshift.png</file>
-    <file>std/img/Shield Block.png</file>
-    <file>std/img/Shiv.png</file>
-    <file>std/img/Soul Tap.png</file>
-    <file>std/img/Starving Buzzard.png</file>
-    <file>std/img/Steady Shot.png</file>
-    <file>std/img/Tank Up!.png</file>
-    <file>std/img/The Silver Hand.png</file>
-    <file>std/img/Totemic Call.png</file>
-    <file>std/img/Totemic Slam.png</file>
-    <file>std/img/Vanessa VanCleef.png</file>
-    <file>std/img/Wild Growth.png</file>
-    <file>std/img/Windfury.png</file>
-    <file>std/img/Animal Companion.png</file>
-    <file>std/img/Arcane Intellect.png</file>
-    <file>std/img/Blazing Longsword.png</file>
-    <file>std/img/Brightwing.png</file>
-    <file>std/img/Charge.png</file>
-    <file>std/img/Consecration.png</file>
-    <file>std/img/Dalaran Mage.png</file>
-    <file>std/img/Drain Life.png</file>
-    <file>std/img/Frost Nova.png</file>
-    <file>std/img/Hammer of Wrath.png</file>
-    <file>std/img/Healing Touch.png</file>
-    <file>std/img/Hellfire.png</file>
-    <file>std/img/Hex.png</file>
-    <file>std/img/Holy Nova.png</file>
-    <file>std/img/Huffer.png</file>
-    <file>std/img/Ironforge Rifleman.png</file>
-    <file>std/img/Ironfur Grizzly.png</file>
-    <file>std/img/Kill Command.png</file>
-    <file>std/img/Leokk.png</file>
-    <file>std/img/Magma Rager.png</file>
-    <file>std/img/Misha.png</file>
-    <file>std/img/Nature's Champion.png</file>
-    <file>std/img/Raid Leader.png</file>
-    <file>std/img/Razorfen Hunter.png</file>
-    <file>std/img/Savage Roar.png</file>
-    <file>std/img/Shadow Bolt.png</file>
-    <file>std/img/Shadowed Spirit.png</file>
-    <file>std/img/Shattered Sun Cleric.png</file>
-    <file>std/img/Silverback Patriarch.png</file>
-    <file>std/img/Swipe.png</file>
-    <file>std/img/War Cache.png</file>
-    <file>std/img/Warsong Commander.png</file>
-    <file>std/img/Wolfrider.png</file>
-    <file>std/img/Assassin's Blade.png</file>
-    <file>std/img/Assassinate.png</file>
-    <file>std/img/Blessing of Kings.png</file>
-    <file>std/img/Chillwind Yeti.png</file>
-    <file>std/img/Dragonling Mechanic.png</file>
-    <file>std/img/Fireball.png</file>
-    <file>std/img/Gnomish Inventor.png</file>
-    <file>std/img/Houndmaster.png</file>
-    <file>std/img/I Am Murloc.png</file>
-    <file>std/img/Kor'kron Elite.png</file>
-    <file>std/img/Multi-Shot.png</file>
-    <file>std/img/Nordrassil Druid.png</file>
-    <file>std/img/Oasis Snapjaw.png</file>
-    <file>std/img/Ogre Magi.png</file>
-    <file>std/img/Old Murk-Eye.png</file>
-    <file>std/img/Plaguebringer.png</file>
-    <file>std/img/Polymorph.png</file>
-    <file>std/img/Power Infusion.png</file>
-    <file>std/img/Power of the Horde.png</file>
-    <file>std/img/Rogues Do It....png</file>
-    <file>std/img/Sen'jin Shieldmasta.png</file>
-    <file>std/img/Shadow Word: Ruin.png</file>
-    <file>std/img/SI:7 Infiltrator.png</file>
-    <file>std/img/Stormwind Knight.png</file>
-    <file>std/img/Truesilver Champion.png</file>
-    <file>std/img/Warsong Outrider.png</file>
-    <file>std/img/Water Elemental.png</file>
-    <file>std/img/Windspeaker.png</file>
-    <file>std/img/Aegwynn, the Guardian.png</file>
-    <file>std/img/Arcanite Reaper.png</file>
-    <file>std/img/Bloodlust.png</file>
-    <file>std/img/Booty Bay Bodyguard.png</file>
-    <file>std/img/Darkscale Healer.png</file>
-    <file>std/img/Elite Tauren Chieftain.png</file>
-    <file>std/img/Felsoul Jailer.png</file>
-    <file>std/img/Frostwolf Warlord.png</file>
-    <file>std/img/Gurubashi Berserker.png</file>
-    <file>std/img/Nightblade.png</file>
-    <file>std/img/Polymorph: ???.png</file>
-    <file>std/img/Righteousness.png</file>
-    <file>std/img/Sprint.png</file>
-    <file>std/img/Stormpike Commando.png</file>
-    <file>std/img/Tundra Rhino.png</file>
-    <file>std/img/Archmage.png</file>
-    <file>std/img/Boulderfist Ogre.png</file>
-    <file>std/img/Dread Infernal.png</file>
-    <file>std/img/Fire Elemental.png</file>
-    <file>std/img/Gelbin Mekkatorque.png</file>
-    <file>std/img/High Inquisitor Whitemane.png</file>
-    <file>std/img/Lord of the Arena.png</file>
-    <file>std/img/Reckless Rocketeer.png</file>
-    <file>std/img/Starfire.png</file>
-    <file>std/img/Vanish.png</file>
-    <file>std/img/Barrens Stablehand.png</file>
-    <file>std/img/Core Hound.png</file>
-    <file>std/img/Enslaved Fel Lord.png</file>
-    <file>std/img/Flamestrike.png</file>
-    <file>std/img/Guardian of Kings.png</file>
-    <file>std/img/Siegebreaker.png</file>
-    <file>std/img/Stormwind Champion.png</file>
-    <file>std/img/War Golem.png</file>
-    <file>std/img/Arcane Devourer.png</file>
-    <file>std/img/Gift of the Wild.png</file>
-    <file>std/img/Ironbark Protector.png</file>
-    <file>std/img/Natalie Seline.png</file>
-    <file>std/img/Alexstrasza the Life-Binder.png</file>
-    <file>std/img/Mind Control.png</file>
-    <file>std/img/Ysera the Dreamer.png</file>
-    <file>std/img/Circle of Healing.png</file>
-    <file>std/img/Inner Rage.png</file>
-    <file>std/img/Preparation.png</file>
-    <file>std/img/Shadow of Nothing.png</file>
-    <file>std/img/Shadowstep.png</file>
-    <file>std/img/Silence.png</file>
-    <file>std/img/Wisp.png</file>
-    <file>std/img/Abusive Sergeant.png</file>
-    <file>std/img/Angry Chicken.png</file>
-    <file>std/img/Argent Squire.png</file>
-    <file>std/img/Bananas.png</file>
-    <file>std/img/Battle Axe.png</file>
-    <file>std/img/Bestial Wrath.png</file>
-    <file>std/img/Blessing of Wisdom.png</file>
-    <file>std/img/Blood Imp.png</file>
-    <file>std/img/Bloodsail Corsair.png</file>
-    <file>std/img/Cold Blood.png</file>
-    <file>std/img/Conceal.png</file>
-    <file>std/img/Damaged Golem.png</file>
-    <file>std/img/Defender.png</file>
-    <file>std/img/Defias Bandit.png</file>
-    <file>std/img/Dust Devil.png</file>
-    <file>std/img/Earth Shock.png</file>
-    <file>std/img/Eye for an Eye.png</file>
-    <file>std/img/Flame Imp.png</file>
-    <file>std/img/Flare.png</file>
-    <file>std/img/Forked Lightning.png</file>
-    <file>std/img/Heavy Axe.png</file>
-    <file>std/img/Hound.png</file>
-    <file>std/img/Hungry Crab.png</file>
-    <file>std/img/Ice Lance.png</file>
-    <file>std/img/Imp.png</file>
-    <file>std/img/Inner Fire.png</file>
-    <file>std/img/Leper Gnome.png</file>
-    <file>std/img/Lightning Bolt.png</file>
-    <file>std/img/Lightwarden.png</file>
-    <file>std/img/Mana Wyrm.png</file>
-    <file>std/img/Murloc Tidecaller.png</file>
-    <file>std/img/Naturalize.png</file>
-    <file>std/img/Noble Sacrifice.png</file>
-    <file>std/img/Power Overwhelming.png</file>
-    <file>std/img/Redemption.png</file>
-    <file>std/img/Repentance.png</file>
-    <file>std/img/Savagery.png</file>
-    <file>std/img/Secretkeeper.png</file>
-    <file>std/img/Shield Slam.png</file>
-    <file>std/img/Shieldbearer.png</file>
-    <file>std/img/Slam.png</file>
-    <file>std/img/Snake.png</file>
-    <file>std/img/Southsea Deckhand.png</file>
-    <file>std/img/Spellbender.png</file>
-    <file>std/img/Squire.png</file>
-    <file>std/img/Squirrel.png</file>
-    <file>std/img/Treant.png</file>
-    <file>std/img/Treant.png</file>
-    <file>std/img/Treant.png</file>
-    <file>std/img/Upgrade!.png</file>
-    <file>std/img/Violet Apprentice.png</file>
-    <file>std/img/Whelp.png</file>
-    <file>std/img/Whelp.png</file>
-    <file>std/img/Worgen Infiltrator.png</file>
-    <file>std/img/Worthless Imp.png</file>
-    <file>std/img/Xavian Satyr.png</file>
-    <file>std/img/Young Dragonhawk.png</file>
-    <file>std/img/Young Priestess.png</file>
-    <file>std/img/Amani Berserker.png</file>
-    <file>std/img/Ancestral Spirit.png</file>
-    <file>std/img/Ancient Watcher.png</file>
-    <file>std/img/Argent Protector.png</file>
-    <file>std/img/Armorsmith.png</file>
-    <file>std/img/Battle Rage.png</file>
-    <file>std/img/Betrayal.png</file>
-    <file>std/img/Blade Flurry.png</file>
-    <file>std/img/Bloodmage Thalnos.png</file>
-    <file>std/img/Bloodsail Raider.png</file>
-    <file>std/img/Commanding Shout.png</file>
-    <file>std/img/Crazed Alchemist.png</file>
-    <file>std/img/Cruel Taskmaster.png</file>
-    <file>std/img/Defias Ringleader.png</file>
-    <file>std/img/Demonfire.png</file>
-    <file>std/img/Dire Wolf Alpha.png</file>
-    <file>std/img/Doomsayer.png</file>
-    <file>std/img/Equality.png</file>
-    <file>std/img/Eviscerate.png</file>
-    <file>std/img/Explosive Trap.png</file>
-    <file>std/img/Faerie Dragon.png</file>
-    <file>std/img/Freezing Trap.png</file>
-    <file>std/img/Gnoll.png</file>
-    <file>std/img/Hyena.png</file>
-    <file>std/img/Icicle.png</file>
-    <file>std/img/INFERNO!.png</file>
-    <file>std/img/Knife Juggler.png</file>
-    <file>std/img/Lightwell.png</file>
-    <file>std/img/Loot Hoarder.png</file>
-    <file>std/img/Lorewalker Cho.png</file>
-    <file>std/img/Mad Bomber.png</file>
-    <file>std/img/Mana Addict.png</file>
-    <file>std/img/Mana Wraith.png</file>
-    <file>std/img/Master Swordsmith.png</file>
-    <file>std/img/Millhouse Manastorm.png</file>
-    <file>std/img/Mind Shatter.png</file>
-    <file>std/img/Mind Spike.png</file>
-    <file>std/img/Misdirection.png</file>
-    <file>std/img/Nat Pagle.png</file>
-    <file>std/img/Panther.png</file>
-    <file>std/img/Patient Assassin.png</file>
-    <file>std/img/Pint-Sized Summoner.png</file>
-    <file>std/img/Power of the Wild.png</file>
-    <file>std/img/Rampage.png</file>
-    <file>std/img/Scavenging Hyena.png</file>
-    <file>std/img/Shadowform.png</file>
-    <file>std/img/Snake Trap.png</file>
-    <file>std/img/Snipe.png</file>
-    <file>std/img/Snipe.png</file>
-    <file>std/img/Sorcerer's Apprentice.png</file>
-    <file>std/img/Spirit Wolf.png</file>
-    <file>std/img/Stormforged Axe.png</file>
-    <file>std/img/Sunfury Protector.png</file>
-    <file>std/img/Thoughtsteal.png</file>
-    <file>std/img/Wild Pyromancer.png</file>
-    <file>std/img/Wrath.png</file>
-    <file>std/img/Youthful Brewmaster.png</file>
-    <file>std/img/Acolyte of Pain.png</file>
-    <file>std/img/Alarm-o-Bot.png</file>
-    <file>std/img/Aldor Peacekeeper.png</file>
-    <file>std/img/Arcane Golem.png</file>
-    <file>std/img/Blood Fury.png</file>
-    <file>std/img/Blood Knight.png</file>
-    <file>std/img/Coldlight Oracle.png</file>
-    <file>std/img/Coldlight Seer.png</file>
-    <file>std/img/Cone of Cold.png</file>
-    <file>std/img/Counterspell.png</file>
-    <file>std/img/Deadly Shot.png</file>
-    <file>std/img/Demolisher.png</file>
-    <file>std/img/Divine Favor.png</file>
-    <file>std/img/Eaglehorn Bow.png</file>
-    <file>std/img/Earthen Ring Farseer.png</file>
-    <file>std/img/Edwin VanCleef.png</file>
-    <file>std/img/Emperor Cobra.png</file>
-    <file>std/img/Far Sight.png</file>
-    <file>std/img/Felguard.png</file>
-    <file>std/img/Feral Spirit.png</file>
-    <file>std/img/Flesheating Ghoul.png</file>
-    <file>std/img/Frothing Berserker.png</file>
     <file>std/img/Harvest Golem.png</file>
-    <file>std/img/Headcrack.png</file>
-    <file>std/img/Ice Barrier.png</file>
-    <file>std/img/Ice Block.png</file>
-    <file>std/img/Imp Master.png</file>
-    <file>std/img/Injured Blademaster.png</file>
-    <file>std/img/Ironbeak Owl.png</file>
-    <file>std/img/Jungle Panther.png</file>
-    <file>std/img/King Mukla.png</file>
-    <file>std/img/Kirin Tor Mage.png</file>
-    <file>std/img/Lava Burst.png</file>
-    <file>std/img/Lightning Storm.png</file>
-    <file>std/img/Lightspawn.png</file>
-    <file>std/img/Mana Tide Totem.png</file>
-    <file>std/img/Mark of Nature.png</file>
-    <file>std/img/Mirror Entity.png</file>
-    <file>std/img/Murloc Warleader.png</file>
-    <file>std/img/Perdition's Blade.png</file>
-    <file>std/img/Pip Quickwit.png</file>
-    <file>std/img/Questing Adventurer.png</file>
-    <file>std/img/Raging Worgen.png</file>
-    <file>std/img/Scarlet Crusader.png</file>
-    <file>std/img/Sense Demons.png</file>
-    <file>std/img/Shadow Madness.png</file>
-    <file>std/img/SI:7 Agent.png</file>
-    <file>std/img/Soul of the Forest.png</file>
-    <file>std/img/Southsea Captain.png</file>
-    <file>std/img/Spellbender.png</file>
-    <file>std/img/Sword of Justice.png</file>
-    <file>std/img/Tauren Warrior.png</file>
-    <file>std/img/Thrallmar Farseer.png</file>
-    <file>std/img/Tinkmaster Overspark.png</file>
-    <file>std/img/Unbound Elemental.png</file>
-    <file>std/img/Unleash the Hounds.png</file>
-    <file>std/img/Vaporize.png</file>
-    <file>std/img/Void Terror.png</file>
-    <file>std/img/Ancient Brewmaster.png</file>
-    <file>std/img/Ancient Mage.png</file>
-    <file>std/img/Arathi Weaponsmith.png</file>
-    <file>std/img/Auchenai Soulpriest.png</file>
-    <file>std/img/Big Game Hunter.png</file>
-    <file>std/img/Bite.png</file>
-    <file>std/img/Cult Master.png</file>
-    <file>std/img/Dark Iron Dwarf.png</file>
-    <file>std/img/Defender of Argus.png</file>
-    <file>std/img/Dread Corsair.png</file>
-    <file>std/img/Ethereal Arcanist.png</file>
-    <file>std/img/Keeper of the Grove.png</file>
-    <file>std/img/Mass Dispel.png</file>
-    <file>std/img/Master of Disguise.png</file>
-    <file>std/img/Mindgames.png</file>
-    <file>std/img/Mogu'shan Warden.png</file>
-    <file>std/img/Mortal Strike.png</file>
-    <file>std/img/Nerubian.png</file>
-    <file>std/img/Pit Lord.png</file>
-    <file>std/img/Pit Lord.png</file>
-    <file>std/img/Shadowflame.png</file>
-    <file>std/img/Silvermoon Guardian.png</file>
-    <file>std/img/Siphon Soul.png</file>
-    <file>std/img/Spellbreaker.png</file>
-    <file>std/img/Summoning Portal.png</file>
-    <file>std/img/The Black Knight.png</file>
-    <file>std/img/Twilight Drake.png</file>
-    <file>std/img/Violet Teacher.png</file>
-    <file>std/img/Abomination.png</file>
-    <file>std/img/Ashbringer.png</file>
-    <file>std/img/Azure Drake.png</file>
-    <file>std/img/Baine Bloodhoof.png</file>
-    <file>std/img/Bane of Doom.png</file>
-    <file>std/img/Blessed Champion.png</file>
-    <file>std/img/Brawl.png</file>
-    <file>std/img/Captain Greenskin.png</file>
-    <file>std/img/Devilsaur.png</file>
-    <file>std/img/Doomguard.png</file>
-    <file>std/img/Doomhammer.png</file>
-    <file>std/img/Earth Elemental.png</file>
-    <file>std/img/Explosive Shot.png</file>
-    <file>std/img/Faceless Manipulator.png</file>
-    <file>std/img/Fen Creeper.png</file>
-    <file>std/img/Force of Nature.png</file>
-    <file>std/img/Harrison Jones.png</file>
-    <file>std/img/Holy Wrath.png</file>
-    <file>std/img/Leeroy Jenkins.png</file>
-    <file>std/img/Mind Control Tech.png</file>
-    <file>std/img/Nourish.png</file>
-    <file>std/img/Silver Hand Knight.png</file>
-    <file>std/img/Spiteful Smith.png</file>
-    <file>std/img/Stampeding Kodo.png</file>
-    <file>std/img/Starfall.png</file>
-    <file>std/img/Stranglethorn Tiger.png</file>
-    <file>std/img/Temple Enforcer.png</file>
-    <file>std/img/Venture Co. Mercenary.png</file>
-    <file>std/img/Argent Commander.png</file>
-    <file>std/img/Avenging Wrath.png</file>
-    <file>std/img/Bear Form.png</file>
-    <file>std/img/Blizzard.png</file>
-    <file>std/img/Cabal Shadow Priest.png</file>
-    <file>std/img/Cairne Bloodhoof.png</file>
-    <file>std/img/Cat Form.png</file>
-    <file>std/img/Druid of the Claw.png</file>
-    <file>std/img/Druid of the Claw.png</file>
-    <file>std/img/Druid of the Claw.png</file>
-    <file>std/img/Druid of the Claw.png</file>
-    <file>std/img/Frost Elemental.png</file>
-    <file>std/img/Hogger.png</file>
-    <file>std/img/Holy Fire.png</file>
-    <file>std/img/Infernal.png</file>
-    <file>std/img/Kidnapper.png</file>
-    <file>std/img/Lay on Hands.png</file>
-    <file>std/img/Priestess of Elune.png</file>
-    <file>std/img/Savannah Highmane.png</file>
-    <file>std/img/Sunwalker.png</file>
-    <file>std/img/Sylvanas Windrunner.png</file>
-    <file>std/img/The Beast.png</file>
-    <file>std/img/Windfury Harpy.png</file>
-    <file>std/img/Xavius.png</file>
-    <file>std/img/Ancient of Lore.png</file>
-    <file>std/img/Ancient of War.png</file>
-    <file>std/img/Archmage Antonidas.png</file>
-    <file>std/img/Baron Geddon.png</file>
-    <file>std/img/Gadgetzan Auctioneer.png</file>
-    <file>std/img/Gladiator's Longbow.png</file>
-    <file>std/img/Gorehowl.png</file>
+    <file>std/arts/Harvest Golem.png</file>
+    <file>std/img/Mind Control.png</file>
+    <file>std/arts/Mind Control.png</file>
     <file>std/img/Prophet Velen.png</file>
-    <file>std/img/Ravenholdt Assassin.png</file>
+    <file>std/arts/Prophet Velen.png</file>
+    <file>std/img/Mana Addict.png</file>
+    <file>std/arts/Mana Addict.png</file>
+    <file>std/img/Inner Rage.png</file>
+    <file>std/arts/Inner Rage.png</file>
+    <file>std/img/Bane of Doom.png</file>
+    <file>std/arts/Bane of Doom.png</file>
+    <file>std/img/Kor'kron Elite.png</file>
+    <file>std/arts/Kor'kron Elite.png</file>
+    <file>std/img/Thoughtsteal.png</file>
+    <file>std/arts/Thoughtsteal.png</file>
     <file>std/img/Al'Akir the Windlord.png</file>
+    <file>std/arts/Al'Akir the Windlord.png</file>
+    <file>std/img/Silvermoon Guardian.png</file>
+    <file>std/arts/Silvermoon Guardian.png</file>
     <file>std/img/Cenarius.png</file>
-    <file>std/img/Grommash Hellscream.png</file>
-    <file>std/img/Gruul.png</file>
-    <file>std/img/Lord Jaraxxus.png</file>
-    <file>std/img/Ragnaros the Firelord.png</file>
-    <file>std/img/Tirion Fordring.png</file>
-    <file>std/img/Twisting Nether.png</file>
-    <file>std/img/Alexstrasza.png</file>
-    <file>std/img/King Krush.png</file>
-    <file>std/img/Malygos.png</file>
-    <file>std/img/Nozdormu.png</file>
-    <file>std/img/Onyxia.png</file>
-    <file>std/img/Ysera.png</file>
-    <file>std/img/Deathwing.png</file>
-    <file>std/img/Pyroblast.png</file>
+    <file>std/arts/Cenarius.png</file>
+    <file>std/img/Pint-Sized Summoner.png</file>
+    <file>std/arts/Pint-Sized Summoner.png</file>
+    <file>std/img/Frostwolf Grunt.png</file>
+    <file>std/arts/Frostwolf Grunt.png</file>
+    <file>std/img/Tauren Warrior.png</file>
+    <file>std/arts/Tauren Warrior.png</file>
+    <file>std/img/Voidwalker.png</file>
+    <file>std/arts/Voidwalker.png</file>
+    <file>std/img/Windfury.png</file>
+    <file>std/arts/Windfury.png</file>
+    <file>std/img/Spiteful Smith.png</file>
+    <file>std/arts/Spiteful Smith.png</file>
+    <file>std/img/Swipe.png</file>
+    <file>std/arts/Swipe.png</file>
+    <file>std/img/Silverback Patriarch.png</file>
+    <file>std/arts/Silverback Patriarch.png</file>
+    <file>std/img/Stranglethorn Tiger.png</file>
+    <file>std/arts/Stranglethorn Tiger.png</file>
+    <file>std/img/Silver Hand Knight.png</file>
+    <file>std/arts/Silver Hand Knight.png</file>
+    <file>std/img/Blessing of Might.png</file>
+    <file>std/arts/Blessing of Might.png</file>
+    <file>std/img/Brawl.png</file>
+    <file>std/arts/Brawl.png</file>
+    <file>std/img/Polymorph.png</file>
+    <file>std/arts/Polymorph.png</file>
+    <file>std/img/Starfall.png</file>
+    <file>std/arts/Starfall.png</file>
+    <file>std/img/Chillwind Yeti.png</file>
+    <file>std/arts/Chillwind Yeti.png</file>
+    <file>std/img/Nourish.png</file>
+    <file>std/arts/Nourish.png</file>
+    <file>std/img/Counterspell.png</file>
+    <file>std/arts/Counterspell.png</file>
+    <file>std/img/Voodoo Doctor.png</file>
+    <file>std/arts/Voodoo Doctor.png</file>
+    <file>std/img/Ravenholdt Assassin.png</file>
+    <file>std/arts/Ravenholdt Assassin.png</file>
+    <file>std/img/Doomsayer.png</file>
+    <file>std/arts/Doomsayer.png</file>
+    <file>std/img/Redemption.png</file>
+    <file>std/arts/Redemption.png</file>
+    <file>std/img/Hunter's Mark.png</file>
+    <file>std/arts/Hunter's Mark.png</file>
+    <file>std/img/Mindgames.png</file>
+    <file>std/arts/Mindgames.png</file>
+    <file>std/img/Shadowflame.png</file>
+    <file>std/arts/Shadowflame.png</file>
+    <file>std/img/Ancestral Healing.png</file>
+    <file>std/arts/Ancestral Healing.png</file>
+    <file>std/img/Mark of Nature.png</file>
+    <file>std/arts/Mark of Nature.png</file>
+    <file>std/img/Lord of the Arena.png</file>
+    <file>std/arts/Lord of the Arena.png</file>
+    <file>std/img/Secretkeeper.png</file>
+    <file>std/arts/Secretkeeper.png</file>
+    <file>std/img/Sacrificial Pact.png</file>
+    <file>std/arts/Sacrificial Pact.png</file>
+    <file>std/img/Ice Lance.png</file>
+    <file>std/arts/Ice Lance.png</file>
+    <file>std/img/Dalaran Mage.png</file>
+    <file>std/arts/Dalaran Mage.png</file>
+    <file>std/img/Windspeaker.png</file>
+    <file>std/arts/Windspeaker.png</file>
+    <file>std/img/Wisp.png</file>
+    <file>std/arts/Wisp.png</file>
+    <file>std/img/Backstab.png</file>
+    <file>std/arts/Backstab.png</file>
+    <file>std/img/Ancient Brewmaster.png</file>
+    <file>std/arts/Ancient Brewmaster.png</file>
+    <file>std/img/Fire Elemental.png</file>
+    <file>std/arts/Fire Elemental.png</file>
+    <file>std/img/Murloc Raider.png</file>
+    <file>std/arts/Murloc Raider.png</file>
+    <file>std/img/Ice Block.png</file>
+    <file>std/arts/Ice Block.png</file>
+    <file>std/img/Mirror Entity.png</file>
+    <file>std/arts/Mirror Entity.png</file>
+    <file>std/img/Vanish.png</file>
+    <file>std/arts/Vanish.png</file>
+    <file>std/img/Defias Ringleader.png</file>
+    <file>std/arts/Defias Ringleader.png</file>
+    <file>std/img/Ironbark Protector.png</file>
+    <file>std/arts/Ironbark Protector.png</file>
     <file>std/img/Sea Giant.png</file>
+    <file>std/arts/Sea Giant.png</file>
+    <file>std/img/Mark of the Wild.png</file>
+    <file>std/arts/Mark of the Wild.png</file>
+    <file>std/img/Bloodfen Raptor.png</file>
+    <file>std/arts/Bloodfen Raptor.png</file>
+    <file>std/img/Shadow Madness.png</file>
+    <file>std/arts/Shadow Madness.png</file>
+    <file>std/img/Repentance.png</file>
+    <file>std/arts/Repentance.png</file>
+    <file>std/img/Naturalize.png</file>
+    <file>std/arts/Naturalize.png</file>
+    <file>std/img/Auchenai Soulpriest.png</file>
+    <file>std/arts/Auchenai Soulpriest.png</file>
+    <file>std/img/Feral Spirit.png</file>
+    <file>std/arts/Feral Spirit.png</file>
+    <file>std/img/Rockbiter Weapon.png</file>
+    <file>std/arts/Rockbiter Weapon.png</file>
+    <file>std/img/Abusive Sergeant.png</file>
+    <file>std/arts/Abusive Sergeant.png</file>
+    <file>std/img/Hammer of Wrath.png</file>
+    <file>std/arts/Hammer of Wrath.png</file>
+    <file>std/img/Loot Hoarder.png</file>
+    <file>std/arts/Loot Hoarder.png</file>
+    <file>std/img/Innervate.png</file>
+    <file>std/arts/Innervate.png</file>
+    <file>std/img/Razorfen Hunter.png</file>
+    <file>std/arts/Razorfen Hunter.png</file>
+    <file>std/img/Cold Blood.png</file>
+    <file>std/arts/Cold Blood.png</file>
+    <file>std/img/Cabal Shadow Priest.png</file>
+    <file>std/arts/Cabal Shadow Priest.png</file>
+    <file>std/img/Holy Smite.png</file>
+    <file>std/arts/Holy Smite.png</file>
+    <file>std/img/Argent Commander.png</file>
+    <file>std/arts/Argent Commander.png</file>
+    <file>std/img/Betrayal.png</file>
+    <file>std/arts/Betrayal.png</file>
+    <file>std/img/Novice Engineer.png</file>
+    <file>std/arts/Novice Engineer.png</file>
+    <file>std/img/Cruel Taskmaster.png</file>
+    <file>std/arts/Cruel Taskmaster.png</file>
+    <file>std/img/Vaporize.png</file>
+    <file>std/arts/Vaporize.png</file>
+    <file>std/img/Kidnapper.png</file>
+    <file>std/arts/Kidnapper.png</file>
+    <file>std/img/Wolfrider.png</file>
+    <file>std/arts/Wolfrider.png</file>
+    <file>std/img/Ironbeak Owl.png</file>
+    <file>std/arts/Ironbeak Owl.png</file>
+    <file>std/img/Holy Light.png</file>
+    <file>std/arts/Holy Light.png</file>
+    <file>std/img/Multi-Shot.png</file>
+    <file>std/arts/Multi-Shot.png</file>
+    <file>std/img/Kill Command.png</file>
+    <file>std/arts/Kill Command.png</file>
+    <file>std/img/Forked Lightning.png</file>
+    <file>std/arts/Forked Lightning.png</file>
+    <file>std/img/Arcanite Reaper.png</file>
+    <file>std/arts/Arcanite Reaper.png</file>
+    <file>std/img/Edwin VanCleef.png</file>
+    <file>std/arts/Edwin VanCleef.png</file>
+    <file>std/img/Gnomish Inventor.png</file>
+    <file>std/arts/Gnomish Inventor.png</file>
+    <file>std/img/Gladiator's Longbow.png</file>
+    <file>std/arts/Gladiator's Longbow.png</file>
+    <file>std/img/Fireball.png</file>
+    <file>std/arts/Fireball.png</file>
+    <file>std/img/Baron Geddon.png</file>
+    <file>std/arts/Baron Geddon.png</file>
+    <file>std/img/Grommash Hellscream.png</file>
+    <file>std/arts/Grommash Hellscream.png</file>
+    <file>std/img/Ironforge Rifleman.png</file>
+    <file>std/arts/Ironforge Rifleman.png</file>
+    <file>std/img/Charge.png</file>
+    <file>std/arts/Charge.png</file>
+    <file>std/img/Assassinate.png</file>
+    <file>std/arts/Assassinate.png</file>
+    <file>std/img/Dark Iron Dwarf.png</file>
+    <file>std/arts/Dark Iron Dwarf.png</file>
+    <file>std/img/Master Swordsmith.png</file>
+    <file>std/arts/Master Swordsmith.png</file>
+    <file>std/img/Doomhammer.png</file>
+    <file>std/arts/Doomhammer.png</file>
+    <file>std/img/Onyxia.png</file>
+    <file>std/arts/Onyxia.png</file>
+    <file>std/img/Shadowstep.png</file>
+    <file>std/arts/Shadowstep.png</file>
+    <file>std/img/Spellbender.png</file>
+    <file>std/arts/Spellbender.png</file>
+    <file>std/img/Ragnaros the Firelord.png</file>
+    <file>std/arts/Ragnaros the Firelord.png</file>
+    <file>std/img/Inner Fire.png</file>
+    <file>std/arts/Inner Fire.png</file>
+    <file>std/img/Soul of the Forest.png</file>
+    <file>std/arts/Soul of the Forest.png</file>
+    <file>std/img/Light's Justice.png</file>
+    <file>std/arts/Light's Justice.png</file>
+    <file>std/img/Elven Archer.png</file>
+    <file>std/arts/Elven Archer.png</file>
+    <file>std/img/Perdition's Blade.png</file>
+    <file>std/arts/Perdition's Blade.png</file>
+    <file>std/img/Explosive Shot.png</file>
+    <file>std/arts/Explosive Shot.png</file>
+    <file>std/img/Water Elemental.png</file>
+    <file>std/arts/Water Elemental.png</file>
+    <file>std/img/Flesheating Ghoul.png</file>
+    <file>std/arts/Flesheating Ghoul.png</file>
+    <file>std/img/Battle Rage.png</file>
+    <file>std/arts/Battle Rage.png</file>
+    <file>std/img/Fiery War Axe.png</file>
+    <file>std/arts/Fiery War Axe.png</file>
+    <file>std/img/Ancestral Spirit.png</file>
+    <file>std/arts/Ancestral Spirit.png</file>
+    <file>std/img/Mana Wyrm.png</file>
+    <file>std/arts/Mana Wyrm.png</file>
+    <file>std/img/Nozdormu.png</file>
+    <file>std/arts/Nozdormu.png</file>
+    <file>std/img/Stormpike Commando.png</file>
+    <file>std/arts/Stormpike Commando.png</file>
+    <file>std/img/Youthful Brewmaster.png</file>
+    <file>std/arts/Youthful Brewmaster.png</file>
+    <file>std/img/Cairne Bloodhoof.png</file>
+    <file>std/arts/Cairne Bloodhoof.png</file>
+    <file>std/img/Assassin's Blade.png</file>
+    <file>std/arts/Assassin's Blade.png</file>
+    <file>std/img/Priestess of Elune.png</file>
+    <file>std/arts/Priestess of Elune.png</file>
+    <file>std/img/Cone of Cold.png</file>
+    <file>std/arts/Cone of Cold.png</file>
+    <file>std/img/Holy Wrath.png</file>
+    <file>std/arts/Holy Wrath.png</file>
+    <file>std/img/Malygos.png</file>
+    <file>std/arts/Malygos.png</file>
+    <file>std/img/Animal Companion.png</file>
+    <file>std/arts/Animal Companion.png</file>
+    <file>std/img/Abomination.png</file>
+    <file>std/arts/Abomination.png</file>
+    <file>std/img/Hungry Crab.png</file>
+    <file>std/arts/Hungry Crab.png</file>
+    <file>std/img/Reckless Rocketeer.png</file>
+    <file>std/arts/Reckless Rocketeer.png</file>
+    <file>std/img/Arcane Explosion.png</file>
+    <file>std/arts/Arcane Explosion.png</file>
+    <file>std/img/Coldlight Seer.png</file>
+    <file>std/arts/Coldlight Seer.png</file>
+    <file>std/img/Snake Trap.png</file>
+    <file>std/arts/Snake Trap.png</file>
+    <file>std/img/Captain Greenskin.png</file>
+    <file>std/arts/Captain Greenskin.png</file>
+    <file>std/img/Blizzard.png</file>
+    <file>std/arts/Blizzard.png</file>
+    <file>std/img/Deadly Poison.png</file>
+    <file>std/arts/Deadly Poison.png</file>
+    <file>std/img/Sap.png</file>
+    <file>std/arts/Sap.png</file>
+    <file>std/img/Eye for an Eye.png</file>
+    <file>std/arts/Eye for an Eye.png</file>
+    <file>std/img/Arcane Golem.png</file>
+    <file>std/arts/Arcane Golem.png</file>
+    <file>std/img/Moonfire.png</file>
+    <file>std/arts/Moonfire.png</file>
+    <file>std/img/Blood Imp.png</file>
+    <file>std/arts/Blood Imp.png</file>
+    <file>std/img/Murloc Tidecaller.png</file>
+    <file>std/arts/Murloc Tidecaller.png</file>
+    <file>std/img/Consecration.png</file>
+    <file>std/arts/Consecration.png</file>
+    <file>std/img/Savagery.png</file>
+    <file>std/arts/Savagery.png</file>
+    <file>std/img/Force of Nature.png</file>
+    <file>std/arts/Force of Nature.png</file>
+    <file>std/img/Frostwolf Warlord.png</file>
+    <file>std/arts/Frostwolf Warlord.png</file>
+    <file>std/img/Power of the Wild.png</file>
+    <file>std/arts/Power of the Wild.png</file>
+    <file>std/img/Lightning Bolt.png</file>
+    <file>std/arts/Lightning Bolt.png</file>
+    <file>std/img/Grimscale Oracle.png</file>
+    <file>std/arts/Grimscale Oracle.png</file>
+    <file>std/img/Upgrade!.png</file>
+    <file>std/arts/Upgrade!.png</file>
+    <file>std/img/Frost Elemental.png</file>
+    <file>std/arts/Frost Elemental.png</file>
+    <file>std/img/Mana Tide Totem.png</file>
+    <file>std/arts/Mana Tide Totem.png</file>
+    <file>std/img/Felguard.png</file>
+    <file>std/arts/Felguard.png</file>
+    <file>std/img/Freezing Trap.png</file>
+    <file>std/arts/Freezing Trap.png</file>
+    <file>std/img/Dragonling Mechanic.png</file>
+    <file>std/arts/Dragonling Mechanic.png</file>
+    <file>std/img/Archmage.png</file>
+    <file>std/arts/Archmage.png</file>
+    <file>std/img/Gruul.png</file>
+    <file>std/arts/Gruul.png</file>
+    <file>std/img/Captain's Parrot.png</file>
+    <file>std/arts/Captain's Parrot.png</file>
+    <file>std/img/Faceless Manipulator.png</file>
+    <file>std/arts/Faceless Manipulator.png</file>
+    <file>std/img/Arathi Weaponsmith.png</file>
+    <file>std/arts/Arathi Weaponsmith.png</file>
+    <file>std/img/Mind Blast.png</file>
+    <file>std/arts/Mind Blast.png</file>
+    <file>std/img/Shield Slam.png</file>
+    <file>std/arts/Shield Slam.png</file>
+    <file>std/img/Arcane Intellect.png</file>
+    <file>std/arts/Arcane Intellect.png</file>
+    <file>std/img/Xavius.png</file>
+    <file>std/arts/Xavius.png</file>
+    <file>std/img/Leeroy Jenkins.png</file>
+    <file>std/arts/Leeroy Jenkins.png</file>
+    <file>std/img/Arcane Missiles.png</file>
+    <file>std/arts/Arcane Missiles.png</file>
+    <file>std/img/Windfury Harpy.png</file>
+    <file>std/arts/Windfury Harpy.png</file>
+    <file>std/img/Tinkmaster Overspark.png</file>
+    <file>std/arts/Tinkmaster Overspark.png</file>
+    <file>std/img/Shiv.png</file>
+    <file>std/arts/Shiv.png</file>
+    <file>std/img/Bite.png</file>
+    <file>std/arts/Bite.png</file>
+    <file>std/img/Alexstrasza.png</file>
+    <file>std/arts/Alexstrasza.png</file>
+    <file>std/img/Darkscale Healer.png</file>
+    <file>std/arts/Darkscale Healer.png</file>
+    <file>std/img/Noble Sacrifice.png</file>
+    <file>std/arts/Noble Sacrifice.png</file>
+    <file>std/img/Explosive Trap.png</file>
+    <file>std/arts/Explosive Trap.png</file>
+    <file>std/img/Frost Nova.png</file>
+    <file>std/arts/Frost Nova.png</file>
+    <file>std/img/Felstalker.png</file>
+    <file>std/arts/Felstalker.png</file>
+    <file>std/img/Lay on Hands.png</file>
+    <file>std/arts/Lay on Hands.png</file>
+    <file>std/img/Armorsmith.png</file>
+    <file>std/arts/Armorsmith.png</file>
+    <file>std/img/Keeper of the Grove.png</file>
+    <file>std/arts/Keeper of the Grove.png</file>
+    <file>std/img/Fen Creeper.png</file>
+    <file>std/arts/Fen Creeper.png</file>
+    <file>std/img/Ancient Watcher.png</file>
+    <file>std/arts/Ancient Watcher.png</file>
+    <file>std/img/Timber Wolf.png</file>
+    <file>std/arts/Timber Wolf.png</file>
+    <file>std/img/Shattered Sun Cleric.png</file>
+    <file>std/arts/Shattered Sun Cleric.png</file>
+    <file>std/img/Faerie Dragon.png</file>
+    <file>std/arts/Faerie Dragon.png</file>
+    <file>std/img/Power Word_ Shield.png</file>
+    <file>std/arts/Power Word_ Shield.png</file>
+    <file>std/img/Sorcerer's Apprentice.png</file>
+    <file>std/arts/Sorcerer's Apprentice.png</file>
+    <file>std/img/Dust Devil.png</file>
+    <file>std/arts/Dust Devil.png</file>
+    <file>std/img/Ice Barrier.png</file>
+    <file>std/arts/Ice Barrier.png</file>
+    <file>std/img/Stormwind Knight.png</file>
+    <file>std/arts/Stormwind Knight.png</file>
+    <file>std/img/Lightning Storm.png</file>
+    <file>std/arts/Lightning Storm.png</file>
+    <file>std/img/Sprint.png</file>
+    <file>std/arts/Sprint.png</file>
+    <file>std/img/Doomguard.png</file>
+    <file>std/arts/Doomguard.png</file>
+    <file>std/img/Sen'jin Shieldmasta.png</file>
+    <file>std/arts/Sen'jin Shieldmasta.png</file>
+    <file>std/img/Whirlwind.png</file>
+    <file>std/arts/Whirlwind.png</file>
+    <file>std/img/Hogger.png</file>
+    <file>std/arts/Hogger.png</file>
+    <file>std/img/Young Dragonhawk.png</file>
+    <file>std/arts/Young Dragonhawk.png</file>
+    <file>std/img/Scarlet Crusader.png</file>
+    <file>std/arts/Scarlet Crusader.png</file>
+    <file>std/img/Sword of Justice.png</file>
+    <file>std/arts/Sword of Justice.png</file>
+    <file>std/img/Stonetusk Boar.png</file>
+    <file>std/arts/Stonetusk Boar.png</file>
+    <file>std/img/Frothing Berserker.png</file>
+    <file>std/arts/Frothing Berserker.png</file>
+    <file>std/img/Leper Gnome.png</file>
+    <file>std/arts/Leper Gnome.png</file>
+    <file>std/img/Frostbolt.png</file>
+    <file>std/arts/Frostbolt.png</file>
+    <file>std/img/Fan of Knives.png</file>
+    <file>std/arts/Fan of Knives.png</file>
+    <file>std/img/Nightblade.png</file>
+    <file>std/arts/Nightblade.png</file>
+    <file>std/img/Kobold Geomancer.png</file>
+    <file>std/arts/Kobold Geomancer.png</file>
+    <file>std/img/Divine Favor.png</file>
+    <file>std/arts/Divine Favor.png</file>
+    <file>std/img/Southsea Captain.png</file>
+    <file>std/arts/Southsea Captain.png</file>
+    <file>std/img/Druid of the Claw.png</file>
+    <file>std/arts/Druid of the Claw.png</file>
+    <file>std/img/Tundra Rhino.png</file>
+    <file>std/arts/Tundra Rhino.png</file>
+    <file>std/img/Mogu'shan Warden.png</file>
+    <file>std/arts/Mogu'shan Warden.png</file>
+    <file>std/img/Headcrack.png</file>
+    <file>std/arts/Headcrack.png</file>
+    <file>std/img/Sinister Strike.png</file>
+    <file>std/arts/Sinister Strike.png</file>
+    <file>std/img/War Golem.png</file>
+    <file>std/arts/War Golem.png</file>
+    <file>std/img/Mana Wraith.png</file>
+    <file>std/arts/Mana Wraith.png</file>
+    <file>std/img/Southsea Deckhand.png</file>
+    <file>std/arts/Southsea Deckhand.png</file>
+    <file>std/img/Hand of Protection.png</file>
+    <file>std/arts/Hand of Protection.png</file>
+    <file>std/img/Mind Control Tech.png</file>
+    <file>std/arts/Mind Control Tech.png</file>
+    <file>std/img/Old Murk-Eye.png</file>
+    <file>std/arts/Old Murk-Eye.png</file>
+    <file>std/img/Bluegill Warrior.png</file>
+    <file>std/arts/Bluegill Warrior.png</file>
+    <file>std/img/Savage Roar.png</file>
+    <file>std/arts/Savage Roar.png</file>
+    <file>std/img/Kirin Tor Mage.png</file>
+    <file>std/arts/Kirin Tor Mage.png</file>
+    <file>std/img/Bloodmage Thalnos.png</file>
+    <file>std/arts/Bloodmage Thalnos.png</file>
+    <file>std/img/Stormwind Champion.png</file>
+    <file>std/arts/Stormwind Champion.png</file>
+    <file>std/img/Spellbreaker.png</file>
+    <file>std/arts/Spellbreaker.png</file>
+    <file>std/img/Blood Knight.png</file>
+    <file>std/arts/Blood Knight.png</file>
+    <file>std/img/Equality.png</file>
+    <file>std/arts/Equality.png</file>
+    <file>std/img/Argent Squire.png</file>
+    <file>std/arts/Argent Squire.png</file>
+    <file>std/img/Sunwalker.png</file>
+    <file>std/arts/Sunwalker.png</file>
+    <file>std/img/Mad Bomber.png</file>
+    <file>std/arts/Mad Bomber.png</file>
+    <file>std/img/Defender of Argus.png</file>
+    <file>std/arts/Defender of Argus.png</file>
+    <file>std/img/Thrallmar Farseer.png</file>
+    <file>std/arts/Thrallmar Farseer.png</file>
+    <file>std/img/Hex.png</file>
+    <file>std/arts/Hex.png</file>
+    <file>std/img/Earth Shock.png</file>
+    <file>std/arts/Earth Shock.png</file>
+    <file>std/img/Gurubashi Berserker.png</file>
+    <file>std/arts/Gurubashi Berserker.png</file>
+    <file>std/img/Healing Touch.png</file>
+    <file>std/arts/Healing Touch.png</file>
+    <file>std/img/Unbound Elemental.png</file>
+    <file>std/arts/Unbound Elemental.png</file>
+    <file>std/img/Lord Jaraxxus.png</file>
+    <file>std/arts/Lord Jaraxxus.png</file>
+    <file>std/img/Pit Lord.png</file>
+    <file>std/arts/Pit Lord.png</file>
+    <file>std/img/Execute.png</file>
+    <file>std/arts/Execute.png</file>
+    <file>std/img/Amani Berserker.png</file>
+    <file>std/arts/Amani Berserker.png</file>
+    <file>std/img/Questing Adventurer.png</file>
+    <file>std/arts/Questing Adventurer.png</file>
+    <file>std/img/Lightwell.png</file>
+    <file>std/arts/Lightwell.png</file>
+    <file>std/img/Crazed Alchemist.png</file>
+    <file>std/arts/Crazed Alchemist.png</file>
+    <file>std/img/Mortal Strike.png</file>
+    <file>std/arts/Mortal Strike.png</file>
+    <file>std/img/Gorehowl.png</file>
+    <file>std/arts/Gorehowl.png</file>
+    <file>std/img/Cult Master.png</file>
+    <file>std/arts/Cult Master.png</file>
+    <file>std/img/Snipe.png</file>
+    <file>std/arts/Snipe.png</file>
+    <file>std/img/Far Sight.png</file>
+    <file>std/arts/Far Sight.png</file>
+    <file>std/img/Starfire.png</file>
+    <file>std/arts/Starfire.png</file>
+    <file>std/img/Azure Drake.png</file>
+    <file>std/arts/Azure Drake.png</file>
+    <file>std/img/Totemic Might.png</file>
+    <file>std/arts/Totemic Might.png</file>
+    <file>std/img/Deathwing.png</file>
+    <file>std/arts/Deathwing.png</file>
+    <file>std/img/Wrath.png</file>
+    <file>std/arts/Wrath.png</file>
+    <file>std/img/Holy Nova.png</file>
+    <file>std/arts/Holy Nova.png</file>
+    <file>std/img/Power Overwhelming.png</file>
+    <file>std/arts/Power Overwhelming.png</file>
+    <file>std/img/Truesilver Champion.png</file>
+    <file>std/arts/Truesilver Champion.png</file>
+    <file>std/img/Humility.png</file>
+    <file>std/arts/Humility.png</file>
+    <file>std/img/Millhouse Manastorm.png</file>
+    <file>std/arts/Millhouse Manastorm.png</file>
+    <file>std/img/Gelbin Mekkatorque.png</file>
+    <file>std/arts/Gelbin Mekkatorque.png</file>
+    <file>std/img/Twisting Nether.png</file>
+    <file>std/arts/Twisting Nether.png</file>
+    <file>std/img/Sense Demons.png</file>
+    <file>std/arts/Sense Demons.png</file>
+    <file>std/img/Lava Burst.png</file>
+    <file>std/arts/Lava Burst.png</file>
+    <file>std/img/Shieldbearer.png</file>
+    <file>std/arts/Shieldbearer.png</file>
+    <file>std/img/Arcane Shot.png</file>
+    <file>std/arts/Arcane Shot.png</file>
+    <file>std/img/Dread Corsair.png</file>
+    <file>std/arts/Dread Corsair.png</file>
+    <file>std/img/Lightspawn.png</file>
+    <file>std/arts/Lightspawn.png</file>
+    <file>std/img/Master of Disguise.png</file>
+    <file>std/arts/Master of Disguise.png</file>
+    <file>std/img/Tirion Fordring.png</file>
+    <file>std/arts/Tirion Fordring.png</file>
+    <file>std/img/Sunfury Protector.png</file>
+    <file>std/arts/Sunfury Protector.png</file>
+    <file>std/img/Flare.png</file>
+    <file>std/arts/Flare.png</file>
+    <file>std/img/Bestial Wrath.png</file>
+    <file>std/arts/Bestial Wrath.png</file>
+    <file>std/img/Eviscerate.png</file>
+    <file>std/arts/Eviscerate.png</file>
+    <file>std/img/Acidic Swamp Ooze.png</file>
+    <file>std/arts/Acidic Swamp Ooze.png</file>
+    <file>std/img/Harrison Jones.png</file>
+    <file>std/arts/Harrison Jones.png</file>
+    <file>std/img/Shadow Bolt.png</file>
+    <file>std/arts/Shadow Bolt.png</file>
+    <file>std/img/Ancient Mage.png</file>
+    <file>std/arts/Ancient Mage.png</file>
+    <file>std/img/Drain Life.png</file>
+    <file>std/arts/Drain Life.png</file>
+    <file>std/img/Ancient of Lore.png</file>
+    <file>std/arts/Ancient of Lore.png</file>
+    <file>std/img/Jungle Panther.png</file>
+    <file>std/arts/Jungle Panther.png</file>
+    <file>std/img/Goldshire Footman.png</file>
+    <file>std/arts/Goldshire Footman.png</file>
+    <file>std/img/Imp Master.png</file>
+    <file>std/arts/Imp Master.png</file>
+    <file>std/img/Gadgetzan Auctioneer.png</file>
+    <file>std/arts/Gadgetzan Auctioneer.png</file>
+    <file>std/img/Cleave.png</file>
+    <file>std/arts/Cleave.png</file>
+    <file>std/img/Blessing of Kings.png</file>
+    <file>std/arts/Blessing of Kings.png</file>
+    <file>std/img/Hellfire.png</file>
+    <file>std/arts/Hellfire.png</file>
+    <file>std/img/Stormforged Axe.png</file>
+    <file>std/arts/Stormforged Axe.png</file>
+    <file>std/img/The Beast.png</file>
+    <file>std/arts/The Beast.png</file>
+    <file>std/img/Summoning Portal.png</file>
+    <file>std/arts/Summoning Portal.png</file>
+    <file>std/img/Frost Shock.png</file>
+    <file>std/arts/Frost Shock.png</file>
+    <file>std/img/Soulfire.png</file>
+    <file>std/arts/Soulfire.png</file>
+    <file>std/img/Murloc Tidehunter.png</file>
+    <file>std/arts/Murloc Tidehunter.png</file>
+    <file>std/img/Demolisher.png</file>
+    <file>std/arts/Demolisher.png</file>
+    <file>std/img/Corruption.png</file>
+    <file>std/arts/Corruption.png</file>
+    <file>std/img/Dire Wolf Alpha.png</file>
+    <file>std/arts/Dire Wolf Alpha.png</file>
+    <file>std/img/Conceal.png</file>
+    <file>std/arts/Conceal.png</file>
     <file>std/img/Mountain Giant.png</file>
+    <file>std/arts/Mountain Giant.png</file>
+    <file>std/img/Worgen Infiltrator.png</file>
+    <file>std/arts/Worgen Infiltrator.png</file>
+    <file>std/img/Ogre Magi.png</file>
+    <file>std/arts/Ogre Magi.png</file>
+    <file>std/img/Bloodsail Corsair.png</file>
+    <file>std/arts/Bloodsail Corsair.png</file>
+    <file>std/img/Bloodsail Raider.png</file>
+    <file>std/arts/Bloodsail Raider.png</file>
+    <file>std/img/Houndmaster.png</file>
+    <file>std/arts/Houndmaster.png</file>
+    <file>std/img/Flamestrike.png</file>
+    <file>std/arts/Flamestrike.png</file>
+    <file>std/img/Heroic Strike.png</file>
+    <file>std/arts/Heroic Strike.png</file>
+    <file>std/img/Flametongue Totem.png</file>
+    <file>std/arts/Flametongue Totem.png</file>
+    <file>std/img/Warsong Commander.png</file>
+    <file>std/arts/Warsong Commander.png</file>
+    <file>std/img/Wild Pyromancer.png</file>
+    <file>std/arts/Wild Pyromancer.png</file>
+    <file>std/img/Coldlight Oracle.png</file>
+    <file>std/arts/Coldlight Oracle.png</file>
+    <file>std/img/Dread Infernal.png</file>
+    <file>std/arts/Dread Infernal.png</file>
+    <file>std/img/Argent Protector.png</file>
+    <file>std/arts/Argent Protector.png</file>
+    <file>std/img/Shield Block.png</file>
+    <file>std/arts/Shield Block.png</file>
+    <file>std/img/Commanding Shout.png</file>
+    <file>std/arts/Commanding Shout.png</file>
+    <file>std/img/Violet Teacher.png</file>
+    <file>std/arts/Violet Teacher.png</file>
+    <file>std/img/Ancient of War.png</file>
+    <file>std/arts/Ancient of War.png</file>
+    <file>std/img/Twilight Drake.png</file>
+    <file>std/arts/Twilight Drake.png</file>
+    <file>std/img/Tracking.png</file>
+    <file>std/arts/Tracking.png</file>
+    <file>std/img/Claw.png</file>
+    <file>std/arts/Claw.png</file>
+    <file>std/img/Murloc Warleader.png</file>
+    <file>std/arts/Murloc Warleader.png</file>
+    <file>std/img/Blade Flurry.png</file>
+    <file>std/arts/Blade Flurry.png</file>
+    <file>std/img/Guardian of Kings.png</file>
+    <file>std/arts/Guardian of Kings.png</file>
+    <file>std/img/Knife Juggler.png</file>
+    <file>std/arts/Knife Juggler.png</file>
+    <file>std/img/Slam.png</file>
+    <file>std/arts/Slam.png</file>
+    <file>std/img/Archmage Antonidas.png</file>
+    <file>std/arts/Archmage Antonidas.png</file>
+    <file>std/img/Mirror Image.png</file>
+    <file>std/arts/Mirror Image.png</file>
+    <file>std/img/Pyroblast.png</file>
+    <file>std/arts/Pyroblast.png</file>
+    <file>std/img/Flame Imp.png</file>
+    <file>std/arts/Flame Imp.png</file>
+    <file>std/img/Misdirection.png</file>
+    <file>std/arts/Misdirection.png</file>
+    <file>std/img/Mortal Coil.png</file>
+    <file>std/arts/Mortal Coil.png</file>
+    <file>std/img/Deadly Shot.png</file>
+    <file>std/arts/Deadly Shot.png</file>
+    <file>std/img/Emperor Cobra.png</file>
+    <file>std/arts/Emperor Cobra.png</file>
+    <file>std/img/Mind Vision.png</file>
+    <file>std/arts/Mind Vision.png</file>
+    <file>std/img/Siphon Soul.png</file>
+    <file>std/arts/Siphon Soul.png</file>
+    <file>std/img/Rampage.png</file>
+    <file>std/arts/Rampage.png</file>
+    <file>std/img/Injured Blademaster.png</file>
+    <file>std/arts/Injured Blademaster.png</file>
+    <file>std/img/SI_7 Agent.png</file>
+    <file>std/arts/SI_7 Agent.png</file>
+    <file>std/img/Venture Co. Mercenary.png</file>
+    <file>std/arts/Venture Co. Mercenary.png</file>
+    <file>std/img/Wild Growth.png</file>
+    <file>std/arts/Wild Growth.png</file>
+    <file>std/img/Patient Assassin.png</file>
+    <file>std/arts/Patient Assassin.png</file>
+    <file>std/img/Lorewalker Cho.png</file>
+    <file>std/arts/Lorewalker Cho.png</file>
+    <file>std/img/Booty Bay Bodyguard.png</file>
+    <file>std/arts/Booty Bay Bodyguard.png</file>
+    <file>std/img/Earth Elemental.png</file>
+    <file>std/arts/Earth Elemental.png</file>
+    <file>std/img/Demonfire.png</file>
+    <file>std/arts/Demonfire.png</file>
+    <file>std/img/King Krush.png</file>
+    <file>std/arts/King Krush.png</file>
+    <file>std/img/Nat Pagle.png</file>
+    <file>std/arts/Nat Pagle.png</file>
+    <file>std/img/Raging Worgen.png</file>
+    <file>std/arts/Raging Worgen.png</file>
+    <file>std/img/Preparation.png</file>
+    <file>std/arts/Preparation.png</file>
+    <file>std/img/Aldor Peacekeeper.png</file>
+    <file>std/arts/Aldor Peacekeeper.png</file>
+    <file>std/img/Bloodlust.png</file>
+    <file>std/arts/Bloodlust.png</file>
+    <file>std/img/Avenging Wrath.png</file>
+    <file>std/arts/Avenging Wrath.png</file>
+    <file>std/img/Ironfur Grizzly.png</file>
+    <file>std/arts/Ironfur Grizzly.png</file>
+    <file>std/img/Ysera.png</file>
+    <file>std/arts/Ysera.png</file>
+    <file>std/img/Silence.png</file>
+    <file>std/arts/Silence.png</file>
+    <file>std/img/Void Terror.png</file>
+    <file>std/arts/Void Terror.png</file>
+    <file>std/img/Starving Buzzard.png</file>
+    <file>std/arts/Starving Buzzard.png</file>
+    <file>std/img/Unleash the Hounds.png</file>
+    <file>std/arts/Unleash the Hounds.png</file>
+    <file>std/img/Savannah Highmane.png</file>
+    <file>std/arts/Savannah Highmane.png</file>
+    <file>std/img/Scavenging Hyena.png</file>
+    <file>std/arts/Scavenging Hyena.png</file>
+    <file>std/img/Divine Spirit.png</file>
+    <file>std/arts/Divine Spirit.png</file>
+    <file>std/img/Circle of Healing.png</file>
+    <file>std/arts/Circle of Healing.png</file>
+    <file>std/img/Shadow Word_ Death.png</file>
+    <file>std/arts/Shadow Word_ Death.png</file>
+    <file>std/img/Temple Enforcer.png</file>
+    <file>std/arts/Temple Enforcer.png</file>
+    <file>std/img/Holy Fire.png</file>
+    <file>std/arts/Holy Fire.png</file>
+    <file>std/img/Mass Dispel.png</file>
+    <file>std/arts/Mass Dispel.png</file>
+    <file>std/img/Shadow Word_ Pain.png</file>
+    <file>std/arts/Shadow Word_ Pain.png</file>
+    <file>std/img/Shadowform.png</file>
+    <file>std/arts/Shadowform.png</file>
+    <file>std/img/River Crocolisk.png</file>
+    <file>std/arts/River Crocolisk.png</file>
+    <file>std/img/Oasis Snapjaw.png</file>
+    <file>std/arts/Oasis Snapjaw.png</file>
+    <file>std/img/Stampeding Kodo.png</file>
+    <file>std/arts/Stampeding Kodo.png</file>
     <file>std/img/Molten Giant.png</file>
-    <file>std/img/Mr. Bigglesworth.png</file>
-    <file>std/img/Spore.png</file>
-    <file>std/img/Avenge.png</file>
-    <file>std/img/Eruption.png</file>
-    <file>std/img/Fallout Slime.png</file>
-    <file>std/img/Harvest.png</file>
-    <file>std/img/Jaws.png</file>
-    <file>std/img/Jaws.png</file>
-    <file>std/img/Mind Control Crystal.png</file>
-    <file>std/img/Putrid Slime.png</file>
-    <file>std/img/Rain of Fire.png</file>
-    <file>std/img/Reincarnate.png</file>
-    <file>std/img/Skeleton.png</file>
-    <file>std/img/Spectral Spider.png</file>
-    <file>std/img/Spectral Trainee.png</file>
-    <file>std/img/Sporeburst.png</file>
+    <file>std/arts/Molten Giant.png</file>
+    <file>std/img/Blessing of Wisdom.png</file>
+    <file>std/arts/Blessing of Wisdom.png</file>
+    <file>std/img/Raid Leader.png</file>
+    <file>std/arts/Raid Leader.png</file>
+    <file>std/img/Blessed Champion.png</file>
+    <file>std/arts/Blessed Champion.png</file>
+    <file>std/img/Young Priestess.png</file>
+    <file>std/arts/Young Priestess.png</file>
+    <file>std/img/Northshire Cleric.png</file>
+    <file>std/arts/Northshire Cleric.png</file>
+    <file>std/img/Earthen Ring Farseer.png</file>
+    <file>std/arts/Earthen Ring Farseer.png</file>
+    <file>std/img/Magma Rager.png</file>
+    <file>std/arts/Magma Rager.png</file>
+    <file>std/img/Lightwarden.png</file>
+    <file>std/arts/Lightwarden.png</file>
+    <file>std/img/The Black Knight.png</file>
+    <file>std/arts/The Black Knight.png</file>
+    <file>std/img/Big Game Hunter.png</file>
+    <file>std/arts/Big Game Hunter.png</file>
+    <file>std/img/Alarm-o-Bot.png</file>
+    <file>std/arts/Alarm-o-Bot.png</file>
+    <file>std/img/Acolyte of Pain.png</file>
+    <file>std/arts/Acolyte of Pain.png</file>
+    <file>std/img/Eaglehorn Bow.png</file>
+    <file>std/arts/Eaglehorn Bow.png</file>
+    <file>std/img/Boulderfist Ogre.png</file>
+    <file>std/arts/Boulderfist Ogre.png</file>
+    <file>std/img/Core Hound.png</file>
+    <file>std/arts/Core Hound.png</file>
+    <file>std/img/Angry Chicken.png</file>
+    <file>std/arts/Angry Chicken.png</file>
+    <file>std/img/King Mukla.png</file>
+    <file>std/arts/King Mukla.png</file>
+    <file>std/img/Sylvanas Windrunner.png</file>
+    <file>std/arts/Sylvanas Windrunner.png</file>
+    <file>std/img/Ethereal Arcanist.png</file>
+    <file>std/arts/Ethereal Arcanist.png</file>
+    <file>std/img/Elite Tauren Chieftain.png</file>
+    <file>std/arts/Elite Tauren Chieftain.png</file>
+    <file>std/img/Icicle.png</file>
+    <file>std/arts/Icicle.png</file>
+    <file>std/img/Tome of Intellect.png</file>
+    <file>std/arts/Tome of Intellect.png</file>
+    <file>std/img/Call of the Void.png</file>
+    <file>std/arts/Call of the Void.png</file>
+    <file>std/img/Pilfer.png</file>
+    <file>std/arts/Pilfer.png</file>
+    <file>std/img/Gift of the Wild.png</file>
+    <file>std/arts/Gift of the Wild.png</file>
+    <file>std/img/Righteousness.png</file>
+    <file>std/arts/Righteousness.png</file>
+    <file>std/img/Siegebreaker.png</file>
+    <file>std/arts/Siegebreaker.png</file>
+    <file>std/img/SI_7 Infiltrator.png</file>
+    <file>std/arts/SI_7 Infiltrator.png</file>
+    <file>std/img/Arcane Devourer.png</file>
+    <file>std/arts/Arcane Devourer.png</file>
+    <file>std/img/Barrens Stablehand.png</file>
+    <file>std/arts/Barrens Stablehand.png</file>
+    <file>std/img/Brightwing.png</file>
+    <file>std/arts/Brightwing.png</file>
+    <file>std/img/High Inquisitor Whitemane.png</file>
+    <file>std/arts/High Inquisitor Whitemane.png</file>
+    <file>std/img/Plaguebringer.png</file>
+    <file>std/arts/Plaguebringer.png</file>
+    <file>std/img/Radiance.png</file>
+    <file>std/arts/Radiance.png</file>
+    <file>std/img/Aldrachi Warblades.png</file>
+    <file>std/arts/Aldrachi Warblades.png</file>
+    <file>std/img/Chaos Strike.png</file>
+    <file>std/arts/Chaos Strike.png</file>
+    <file>std/img/Coordinated Strike.png</file>
+    <file>std/arts/Coordinated Strike.png</file>
+    <file>std/img/Shadowhoof Slayer.png</file>
+    <file>std/arts/Shadowhoof Slayer.png</file>
+    <file>std/img/Sightless Watcher.png</file>
+    <file>std/arts/Sightless Watcher.png</file>
+    <file>std/img/Soul Cleave.png</file>
+    <file>std/arts/Soul Cleave.png</file>
+    <file>std/img/Chaos Nova.png</file>
+    <file>std/arts/Chaos Nova.png</file>
+    <file>std/img/Satyr Overseer.png</file>
+    <file>std/arts/Satyr Overseer.png</file>
+    <file>std/img/Glaivebound Adept.png</file>
+    <file>std/arts/Glaivebound Adept.png</file>
+    <file>std/img/Inner Demon.png</file>
+    <file>std/arts/Inner Demon.png</file>
+    <file>std/img/Psychic Conjurer.png</file>
+    <file>std/arts/Psychic Conjurer.png</file>
+    <file>std/img/Power Infusion.png</file>
+    <file>std/arts/Power Infusion.png</file>
+    <file>std/img/Kul Tiran Chaplain.png</file>
+    <file>std/arts/Kul Tiran Chaplain.png</file>
+    <file>std/img/Scarlet Subjugator.png</file>
+    <file>std/arts/Scarlet Subjugator.png</file>
+    <file>std/img/Shadow Word_ Ruin.png</file>
+    <file>std/arts/Shadow Word_ Ruin.png</file>
+    <file>std/img/Natalie Seline.png</file>
+    <file>std/arts/Natalie Seline.png</file>
+    <file>std/img/Ritual of Doom.png</file>
+    <file>std/arts/Ritual of Doom.png</file>
+    <file>std/img/War Cache.png</file>
+    <file>std/arts/War Cache.png</file>
+    <file>std/img/Nordrassil Druid.png</file>
+    <file>std/arts/Nordrassil Druid.png</file>
+    <file>std/img/Crimson Clergy.png</file>
+    <file>std/arts/Crimson Clergy.png</file>
+    <file>std/img/Enslaved Fel Lord.png</file>
+    <file>std/arts/Enslaved Fel Lord.png</file>
+    <file>std/img/Pursuit of Justice.png</file>
+    <file>std/arts/Pursuit of Justice.png</file>
+    <file>std/img/Warsong Outrider.png</file>
+    <file>std/arts/Warsong Outrider.png</file>
+    <file>std/img/Champions of Azeroth.png</file>
+    <file>std/arts/Champions of Azeroth.png</file>
+    <file>std/img/Avatar of Hearthstone.png</file>
+    <file>std/arts/Avatar of Hearthstone.png</file>
+    <file>std/img/Bloodsail Deckhand.png</file>
+    <file>std/arts/Bloodsail Deckhand.png</file>
+    <file>std/img/Focused Will.png</file>
+    <file>std/arts/Focused Will.png</file>
+    <file>std/img/Vanessa VanCleef.png</file>
+    <file>std/arts/Vanessa VanCleef.png</file>
+    <file>std/img/Felsoul Jailer.png</file>
+    <file>std/arts/Felsoul Jailer.png</file>
+    <file>std/img/Kor'vas Bloodthorn.png</file>
+    <file>std/arts/Kor'vas Bloodthorn.png</file>
+    <file>std/img/Harth Stonebrew.png</file>
+    <file>std/arts/Harth Stonebrew.png</file>
+    <file>std/img/Jaina's Gift.png</file>
+    <file>std/arts/Jaina's Gift.png</file>
+    <file>std/img/Rexxar's Gift.png</file>
+    <file>std/arts/Rexxar's Gift.png</file>
+    <file>std/img/Uther's Gift.png</file>
+    <file>std/arts/Uther's Gift.png</file>
+    <file>std/img/Thrall's Gift.png</file>
+    <file>std/arts/Thrall's Gift.png</file>
+    <file>std/img/Garrosh's Gift.png</file>
+    <file>std/arts/Garrosh's Gift.png</file>
+    <file>std/img/Illidan's Gift.png</file>
+    <file>std/arts/Illidan's Gift.png</file>
+    <file>std/img/Valeera's Gift.png</file>
+    <file>std/arts/Valeera's Gift.png</file>
+    <file>std/img/Malfurion's Gift.png</file>
+    <file>std/arts/Malfurion's Gift.png</file>
+    <file>std/img/Gul'dan's Gift.png</file>
+    <file>std/arts/Gul'dan's Gift.png</file>
+    <file>std/img/Anduin's Gift.png</file>
+    <file>std/arts/Anduin's Gift.png</file>
+    <file>std/img/Reckoning.png</file>
+    <file>std/arts/Reckoning.png</file>
+    <file>std/img/Night Elf Huntress.png</file>
+    <file>std/arts/Night Elf Huntress.png</file>
+    <file>std/img/Footman.png</file>
+    <file>std/arts/Footman.png</file>
+    <file>std/img/Warsong Grunt.png</file>
+    <file>std/arts/Warsong Grunt.png</file>
+    <file>std/img/Gnomelia, S.A.F.E. Pilot.png</file>
+    <file>std/arts/Gnomelia, S.A.F.E. Pilot.png</file>
+    <file>std/img/Aegwynn, the Guardian.png</file>
+    <file>std/arts/Aegwynn, the Guardian.png</file>
+    <file>std/img/Shadowed Spirit.png</file>
+    <file>std/arts/Shadowed Spirit.png</file>
+    <file>std/img/Alexstrasza the Life-Binder.png</file>
+    <file>std/arts/Alexstrasza the Life-Binder.png</file>
+    <file>std/img/Ysera the Dreamer.png</file>
+    <file>std/arts/Ysera the Dreamer.png</file>
+    <file>std/img/Emerald Skytalon.png</file>
+    <file>std/arts/Emerald Skytalon.png</file>
+    <file>std/img/Selective Breeder.png</file>
+    <file>std/arts/Selective Breeder.png</file>
+    <file>std/img/Bob the Bartender.png</file>
+    <file>std/arts/Bob the Bartender.png</file>
+    <file>std/img/Raptor Herald.png</file>
+    <file>std/arts/Raptor Herald.png</file>
+    <file>std/img/Deathwing the Destroyer.png</file>
+    <file>std/arts/Deathwing the Destroyer.png</file>
+    <file>std/img/Malygos the Spellweaver.png</file>
+    <file>std/arts/Malygos the Spellweaver.png</file>
+    <file>std/img/Onyxia the Broodmother.png</file>
+    <file>std/arts/Onyxia the Broodmother.png</file>
+    <file>std/img/Gan'arg Glaivesmith.png</file>
+    <file>std/arts/Gan'arg Glaivesmith.png</file>
+    <file>std/img/Thrive in the Shadows.png</file>
+    <file>std/arts/Thrive in the Shadows.png</file>
+    <file>std/img/Crusader Aura.png</file>
+    <file>std/arts/Crusader Aura.png</file>
+    <file>std/img/Emboldener 3000.png</file>
+    <file>std/arts/Emboldener 3000.png</file>
+    <file>std/img/Whelp.png</file>
+    <file>std/arts/Whelp.png</file>
+    <file>std/img/Mechanical Dragonling.png</file>
+    <file>std/arts/Mechanical Dragonling.png</file>
+    <file>std/img/Imp.png</file>
+    <file>std/arts/Imp.png</file>
+    <file>std/img/Huffer.png</file>
+    <file>std/arts/Huffer.png</file>
+    <file>std/img/Defender.png</file>
+    <file>std/arts/Defender.png</file>
+    <file>std/img/Poultryizer.png</file>
+    <file>std/arts/Poultryizer.png</file>
+    <file>std/img/Snake.png</file>
+    <file>std/arts/Snake.png</file>
+    <file>std/img/Leokk.png</file>
+    <file>std/arts/Leokk.png</file>
+    <file>std/img/Homing Chicken.png</file>
+    <file>std/arts/Homing Chicken.png</file>
+    <file>std/img/Chicken.png</file>
+    <file>std/arts/Chicken.png</file>
+    <file>std/img/Boar.png</file>
+    <file>std/arts/Boar.png</file>
+    <file>std/img/Baine Bloodhoof.png</file>
+    <file>std/arts/Baine Bloodhoof.png</file>
+    <file>std/img/Repair Bot.png</file>
+    <file>std/arts/Repair Bot.png</file>
+    <file>std/img/Devilsaur.png</file>
+    <file>std/arts/Devilsaur.png</file>
     <file>std/img/Treant.png</file>
-    <file>std/img/Unbalancing Strike.png</file>
-    <file>std/img/Undertaker.png</file>
-    <file>std/img/Unrelenting Trainee.png</file>
-    <file>std/img/Webspinner.png</file>
-    <file>std/img/Zombie Chow.png</file>
-    <file>std/img/Decimate.png</file>
-    <file>std/img/Echoing Ooze.png</file>
-    <file>std/img/Harvest.png</file>
-    <file>std/img/Haunted Creeper.png</file>
-    <file>std/img/Mad Scientist.png</file>
-    <file>std/img/Mindpocalypse.png</file>
-    <file>std/img/Necrotic Aura.png</file>
-    <file>std/img/Necrotic Poison.png</file>
-    <file>std/img/Nerub'ar Weblord.png</file>
-    <file>std/img/Nerubian.png</file>
-    <file>std/img/Nerubian.png</file>
-    <file>std/img/Nerubian Egg.png</file>
-    <file>std/img/Poison Cloud.png</file>
-    <file>std/img/Rain of Fire.png</file>
-    <file>std/img/Skitter.png</file>
-    <file>std/img/Skitter.png</file>
-    <file>std/img/Supercharge.png</file>
-    <file>std/img/Unbalancing Strike.png</file>
-    <file>std/img/Understudy.png</file>
-    <file>std/img/Unstable Ghoul.png</file>
-    <file>std/img/Dancing Swords.png</file>
-    <file>std/img/Dark Cultist.png</file>
-    <file>std/img/Deathlord.png</file>
-    <file>std/img/Duplicate.png</file>
-    <file>std/img/Enrage.png</file>
-    <file>std/img/Hook.png</file>
-    <file>std/img/Hook.png</file>
-    <file>std/img/Lady Blaumeux.png</file>
-    <file>std/img/Lady Blaumeux.png</file>
-    <file>std/img/Massive Runeblade.png</file>
-    <file>std/img/Massive Runeblade.png</file>
-    <file>std/img/Mutating Injection.png</file>
-    <file>std/img/Runeblade.png</file>
-    <file>std/img/Runeblade.png</file>
-    <file>std/img/Shade of Naxxramas.png</file>
-    <file>std/img/Sir Zeliek.png</file>
-    <file>std/img/Sir Zeliek.png</file>
-    <file>std/img/Skeletal Smith.png</file>
-    <file>std/img/Spectral Warrior.png</file>
-    <file>std/img/Stoneskin Gargoyle.png</file>
-    <file>std/img/Thane Korth'azz.png</file>
-    <file>std/img/Thane Korth'azz.png</file>
-    <file>std/img/Unrelenting Warrior.png</file>
-    <file>std/img/Web Wrap.png</file>
-    <file>std/img/Worshipper.png</file>
-    <file>std/img/Worshipper.png</file>
-    <file>std/img/Anub'ar Ambusher.png</file>
-    <file>std/img/Baron Rivendare.png</file>
-    <file>std/img/Death's Bite.png</file>
-    <file>std/img/Deathbloom.png</file>
-    <file>std/img/Guardian of Icecrown.png</file>
-    <file>std/img/Guardian of Icecrown.png</file>
-    <file>std/img/Hateful Strike.png</file>
-    <file>std/img/Hateful Strike.png</file>
-    <file>std/img/Necroknight.png</file>
-    <file>std/img/Poison Seeds.png</file>
-    <file>std/img/Voidcaller.png</file>
-    <file>std/img/Wailing Soul.png</file>
-    <file>std/img/Feugen.png</file>
-    <file>std/img/Feugen.png</file>
-    <file>std/img/Frozen Champion.png</file>
-    <file>std/img/Loatheb.png</file>
-    <file>std/img/Mark of the Horsemen.png</file>
-    <file>std/img/Pure Cold.png</file>
-    <file>std/img/Skeleton.png</file>
-    <file>std/img/Sludge Belcher.png</file>
-    <file>std/img/Spectral Knight.png</file>
-    <file>std/img/Spectral Rider.png</file>
-    <file>std/img/Stalagg.png</file>
-    <file>std/img/Stalagg.png</file>
-    <file>std/img/Unholy Shadow.png</file>
-    <file>std/img/Maexxna.png</file>
-    <file>std/img/Plague.png</file>
-    <file>std/img/Unrelenting Rider.png</file>
-    <file>std/img/Locust Swarm.png</file>
-    <file>std/img/Chains.png</file>
-    <file>std/img/Chains.png</file>
-    <file>std/img/Kel'Thuzad.png</file>
-    <file>std/img/Thaddius.png</file>
+    <file>std/arts/Treant.png</file>
+    <file>std/img/Violet Apprentice.png</file>
+    <file>std/arts/Violet Apprentice.png</file>
+    <file>std/img/Gnoll.png</file>
+    <file>std/arts/Gnoll.png</file>
+    <file>std/img/Damaged Golem.png</file>
+    <file>std/arts/Damaged Golem.png</file>
+    <file>std/img/Squire.png</file>
+    <file>std/arts/Squire.png</file>
+    <file>std/img/Defias Bandit.png</file>
+    <file>std/arts/Defias Bandit.png</file>
+    <file>std/img/Spirit Wolf.png</file>
+    <file>std/arts/Spirit Wolf.png</file>
+    <file>std/img/Frog.png</file>
+    <file>std/arts/Frog.png</file>
+    <file>std/img/Treant.png</file>
+    <file>std/arts/Treant.png</file>
+    <file>std/img/Treant.png</file>
+    <file>std/arts/Treant.png</file>
+    <file>std/img/Sheep.png</file>
+    <file>std/arts/Sheep.png</file>
+    <file>std/img/Panther.png</file>
+    <file>std/arts/Panther.png</file>
+    <file>std/img/Misha.png</file>
+    <file>std/arts/Misha.png</file>
+    <file>std/img/Mirror Image.png</file>
+    <file>std/arts/Mirror Image.png</file>
+    <file>std/img/Pip Quickwit.png</file>
+    <file>std/arts/Pip Quickwit.png</file>
+    <file>std/img/Murloc Scout.png</file>
+    <file>std/arts/Murloc Scout.png</file>
+    <file>std/img/Spellbender.png</file>
+    <file>std/arts/Spellbender.png</file>
+    <file>std/img/Infernal.png</file>
+    <file>std/arts/Infernal.png</file>
+    <file>std/img/Squirrel.png</file>
+    <file>std/arts/Squirrel.png</file>
+    <file>std/img/Hyena.png</file>
+    <file>std/arts/Hyena.png</file>
+    <file>std/img/Silver Hand Recruit.png</file>
+    <file>std/arts/Silver Hand Recruit.png</file>
+    <file>std/img/Blood Fury.png</file>
+    <file>std/arts/Blood Fury.png</file>
+    <file>std/img/Heavy Axe.png</file>
+    <file>std/arts/Heavy Axe.png</file>
+    <file>std/img/Druid of the Claw.png</file>
+    <file>std/arts/Druid of the Claw.png</file>
+    <file>std/img/Druid of the Claw.png</file>
+    <file>std/arts/Druid of the Claw.png</file>
+    <file>std/img/Bananas.png</file>
+    <file>std/arts/Bananas.png</file>
+    <file>std/img/Battle Axe.png</file>
+    <file>std/arts/Battle Axe.png</file>
+    <file>std/img/Hound.png</file>
+    <file>std/arts/Hound.png</file>
+    <file>std/img/Shadow of Nothing.png</file>
+    <file>std/arts/Shadow of Nothing.png</file>
+    <file>std/img/Worthless Imp.png</file>
+    <file>std/arts/Worthless Imp.png</file>
+    <file>std/img/Excess Mana.png</file>
+    <file>std/arts/Excess Mana.png</file>
+    <file>std/img/Ashbringer.png</file>
+    <file>std/arts/Ashbringer.png</file>
+    <file>std/img/The Coin.png</file>
+    <file>std/arts/The Coin.png</file>
+    <file>std/img/Xavian Satyr.png</file>
+    <file>std/arts/Xavian Satyr.png</file>
+    <file>std/img/I Am Murloc.png</file>
+    <file>std/arts/I Am Murloc.png</file>
+    <file>std/img/Murloc.png</file>
+    <file>std/arts/Murloc.png</file>
+    <file>std/img/Rogues Do It....png</file>
+    <file>std/arts/Rogues Do It....png</file>
+    <file>std/img/Power of the Horde.png</file>
+    <file>std/arts/Power of the Horde.png</file>
+    <file>std/img/Whelp.png</file>
+    <file>std/arts/Whelp.png</file>
+    <file>std/img/Druid of the Claw.png</file>
+    <file>std/arts/Druid of the Claw.png</file>
+    <file>std/img/Illidari Initiate.png</file>
+    <file>std/arts/Illidari Initiate.png</file>
+    <file>std/img/Illidari Satyr.png</file>
+    <file>std/arts/Illidari Satyr.png</file>
+    <file>std/img/Demonic Tyrant.png</file>
+    <file>std/img/Fel Barrage.png</file>
+    <file>std/arts/Fel Barrage.png</file>
+    <file>std/img/Arcane Intellect.png</file>
+    <file>std/arts/Arcane Intellect.png</file>
+    <file>std/img/Fireball.png</file>
+    <file>std/arts/Fireball.png</file>
+    <file>std/img/Chaos Nova.png</file>
+    <file>std/arts/Chaos Nova.png</file>
+    <file>std/img/Wild Growth.png</file>
+    <file>std/arts/Wild Growth.png</file>
+    <file>std/img/Backstab.png</file>
+    <file>std/arts/Backstab.png</file>
+    <file>std/img/Deadly Poison.png</file>
+    <file>std/arts/Deadly Poison.png</file>
+    <file>std/img/Blessing of Kings.png</file>
+    <file>std/arts/Blessing of Kings.png</file>
+    <file>std/img/Consecration.png</file>
+    <file>std/arts/Consecration.png</file>
+    <file>std/img/Execute.png</file>
+    <file>std/arts/Execute.png</file>
+    <file>std/img/Hex.png</file>
+    <file>std/arts/Hex.png</file>
+    <file>std/img/Mortal Coil.png</file>
+    <file>std/arts/Mortal Coil.png</file>
+    <file>std/img/Chaos Strike.png</file>
+    <file>std/arts/Chaos Strike.png</file>
+    <file>std/img/Deadly Shot.png</file>
+    <file>std/arts/Deadly Shot.png</file>
+    <file>std/img/Equality.png</file>
+    <file>std/arts/Equality.png</file>
+    <file>std/img/Lightning Storm.png</file>
+    <file>std/arts/Lightning Storm.png</file>
+    <file>std/img/Siphon Soul.png</file>
+    <file>std/arts/Siphon Soul.png</file>
+    <file>std/img/Twisting Nether.png</file>
+    <file>std/arts/Twisting Nether.png</file>
+    <file>std/img/Brawl.png</file>
+    <file>std/arts/Brawl.png</file>
+    <file>std/img/Feral Rage.png</file>
+    <file>std/arts/Feral Rage.png</file>
+    <file>std/img/Quick Shot.png</file>
+    <file>std/arts/Quick Shot.png</file>
+    <file>std/img/Shield Block.png</file>
+    <file>std/arts/Shield Block.png</file>
+    <file>std/img/Bloodlust.png</file>
+    <file>std/arts/Bloodlust.png</file>
+    <file>std/img/Undead Peasant.png</file>
+    <file>std/img/Altruis the Outcast.png</file>
+    <file>std/arts/Altruis the Outcast.png</file>
+    <file>std/img/Skull of Gul'dan.png</file>
+    <file>std/arts/Skull of Gul'dan.png</file>
+    <file>std/img/Twin Slice.png</file>
+    <file>std/arts/Twin Slice.png</file>
+    <file>std/img/Second Slice.png</file>
+    <file>std/arts/Second Slice.png</file>
+    <file>std/img/Imprisoned Antaen.png</file>
+    <file>std/arts/Imprisoned Antaen.png</file>
+    <file>std/img/Priestess of Fury.png</file>
+    <file>std/arts/Priestess of Fury.png</file>
+    <file>std/img/Metamorphosis.png</file>
+    <file>std/arts/Metamorphosis.png</file>
+    <file>std/img/Warglaives of Azzinoth.png</file>
+    <file>std/arts/Warglaives of Azzinoth.png</file>
+    <file>std/img/Eye Beam.png</file>
+    <file>std/arts/Eye Beam.png</file>
+    <file>std/img/Fan of Knives.png</file>
+    <file>std/arts/Fan of Knives.png</file>
+    <file>std/img/Aldrachi Warblades.png</file>
+    <file>std/arts/Aldrachi Warblades.png</file>
+    <file>std/img/Battlefiend.png</file>
+    <file>std/arts/Battlefiend.png</file>
+    <file>std/img/Glaivebound Adept.png</file>
+    <file>std/arts/Glaivebound Adept.png</file>
     <file>std/std_metadata.json</file>
 </qresource>
 </RCC>

@@ -6,7 +6,7 @@ import hashlib
 
 from Communication import CommunicationPostgres
 from utils.BytesEncoder import BytesEncoder, base64_to_bytes, hash_library
-from DataTypes import CardMetadata, Deck, DeckCard, Response
+from DataTypes import CardMetadata, Deck, DeckCard, Response, StdMetadata
 
 
 class DataPresenter(QObject):
@@ -14,6 +14,26 @@ class DataPresenter(QObject):
         super().__init__()
         self.login = ""
         self.comm = CommunicationPostgres()
+
+    def _map_card_row(self, params_list, meta_cls=CardMetadata):
+        meta = meta_cls()
+        meta.id = params_list[0]
+        meta.name = params_list[1]
+        meta.description = params_list[2]
+        meta.manacost = params_list[3]
+        meta.rarity = params_list[4]
+        meta.cardtype = params_list[5]
+        meta.classtype = params_list[6]
+        meta.attack = params_list[7]
+        meta.health = params_list[8]
+        meta.tribe = params_list[9]
+        meta.istoken = params_list[10]
+        meta.tokens = params_list[11]
+        meta.comment = params_list[12]
+        meta.command = params_list[13]
+        meta.card_image = params_list[14]
+        meta.hash = params_list[15]
+        return meta
 
     def get_library(self, ids: List[int] = None) -> List[CardMetadata]:
         if not self.comm.is_connected:
@@ -31,24 +51,25 @@ class DataPresenter(QObject):
             return
         library = []
         for params_list in card_raw_data:
-            meta = CardMetadata()
-            meta.id = params_list[0]
-            meta.name = params_list[1]
-            meta.description = params_list[2]
-            meta.manacost = params_list[3]
-            meta.rarity = params_list[4]
-            meta.cardtype = params_list[5]
-            meta.classtype = params_list[6]
-            meta.attack = params_list[7]
-            meta.health = params_list[8]
-            meta.tribe = params_list[9]
-            meta.istoken = params_list[10]
-            meta.tokens = params_list[11]
-            meta.comment = params_list[12]
-            meta.command = params_list[13]
-            meta.card_image = params_list[14]
-            meta.hash = params_list[15]
-            library.append(meta)
+            library.append(self._map_card_row(params_list, CardMetadata))
+        return library
+
+    def get_std_library(self, ids: List[int] = None) -> List[StdMetadata]:
+        if not self.comm.is_connected:
+            print("Connection is not established")
+            return
+        if not ids:
+            print("FETCH ALL STD")
+            card_raw_data = self.comm.fetch_all_std_cards()
+        else:
+            card_raw_data = self.comm.fetch_std_cards_by_ids(ids)
+
+        if not card_raw_data:
+            print("Fetch std error: empty list")
+            return
+        library = []
+        for params_list in card_raw_data:
+            library.append(self._map_card_row(params_list, StdMetadata))
         return library
     
     def get_edit_data(self, id: int) -> CardMetadata:
@@ -87,6 +108,24 @@ class DataPresenter(QObject):
             hash["hash"] = i[2]
             hashes_by_ids.append(hash)
         
+        return hashes_by_ids
+
+    def get_std_hashes(self) -> List[dict]:
+        if not self.comm.is_connected:
+            print("Connection is not established")
+            return
+        hash_raw_data = self.comm.fetch_all_std_hashes()
+        if not hash_raw_data:
+            print("Fetch std hashes error: empty list")
+            return
+
+        hashes_by_ids = []
+        for i in hash_raw_data:
+            hashes_by_ids.append({
+                "id": i[0],
+                "name": i[1],
+                "hash": i[2],
+            })
         return hashes_by_ids
 
     def create_new_deck(self, deck_name: str) -> Tuple:

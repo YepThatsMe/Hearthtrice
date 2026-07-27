@@ -7,6 +7,7 @@ from DataTypes import CardMetadata, Deck, Response
 from main import DEBUG
 TABLE = "Cards" if not DEBUG else "CardsDbg"
 CHANGELOG_TABLE = "CardsLog" if not DEBUG else "CardsLogDbg"
+STD_TABLE = "cards_std"
 
 class CommunicationPostgres:
     def __init__(self) -> None:
@@ -128,6 +129,63 @@ class CommunicationPostgres:
             return rows
         except psycopg2.Error as e:
             print(f"Fetch hashes error: {e}")
+            self._safe_rollback()
+            return []
+
+    def fetch_all_std_cards(self) -> List[tuple]:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return []
+        query = f"""
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash
+        FROM {STD_TABLE}
+        WHERE card_image IS NOT NULL;
+        """
+        try:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            print(f"Std library has been loaded from the PostgreSQL database.")
+            return rows
+        except psycopg2.Error as e:
+            print(f"Fetch std cards error: {e}")
+            self._safe_rollback()
+            return []
+
+    def fetch_std_cards_by_ids(self, ids: List[int]) -> List[tuple]:
+        if not self.is_connected:
+            print("Connection is not established.")
+            return []
+        if not ids:
+            return []
+        placeholders = ', '.join(['%s'] * len(ids))
+        query = f"""
+        SELECT id, name, description, manacost, rarity, cardtype, classtype, attack, health, tribe, istoken, tokens, comment, command, card_image, hash
+        FROM {STD_TABLE} WHERE id IN ({placeholders}) AND card_image IS NOT NULL;
+        """
+        try:
+            self.cursor.execute(query, ids)
+            rows = self.cursor.fetchall()
+            return rows
+        except psycopg2.Error as e:
+            print(f"Fetch std cards error: {e}")
+            self._safe_rollback()
+            return []
+
+    def fetch_all_std_hashes(self) -> List[tuple]:
+        if not self.is_connected:
+            print('Connection is not established.')
+            return []
+        query = f"""
+        SELECT id, name, hash
+        FROM {STD_TABLE}
+        WHERE card_image IS NOT NULL;
+        """
+        try:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            return rows
+        except psycopg2.Error as e:
+            print(f"Fetch std hashes error: {e}")
             self._safe_rollback()
             return []
 

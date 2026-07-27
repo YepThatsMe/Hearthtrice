@@ -1,10 +1,9 @@
 import os
 import random
 from typing import List
-import json
 
 from PyQt5.QtWidgets import QFrame, QApplication, QProgressBar, QGridLayout, QLineEdit, QComboBox, QCheckBox, QMessageBox, QDialog, QVBoxLayout, QLabel, QStackedWidget, QFileDialog, QWidget, QScrollArea, QSizePolicy, QHBoxLayout, QPushButton
-from PyQt5.QtCore import pyqtSignal, Qt, QThread, QTimer, QDir, QByteArray, QFile, QTextStream, QSize, QSettings, QIODevice
+from PyQt5.QtCore import pyqtSignal, Qt, QThread, QTimer, QDir, QByteArray, QSize, QSettings
 from PyQt5.QtGui import QIcon
 from Widgets.DeckView import DeckView
 from Widgets.components.ToggleButton import ToggleButton
@@ -74,13 +73,6 @@ class LibraryView(QFrame):
         self.pending_initial_filter = False
         self.set_up_ui()
         self.set_up_connections()
-
-        try:
-            import resources_std
-            self.load_standard_cards()
-        except ImportError as e:
-            self.export_std_checkbox.setEnabled(False)
-            self.standard_only_toggle.setEnabled(False)
 
     def set_up_connections(self):
         self.deck_view.get_decks_requested.connect(self.get_decks_requsted)
@@ -200,9 +192,22 @@ class LibraryView(QFrame):
     def switch_to_standard_grid(self):
         if self.standard_only_toggle.isChecked:
             self.stack.setCurrentIndex(1)
+            self._ensure_std_default_class()
+            if not self.no_tokens_toggle.isChecked:
+                self.no_tokens_toggle.blockSignals(True)
+                self.no_tokens_toggle.setChecked(True)
+                self.no_tokens_toggle.blockSignals(False)
         else:
             self.stack.setCurrentIndex(0)
+        self.on_filter_changed()
 
+    def _ensure_std_default_class(self):
+        if not self.standard_only_toggle.isChecked:
+            return
+        if self.classtype_filter.currentIndex() == 0:
+            self.classtype_filter.blockSignals(True)
+            self.classtype_filter.setCurrentIndex(ClassType.NEUTRAL)
+            self.classtype_filter.blockSignals(False)
     def on_infobase_toggled(self, checked: bool):
         if checked:
             self.content_stack.setCurrentIndex(1)
@@ -231,6 +236,9 @@ class LibraryView(QFrame):
         self.on_filter_changed()
     
     def on_filter_changed(self):
+        if self.standard_only_toggle.isChecked and self.classtype_filter.currentIndex() == 0:
+            self._ensure_std_default_class()
+
         main_scrollbar = self.main_gallery_grid.scrollArea.verticalScrollBar()
         std_scrollbar = self.std_gallery_grid.scrollArea.verticalScrollBar()
         
@@ -419,6 +427,50 @@ class LibraryView(QFrame):
         self.set_loading(False)
         print("LibraryView updated")
 
+    def set_updated_std_library(self, cards: List[CardMetadata]):
+        self.clear_std_grid()
+        if not cards:
+            print("Cannot update std library view: empty")
+            self.set_loading(False)
+            return
+
+        cards = sorted(
+            cards,
+            key=lambda c: (
+                c.manacost if c.manacost is not None else 10**9,
+                c.name or "",
+            ),
+        )
+
+        pos = 0
+        for card in cards:
+            if not card.card_image:
+                print(f"Skipped std card [{card.id}]: no image")
+                continue
+            if not isinstance(card, StdMetadata):
+                std_meta = StdMetadata()
+                std_meta.__dict__ = dict(card.__dict__)
+                card = std_meta
+            card_widget = CardWidget(card, self)
+            card_widget.card_clicked_event.connect(self.on_card_clicked)
+            card_widget.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
+            self.std_gallery_grid.grid_layout.addWidget(card_widget, pos // 4, pos % 4)
+            self.std_original_positions[card_widget] = (pos // 4, pos % 4)
+            self.std_card_widgets.append(card_widget)
+            pos += 1
+
+        for row in range(self.std_gallery_grid.grid_layout.rowCount()):
+            self.std_gallery_grid.grid_layout.setRowMinimumHeight(row, 130)
+
+        if self.standard_only_toggle.isChecked:
+            self._ensure_std_default_class()
+
+        self.pending_initial_filter = True
+        if self.isVisible():
+            QTimer.singleShot(50, self._apply_initial_filter)
+        self.set_loading(False)
+        print("Loaded", len(self.std_card_widgets), "standard cards.")
+
     def clear_grid(self):
         while self.main_gallery_grid.grid_layout.count():
             child = self.main_gallery_grid.grid_layout.takeAt(0)
@@ -427,6 +479,15 @@ class LibraryView(QFrame):
 
         self.card_widgets.clear()
         self.original_positions.clear()
+
+    def clear_std_grid(self):
+        while self.std_gallery_grid.grid_layout.count():
+            child = self.std_gallery_grid.grid_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+        self.std_card_widgets.clear()
+        self.std_original_positions.clear()
 
     def on_export_clicked(self, metas: List[CardMetadata] = None, all_cached_cards: List[CardMetadata] = None):
         if not metas and not self.card_widgets:
@@ -560,7 +621,16 @@ class LibraryView(QFrame):
         self.deck_view.set_updated_decks(decks)
             
     def get_card_metadata_by_id(self, id: int, deck_fields_only: bool = False) -> CardMetadata:
-        for card_widget in self.card_widgets + self.std_card_widgets:
+        for card_widget in self.card_widgets:
+            if card_widget.metadata.id == id:
+                if not deck_fields_only:
+                    return card_widget.metadata
+                partial_meta = CardMetadata()
+                partial_meta.name = card_widget.metadata.name
+                partial_meta.manacost = card_widget.metadata.manacost
+                partial_meta.istoken = card_widget.metadata.istoken
+                return partial_meta
+        for card_widget in self.std_card_widgets:
             if card_widget.metadata.id == id:
                 if not deck_fields_only:
                     return card_widget.metadata
@@ -608,56 +678,6 @@ class LibraryView(QFrame):
                 card_widget.deleteLater()
                 return
 
-    def load_standard_cards(self) -> Response:
-        try:
-            json_path = ':std/std_metadata.json'
-            file = QFile(json_path)
-            if not file.open(QFile.ReadOnly | QFile.Text):
-                print(f"Cannot open file: {json_path}")
-                return None
-            text_stream = QTextStream(file)
-            json_text = text_stream.readAll()
-            file.close()
-            std_metadata = json.loads(str(json_text))
-
-            for new_id, entry in enumerate(std_metadata):
-                std_meta = StdMetadata()
-                std_meta.id = -new_id-10
-                std_meta.name = entry["name"]
-                std_meta.description = entry["description"]
-                std_meta.manacost = entry["manacost"]
-                std_meta.rarity = entry["rarity"]
-                std_meta.cardtype = entry["cardtype"]
-                std_meta.classtype = entry["classtype"]
-                std_meta.attack = entry["attack"]
-                std_meta.health = entry["health"]
-                std_meta.tribe = entry["tribe"]
-                std_meta.istoken = entry["istoken"]
-                std_meta.card_image_path = entry["card_image_path"]
-
-                file = QFile(f":{std_meta.card_image_path}")
-                if file.open(QIODevice.ReadOnly):
-                    bytes_data = file.readAll()
-                    file.close()
-                    std_meta.card_image = bytes_data
-                std_card = CardWidget(std_meta, self)
-                self.std_card_widgets.append(std_card)
-            print("Loaded", len(self.std_card_widgets), "standard cards.")
-
-            pos = 0
-            for card_widget in self.std_card_widgets:
-                card_widget.card_clicked_event.connect(self.on_card_clicked)
-                card_widget.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
-                self.std_gallery_grid.grid_layout.addWidget(card_widget, pos//4, pos%4)
-                self.std_original_positions[card_widget] = (pos//4, pos%4)
-                pos+=1
-                
-            for row in range(self.std_gallery_grid.grid_layout.rowCount()):
-                self.std_gallery_grid.grid_layout.setRowMinimumHeight(row, 130)
-        except Exception as e:
-            print("Unable to load std cards", e)
-            return Response(False, str(e))
-    
     def launch_cockatrice(self):
         game_dir = self.settings.value("path")
         exe_path = os.path.join(game_dir, "cockatrice.exe")

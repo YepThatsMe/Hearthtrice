@@ -5,16 +5,16 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import QSize
 from main import VERSION_MINOR, VERSION_MAJOR
 
-from CacheManager import CacheManager
+from CacheManager import CacheManager, CACHE_STD_PATH
 from GameListener import GameListener
 import resources
 from Widgets.ArenaView import ArenaView
 from Widgets.LibraryView import LibraryView
-from utils.Thread import Thread, send_to_thread
+from utils.Thread import Thread, send_to_thread, CardsDownloadThread
 from DataPresenter import DataPresenter
 from Widgets.CardBuilderView import CardBuilderView
 
-from DataTypes import CardMetadata, Deck, Response
+from DataTypes import CardMetadata, Deck, Response, StdMetadata
 from Widgets.components.ConnectionSettings import ConnectionSettingsDialog
 from Widgets.components.NotificationWidget import NotificationWidget
 from Widgets.components.LoadingOverlay import LoadingOverlay
@@ -67,6 +67,11 @@ class MainMediator(QMainWindow):
         self.connection_settings = ConnectionSettingsDialog(self.data_presenter, self)
 
         self.cache_manager = CacheManager(self.data_presenter)
+        self.std_cache_manager = CacheManager(
+            self.data_presenter,
+            cache_subdir=CACHE_STD_PATH,
+            meta_cls=StdMetadata,
+        )
 
         self.card_builder_view = CardBuilderView(self.cache_manager, self)
         self.library_view = LibraryView(self)
@@ -118,6 +123,10 @@ class MainMediator(QMainWindow):
             NotificationWidget(self, f"Ошибка подключения: {response.msg}", "error")
 
     def on_hashes_received(self, hashlist: List[dict]):
+        if not hashlist:
+            print("Custom hashes empty")
+            self._start_std_library_update()
+            return
         ids_to_request = self.cache_manager.get_discrepant_ids(hashlist)
         if not ids_to_request:
             print("Nothing no download")
@@ -125,22 +134,94 @@ class MainMediator(QMainWindow):
             return
         
         print("\nIDs to download:", ids_to_request)
-        send_to_thread(self, self.data_presenter.get_library, self.on_library_part_received, args=(ids_to_request,))
+        self.show_loading("Скачивание карт")
+        self._start_cards_download(
+            self.data_presenter.get_library,
+            ids_to_request,
+            self.on_library_part_received,
+        )
 
-    def on_library_part_received(self, received_card_metadata: List[CardMetadata]):
+    def _start_cards_download(self, fetch_fn, ids, finished_handler):
+        thread = CardsDownloadThread(fetch_fn, ids, self)
+        thread.progress.connect(self._on_download_progress)
+        thread.finished_ok.connect(finished_handler)
+        thread.finished_ok.connect(thread.deleteLater)
+        thread.start()
+        self._download_thread = thread
+
+    def _on_download_progress(self, current: int, total: int, card_id):
+        self.loading_overlay.set_progress(current, total, card_id)
+
+    def on_library_part_received(self, received_card_metadata):
+        if isinstance(received_card_metadata, Response) and not received_card_metadata.ok:
+            NotificationWidget(self, received_card_metadata.msg, "error")
+            self._start_std_library_update()
+            return
+        if not received_card_metadata:
+            print("Custom library fetch empty")
+            self.update_library_from_cache()
+            return
+        self.show_loading("Кэширование карт")
         self.cache_manager.save_cache(received_card_metadata)
         print("Updated cards have been cached.")
         
         def export_after_update(cached_library):
             self.library_view.set_updated_library(cached_library)
             self.library_view.on_export_clicked(received_card_metadata, cached_library)
+            self._start_std_library_update()
         
         send_to_thread(self, self.cache_manager.get_cache, export_after_update)
 
     def update_library_from_cache(self):
         def callback(cached_library):
             self.library_view.set_updated_library(cached_library)
+            self._start_std_library_update()
         send_to_thread(self, self.cache_manager.get_cache, callback)
+
+    def _start_std_library_update(self):
+        self.show_loading("Загрузка стандартных карт")
+        send_to_thread(self, self.data_presenter.get_std_hashes, self.on_std_hashes_received)
+
+    def on_std_hashes_received(self, hashlist: List[dict]):
+        if not hashlist:
+            print("Std hashes empty")
+            self.update_std_library_from_cache()
+            return
+        ids_to_request = self.std_cache_manager.get_discrepant_ids(hashlist)
+        if not ids_to_request:
+            print("Nothing to download for std")
+            self.update_std_library_from_cache()
+            return
+
+        print("\nStd IDs to download:", ids_to_request)
+        self.show_loading("Скачивание стандартных карт")
+        self._start_cards_download(
+            self.data_presenter.get_std_library,
+            ids_to_request,
+            self.on_std_library_part_received,
+        )
+
+    def on_std_library_part_received(self, received_card_metadata):
+        if isinstance(received_card_metadata, Response) and not received_card_metadata.ok:
+            NotificationWidget(self, received_card_metadata.msg, "error")
+            self.update_std_library_from_cache()
+            return
+        if not received_card_metadata:
+            print("Std library fetch empty")
+            self.update_std_library_from_cache()
+            return
+        self.show_loading("Кэширование стандартных карт")
+        self.std_cache_manager.save_cache(received_card_metadata)
+        print("Updated std cards have been cached.")
+
+        def callback(cached_library):
+            self.library_view.set_updated_std_library(cached_library)
+        send_to_thread(self, self.std_cache_manager.get_cache, callback)
+
+    def update_std_library_from_cache(self):
+        def callback(cached_library):
+            self.library_view.set_updated_std_library(cached_library)
+        send_to_thread(self, self.std_cache_manager.get_cache, callback)
 
     def on_deck_created(self, new_deck_data: tuple):
         if not new_deck_data:

@@ -3,7 +3,7 @@ import hashlib
 import json
 import shutil
 import traceback
-from typing import List
+from typing import List, Type
 from datetime import timedelta
 
 from DataPresenter import DataPresenter
@@ -13,15 +13,20 @@ from utils.string import sanitize
 
 from main import DEBUG
 CACHE_PATH = "cache" if not DEBUG else "cache_dbg"
+CACHE_STD_PATH = "cache_std" if not DEBUG else "cache_std_dbg"
 
 class CacheManager:
-    def __init__(self, data_presenter: DataPresenter, ttl_days=7):
+    def __init__(self, data_presenter: DataPresenter, ttl_days=7, cache_subdir: str = None, meta_cls: Type[CardMetadata] = CardMetadata):
         self.data_presenter = data_presenter
         self.ttl = timedelta(days=ttl_days)
+        self.meta_cls = meta_cls
 
-        self.cache_dir = os.path.join(os.getcwd(), CACHE_PATH)
+        if cache_subdir is None:
+            cache_subdir = CACHE_PATH
+
+        self.cache_dir = os.path.join(os.getcwd(), cache_subdir)
         if os.getenv("LOCALAPPDATA"):
-            self.cache_dir = os.path.join(os.getenv("LOCALAPPDATA"), "Hearthtrice", CACHE_PATH)
+            self.cache_dir = os.path.join(os.getenv("LOCALAPPDATA"), "Hearthtrice", cache_subdir)
 
         self.index_path = os.path.join(self.cache_dir, "index.json")
         self.images_dir = os.path.join(self.cache_dir, "images")
@@ -46,13 +51,16 @@ class CacheManager:
         with open(self.index_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
+    def _image_path(self, name: str) -> str:
+        return os.path.join(self.images_dir, sanitize(name) + ".png")
+
     def save_cache(self, card_metadata: List[CardMetadata]):
         """Обновление или добавление данных в кэш."""
         try:
             local_hahslist = self.__read_local_hashlist()
             for meta in card_metadata:
                 img = bytes_to_pixmap(meta.card_image)
-                img.save(os.path.join(self.images_dir, sanitize(meta.name) + ".png"))
+                img.save(self._image_path(meta.name))
 
                 local_hahslist[meta.id] = { "name": meta.name,
                                             "description": meta.description,
@@ -72,28 +80,37 @@ class CacheManager:
             self.__save_local_hashlist(local_hahslist)
         except Exception as e:
             traceback.print_exc()
-            self.clear_cache()
-            exit()
+            print(f"save_cache error: {e}")
 
     def get_cache(self) -> List[CardMetadata]:
         try:
             local_hahslist = self.__read_local_hashlist()
-
             metadata_list = []
+            broken_ids = []
+
             for id, meta in sorted(local_hahslist.items()):
-                metadata = CardMetadata()
+                metadata = self.meta_cls()
                 metadata.id = id
                 metadata.update(meta)
-                with open(os.path.join(self.images_dir, sanitize(metadata.name) + ".png"), 'rb') as f:
+                image_path = self._image_path(metadata.name)
+                if not os.path.isfile(image_path):
+                    print(f"Cache image missing for id={id} ({metadata.name}), will redownload")
+                    broken_ids.append(id)
+                    continue
+                with open(image_path, "rb") as f:
                     metadata.card_image = f.read()
-                
                 metadata_list.append(metadata)
+
+            if broken_ids:
+                for broken_id in broken_ids:
+                    local_hahslist.pop(broken_id, None)
+                self.__save_local_hashlist(local_hahslist)
 
             return metadata_list
         except Exception as e:
             traceback.print_exc()
-            self.clear_cache()
-            exit()
+            print(f"get_cache error: {e}")
+            return []
 
     def delete_from_cache(self, id: int):
         try:
@@ -104,38 +121,45 @@ class CacheManager:
                 name = local_hahslist[id]["name"]
                 del local_hahslist[id]
 
-            image = os.path.join(self.images_dir, sanitize(name) + ".png")
-            if os.path.exists(image):
+            image = self._image_path(name) if name else ""
+            if image and os.path.exists(image):
                 os.remove(image)
 
             self.__save_local_hashlist(local_hahslist)
         except Exception as e:
             traceback.print_exc()
-            self.clear_cache()
-            exit()
+            print(f"delete_from_cache error: {e}")
 
     def get_discrepant_ids(self, remote_hashlist: List[dict]) -> List[int]:
         """
-        Returns IDs that are missing from local cache 
+        Returns IDs that are missing from local cache
         or those whose hash is different
+        or whose image file is missing
         """
         try:
             local_hahslist = self.__read_local_hashlist()
-
             mismatched_ids = []
-            
+
             for remote_dict_item in remote_hashlist:
-                id = remote_dict_item['id']
-                if id not in local_hahslist.keys():
+                id = remote_dict_item["id"]
+                if id not in local_hahslist:
                     mismatched_ids.append(id)
-                elif local_hahslist[id]["hash"] != remote_dict_item["hash"]:
+                    continue
+
+                local_item = local_hahslist[id]
+                if local_item.get("hash") != remote_dict_item["hash"]:
+                    mismatched_ids.append(id)
+                    continue
+
+                image_path = self._image_path(local_item.get("name", ""))
+                if not os.path.isfile(image_path):
                     mismatched_ids.append(id)
 
             return mismatched_ids
         except Exception as e:
             traceback.print_exc()
-            self.clear_cache()
-            exit()
+            print(f"get_discrepant_ids error: {e}")
+            return [item["id"] for item in remote_hashlist]
 
     def clear_cache(self):
         if os.path.isdir(self.cache_dir):
