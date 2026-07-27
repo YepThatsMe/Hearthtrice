@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 class ExclusiveButtonGroup(QFrame):
     button_clicked = pyqtSignal()
 
-    def __init__(self, count, icon_path, is_vertical=0, fixed_size=1, parent=None):
+    def __init__(self, count, icon_path, is_vertical=0, fixed_size=1, parent=None, icon_files=None):
         super().__init__(parent)
         self.count = count
 
@@ -23,10 +23,14 @@ class ExclusiveButtonGroup(QFrame):
         self.buttons = []
         for i in range(count):
             button = QPushButton(self)
-            if icon_path:
+            pixmap = None
+            if icon_files is not None:
+                if icon_files[i]:
+                    pixmap = QPixmap(icon_files[i])
+                    button.setIcon(QIcon(pixmap))
+            elif icon_path:
                 pixmap = QPixmap(f"{icon_path}/icon_{i}.png")
-                icon = QIcon(pixmap)
-                button.setIcon(icon)
+                button.setIcon(QIcon(pixmap))
             
             if fixed_size:
                 button.setFixedSize(64, 64)

@@ -1,9 +1,10 @@
-from PyQt5.QtWidgets import QLineEdit, QLabel, QTableWidget, QCheckBox, QApplication, QTextEdit, QVBoxLayout, QComboBox, QFrame, QHBoxLayout, QPushButton, QSpinBox, QFormLayout, QSizePolicy
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QLineEdit, QLabel, QTableWidget, QCheckBox, QApplication, QTextEdit, QVBoxLayout, QFrame, QHBoxLayout, QPushButton, QFormLayout, QSizePolicy
+from PyQt5.QtCore import pyqtSignal, Qt
 
-from DataTypes import CardMetadata, CardType, ClassType, Rarity
+from DataTypes import CardMetadata, CardType, ClassType
 from Widgets.components.ButtonGroup import ExclusiveButtonGroup
 from Widgets.components.FormLabel import FormLabel
+from Widgets.components.IconSpinBox import IconSpinBox
 from Widgets.components.ToggleButton import ToggleButton
 from Widgets.components.TokensTable import TokensTable
 
@@ -47,20 +48,37 @@ class FormView(QFrame):
         self.description_form.setMaximumHeight(200)
 
         self.mana_label = FormLabel("Стоимсть", self)
-        self.mana_form = QSpinBox(self)
+        self.mana_label.setAlignment(Qt.AlignHCenter)
+        self.mana_form = IconSpinBox(
+            ":Cardbuilder/MINION/manatexture.png", 72, self,
+            font_size=42, font_size_wide=34,
+        )
         self.mana_form.setRange(0, 99)
 
         self.attack_label = FormLabel("Атака", self)
-        self.attack_form = QSpinBox(self)
+        self.attack_label.setAlignment(Qt.AlignHCenter)
+        self.attack_form = IconSpinBox(
+            ":Cardbuilder/MINION/attacktexture.png", 72, self,
+            text_offset_x=4,
+        )
         self.attack_form.setRange(0, 99)
 
         self.health_label = FormLabel("Здоровье", self)
-        self.health_form = QSpinBox(self)
+        self.health_label.setAlignment(Qt.AlignHCenter)
+        self.health_form = IconSpinBox(":Cardbuilder/MINION/healthtexture.png", 72, self)
         self.health_form.setRange(0, 99)
 
         self.rarity_label = FormLabel("Редкость", self)
-        self.rarity_form = QComboBox(self)
-        self.rarity_form.addItems(list(map(str.capitalize, Rarity._member_names_)))
+        self.rarity_form = ExclusiveButtonGroup(
+            5, None, 0, 1, self,
+            icon_files=[
+                None,
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Common.png",
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Rare.png",
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Epic.png",
+                ":Cardbuilder/MINION/Card_Inhand_MINION_Gem_Legendary.png",
+            ],
+        )
 
         self.tribe_label = FormLabel("Раса", self)
         self.tribe_form = QLineEdit(self)
@@ -91,14 +109,17 @@ class FormView(QFrame):
         self.form_layout1.addWidget(self.description_form)
         self.form_layout1.addSpacing(15)
 
-        self.layout_inlay_mana.addWidget(self.mana_label)
-        self.layout_inlay_mana.addWidget(self.mana_form)
+        self.layout_inlay_mana.setAlignment(Qt.AlignHCenter)
+        self.layout_inlay_mana.addWidget(self.mana_label, alignment=Qt.AlignHCenter)
+        self.layout_inlay_mana.addWidget(self.mana_form, alignment=Qt.AlignHCenter)
 
-        self.layout_inlay_attack.addWidget(self.attack_label)
-        self.layout_inlay_attack.addWidget(self.attack_form)
+        self.layout_inlay_attack.setAlignment(Qt.AlignHCenter)
+        self.layout_inlay_attack.addWidget(self.attack_label, alignment=Qt.AlignHCenter)
+        self.layout_inlay_attack.addWidget(self.attack_form, alignment=Qt.AlignHCenter)
 
-        self.layout_inlay_health.addWidget(self.health_label)
-        self.layout_inlay_health.addWidget(self.health_form)
+        self.layout_inlay_health.setAlignment(Qt.AlignHCenter)
+        self.layout_inlay_health.addWidget(self.health_label, alignment=Qt.AlignHCenter)
+        self.layout_inlay_health.addWidget(self.health_form, alignment=Qt.AlignHCenter)
 
         self.form_layout1.addWidget(self.rarity_label)
         self.form_layout1.addWidget(self.rarity_form)
@@ -142,7 +163,7 @@ class FormView(QFrame):
             "name": self.name_form.text(),
             "description": self.description_form.toPlainText(),
             "manacost": self.mana_form.value(),
-            "rarity": self.rarity_form.currentIndex() + 1,
+            "rarity": self.rarity_form.get_checked_button_index() + 1,
             "cardtype": self.cardtype_button_group.get_checked_button_index() + 1,
             "classtype": self.class_button_group.get_checked_button_index() + 1,
             "attack": self.attack_form.value(),
@@ -177,7 +198,7 @@ class FormView(QFrame):
         self.attack_form.setValue(0)
         self.health_form.setValue(0)
         self.mana_form.setValue(0)
-        self.rarity_form.setCurrentIndex(0)
+        self.rarity_form.set_checked_button_index(0)
         self.tribe_form.setText("")
         self.comment_form.setText("")
         self.activation_command_line.setText("")
