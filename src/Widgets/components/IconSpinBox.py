@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QSizePolicy
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QElapsedTimer
 from PyQt5.QtGui import (
     QPainter, QPixmap, QFont, QFontDatabase, QPen, QColor, QPainterPath, QFontMetrics,
 )
@@ -11,6 +11,7 @@ class IconSpinBox(QWidget):
     valueChanged = pyqtSignal(int)
 
     _font_family = None
+    _DIGIT_RESTART_MS = 1000
 
     def __init__(self, icon_path: str, size: int = 72, parent=None,
                  font_size: int = 36, font_size_wide: int = 30, text_offset_x: int = 0):
@@ -23,6 +24,8 @@ class IconSpinBox(QWidget):
         self._font_size = font_size
         self._font_size_wide = font_size_wide
         self._text_offset_x = text_offset_x
+        self._digit_timer = QElapsedTimer()
+        self._digit_timer.invalidate()
         self.setFixedSize(size, size)
         self.setFocusPolicy(Qt.StrongFocus)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -64,6 +67,7 @@ class IconSpinBox(QWidget):
         return self._maximum
 
     def stepBy(self, steps: int):
+        self._digit_timer.invalidate()
         self.setValue(self._value + steps)
 
     def wheelEvent(self, event):
@@ -94,13 +98,22 @@ class IconSpinBox(QWidget):
             event.accept()
         elif Qt.Key_0 <= key <= Qt.Key_9:
             digit = key - Qt.Key_0
-            new_val = self._value * 10 + digit
-            if new_val > self._maximum:
+            restart = (
+                not self._digit_timer.isValid()
+                or self._digit_timer.elapsed() >= self._DIGIT_RESTART_MS
+            )
+            if restart:
                 new_val = digit
+            else:
+                new_val = self._value * 10 + digit
+                if new_val > self._maximum:
+                    new_val = digit
             self.setValue(new_val)
+            self._digit_timer.start()
             event.accept()
         elif key in (Qt.Key_Backspace, Qt.Key_Delete):
             self.setValue(0)
+            self._digit_timer.invalidate()
             event.accept()
         else:
             super().keyPressEvent(event)
