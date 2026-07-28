@@ -14,7 +14,7 @@ import psycopg2
 import requests
 from PIL import Image
 
-DOWNLOAD = 0
+DOWNLOAD = 1
 UPLOAD_DB = 1
 
 DB_TABLE = "cards_std"
@@ -27,22 +27,72 @@ USER_AGENT = "HearthtriceCardBot/0.1 (std cards import; local)"
 REQUEST_DELAY_SEC = 0.35
 CARGO_PAGE_SIZE = 100
 
-LEGACY_SET_IDS = (3, 1635)
+CLASSIC_SET_IDS = frozenset({2, 3, 4, 1635, 1637, 1810})
+SKIP_SET_IDS = frozenset({1414, 1463, 1578, 1776})
 
 SET_ID_TO_NAME = {
-    2: "BASIC",
-    3: "EXPERT1",
-    4: "HOF",
-    12: "NAXX",
-    13: "GVG",
-    14: "BRM",
-    15: "TGT",
-    20: "LOE",
-    21: "OG",
-    23: "KARA",
-    25: "GANGS",
-    27: "UNGORO",
-    1635: "LEGACY",
+    12: "Naxxramas",
+    13: "Goblins vs Gnomes",
+    14: "Blackrock Mountain",
+    15: "The Grand Tournament",
+    20: "League of Explorers",
+    21: "Whispers of the Old Gods",
+    23: "One Night in Karazhan",
+    25: "Mean Streets of Gadgetzan",
+    27: "Journey to Un'Goro",
+    1001: "Knights of the Frozen Throne",
+    1004: "Kobolds & Catacombs",
+    1125: "The Witchwood",
+}
+
+EXPANSION_SET_IDS = (
+    12, 13, 14, 15, 20, 21, 23, 25, 27,
+    1001, 1004, 1125,
+)
+
+DOWNLOAD_SET_IDS = (13, 14,)
+
+SET_NAME_ALIASES = {
+    "BASIC": "Classic",
+    "EXPERT1": "Classic",
+    "LEGACY": "Classic",
+    "HOF": "Classic",
+    "2": "Classic",
+    "3": "Classic",
+    "4": "Classic",
+    "1635": "Classic",
+    "1637": "Classic",
+    "1810": "Classic",
+    "NAXX": "Naxxramas",
+    "12": "Naxxramas",
+    "GVG": "Goblins vs Gnomes",
+    "13": "Goblins vs Gnomes",
+    "BRM": "Blackrock Mountain",
+    "14": "Blackrock Mountain",
+    "TGT": "The Grand Tournament",
+    "15": "The Grand Tournament",
+    "LOE": "League of Explorers",
+    "20": "League of Explorers",
+    "OG": "Whispers of the Old Gods",
+    "WOG": "Whispers of the Old Gods",
+    "21": "Whispers of the Old Gods",
+    "KARA": "One Night in Karazhan",
+    "23": "One Night in Karazhan",
+    "GANGS": "Mean Streets of Gadgetzan",
+    "MSG": "Mean Streets of Gadgetzan",
+    "25": "Mean Streets of Gadgetzan",
+    "UNGORO": "Journey to Un'Goro",
+    "UNG": "Journey to Un'Goro",
+    "27": "Journey to Un'Goro",
+    "ICECROWN": "Knights of the Frozen Throne",
+    "KFT": "Knights of the Frozen Throne",
+    "1001": "Knights of the Frozen Throne",
+    "LOOTAPALOOZA": "Kobolds & Catacombs",
+    "LOOT": "Kobolds & Catacombs",
+    "1004": "Kobolds & Catacombs",
+    "GILNEAS": "The Witchwood",
+    "WITCHWOOD": "The Witchwood",
+    "1125": "The Witchwood",
 }
 
 WIKI_RARITY_TO_APP = {
@@ -221,17 +271,103 @@ def map_classtype(class_id) -> Optional[int]:
     return WIKI_CLASS_TO_APP[cid]
 
 
+def map_set_name(set_id) -> Optional[str]:
+    sid = to_int(set_id)
+    if sid is None:
+        return None
+    if sid in SKIP_SET_IDS:
+        return None
+    if sid in CLASSIC_SET_IDS:
+        return "Classic"
+    name = SET_ID_TO_NAME.get(sid)
+    if name:
+        return name
+    return SET_NAME_ALIASES.get(str(sid), str(sid))
+
+
+def normalize_set_name(raw) -> Optional[str]:
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    if text in SET_NAME_ALIASES:
+        return SET_NAME_ALIASES[text]
+    sid = to_int(text)
+    if sid is not None:
+        return map_set_name(sid)
+    return text
+
+
 def safe_filename(name: str) -> str:
     return re.sub(r'[<>:"/\\|?*]', "_", name)
+
+
+def card_identity_key(
+    name,
+    description,
+    manacost,
+    rarity,
+    cardtype,
+    classtype,
+    attack,
+    health,
+    tribe,
+    istoken,
+    set_name,
+) -> tuple:
+    return (
+        (name or "").strip(),
+        (description or "").strip(),
+        to_int(manacost),
+        to_int(rarity),
+        to_int(cardtype),
+        to_int(classtype),
+        to_int(attack),
+        to_int(health),
+        (tribe or "").strip() if tribe else "",
+        1 if istoken in (True, 1, "1", "true", "True") else 0,
+        (set_name or "").strip(),
+    )
+
+
+def merge_metadata(meta_path: str, new_cards: List[dict]) -> List[dict]:
+    existing = []
+    if os.path.isfile(meta_path):
+        try:
+            existing = load_metadata(meta_path)
+        except Exception as e:
+            print(f"Warning: failed to load existing metadata: {e}")
+            existing = []
+
+    by_dbf = {}
+    without_dbf = []
+    for card in existing:
+        dbf_id = to_int(card.get("dbfId"))
+        if dbf_id is None:
+            without_dbf.append(card)
+        else:
+            by_dbf[dbf_id] = card
+
+    for card in new_cards:
+        dbf_id = to_int(card.get("dbfId"))
+        if dbf_id is None:
+            without_dbf.append(card)
+        else:
+            by_dbf[dbf_id] = card
+
+    merged = without_dbf + [by_dbf[k] for k in sorted(by_dbf.keys())]
+    return merged
 
 
 def save_card_image(name: str, card_image: bytes, img_path: str, unique_key=None):
     safe_name = safe_filename(name)
     if unique_key is not None:
         safe_name = f"{safe_name}__{unique_key}"
+    out_path = os.path.join(img_path, safe_name + ".png")
     with Image.open(BytesIO(card_image)) as img:
         img_resized = img.resize((769, 1107), Image.LANCZOS)
-        img_resized.save(os.path.join(img_path, safe_name + ".png"))
+        img_resized.save(out_path)
     return safe_name
 
 
@@ -244,17 +380,6 @@ def save_art_image(safe_name: str, art_image: bytes, arts_path: str) -> Optional
             img = img.convert("RGB")
         img.save(os.path.join(arts_path, out_name), format="PNG")
     return out_name
-
-
-def create_or_overwrite_qrc_file(filename: str, resource_paths: list):
-    with open(filename, "w", encoding="utf-8") as file:
-        file.write('<!DOCTYPE RCC><RCC version="1.0">\n')
-        file.write("<qresource>\n")
-        for path in resource_paths:
-            file.write(f"    <file>{path}</file>\n")
-        file.write("</qresource>\n")
-        file.write("</RCC>\n")
-    print(f"QRC '{filename}' has been overwritten successfully.")
 
 
 class StandardCardsImporter:
@@ -371,6 +496,11 @@ class StandardCardsImporter:
             self.warnings.append(f"Skip dbfId={row.get('dbfId')}: missing name")
             return None
 
+        set_id = to_int(row.get("setId"))
+        if set_id in SKIP_SET_IDS:
+            self.warnings.append(f"Skip {name} ({dbf_id}): ignored setId={set_id}")
+            return None
+
         cardtype = map_cardtype(row.get("typeId"))
         if cardtype is None:
             self.warnings.append(f"Skip {name} ({dbf_id}): unsupported/skipped typeId={row.get('typeId')}")
@@ -414,7 +544,7 @@ class StandardCardsImporter:
             "istoken": 0 if is_collectible else 1,
             "related_dbf_ids": related_ids,
             "choice_dbf_ids": choice_ids,
-            "setId": to_int(row.get("setId")),
+            "setId": set_id,
             "formats": row.get("formats") or "",
             "img": row.get("img") or "",
             "img_art": row.get("imgFullArt") or row.get("imgArt") or "",
@@ -452,10 +582,11 @@ class StandardCardsImporter:
     def download_art(self, card: dict) -> Optional[bytes]:
         return self.download_named_image(card.get("img_art") or "", card["name"], "art")
 
-    def run(self, set_ids: Iterable[int] = LEGACY_SET_IDS, prefer_names: Optional[List[str]] = None) -> List[dict]:
+    def run(self, set_ids: Iterable[int] = DOWNLOAD_SET_IDS, prefer_names: Optional[List[str]] = None) -> List[dict]:
         os.makedirs(self.img_path, exist_ok=True)
         os.makedirs(self.arts_path, exist_ok=True)
         prefer_names = prefer_names or []
+        set_ids = [int(x) for x in set_ids if to_int(x) not in SKIP_SET_IDS]
 
         print(f"Fetching collectible cards from setIds={list(set_ids)} limit={self.limit}")
         preferred_rows = self.fetch_collectible_by_names(prefer_names, set_ids) if prefer_names else []
@@ -503,26 +634,46 @@ class StandardCardsImporter:
 
         dbf_to_index = {c["dbfId"]: i for i, c in enumerate(cards)}
         output = []
-        qrc_entries = []
+        skipped_existing = 0
 
         for i, card in enumerate(cards):
-            image = self.download_image(card)
-            if not image:
-                print(f"Skip #{i} {card['name']}: no image")
-                continue
+            safe_name = safe_filename(card["name"])
+            if card.get("dbfId") is not None:
+                safe_name = f"{safe_name}__{card['dbfId']}"
+            img_file = os.path.join(self.img_path, safe_name + ".png")
+            art_file = os.path.join(self.arts_path, safe_name + ".png")
+            art_path = f"std/arts/{safe_name}.png" if os.path.isfile(art_file) else None
 
-            safe_name = save_card_image(card["name"], image, self.img_path, unique_key=card.get("dbfId"))
-            art_path = None
-            art = self.download_art(card)
-            if art:
-                art_filename = save_art_image(safe_name, art, self.arts_path)
-                if art_filename:
-                    art_path = f"std/arts/{art_filename}"
-                    print(f"Saved art #{i} {card['name']} -> {art_filename}")
+            if os.path.isfile(img_file):
+                skipped_existing += 1
+                print(f"Skip download #{i} {card['name']}: file exists")
+                if not os.path.isfile(art_file):
+                    art = self.download_art(card)
+                    if art:
+                        art_filename = save_art_image(safe_name, art, self.arts_path)
+                        if art_filename:
+                            art_path = f"std/arts/{art_filename}"
+                            print(f"Saved art #{i} {card['name']} -> {art_filename}")
             else:
-                print(f"No art #{i} {card['name']}")
+                image = self.download_image(card)
+                if not image:
+                    print(f"Skip #{i} {card['name']}: no image")
+                    continue
+                safe_name = save_card_image(card["name"], image, self.img_path, unique_key=card.get("dbfId"))
+                art = self.download_art(card)
+                if art:
+                    art_filename = save_art_image(safe_name, art, self.arts_path)
+                    if art_filename:
+                        art_path = f"std/arts/{art_filename}"
+                        print(f"Saved art #{i} {card['name']} -> {art_filename}")
+                else:
+                    print(f"No art #{i} {card['name']}")
+                print(f"Saved #{i} {card['name']} collectible={not card['istoken']} related={card['related_dbf_ids']}")
 
-            print(f"Saved #{i} {card['name']} collectible={not card['istoken']} related={card['related_dbf_ids']}")
+            if not os.path.isfile(os.path.join(self.img_path, safe_name + ".png")):
+                continue
+            if art_path is None and os.path.isfile(art_file):
+                art_path = f"std/arts/{safe_name}.png"
 
             related_local_ids = []
             for related_dbf in card["related_dbf_ids"]:
@@ -544,26 +695,27 @@ class StandardCardsImporter:
                 "dbfId": card["dbfId"],
                 "cardId": card["cardId"],
                 "setId": card["setId"],
-                "set": SET_ID_TO_NAME.get(card["setId"], str(card["setId"]) if card["setId"] is not None else None),
+                "set": map_set_name(card["setId"]),
                 "formats": card["formats"],
                 "card_image_path": f"std/img/{safe_name}.png",
                 "art_image_path": art_path,
                 "card_image": None,
             }
             output.append(params_set)
-            qrc_entries.append(params_set["card_image_path"])
-            if art_path:
-                qrc_entries.append(art_path)
 
         meta_path = os.path.join(self.img_path, "..", "std_metadata.json")
+        merged = merge_metadata(meta_path, output)
         with open(meta_path, "w", encoding="utf-8") as f:
-            json.dump(output, f, indent=4, ensure_ascii=False)
+            json.dump(merged, f, indent=4, ensure_ascii=False)
 
         report_path = os.path.join(self.img_path, "..", "std_import_report.json")
         report = {
+            "set_ids": list(set_ids),
+            "batch_saved": len(output),
+            "batch_skipped_existing_files": skipped_existing,
+            "merged_total": len(merged),
             "collectible_count": sum(1 for c in output if not c["istoken"]),
             "token_count": sum(1 for c in output if c["istoken"]),
-            "total_saved": len(output),
             "warnings": self.warnings,
             "cards": [
                 {
@@ -571,6 +723,7 @@ class StandardCardsImporter:
                     "dbfId": c["dbfId"],
                     "istoken": c["istoken"],
                     "tokens": c["tokens"],
+                    "set": c.get("set"),
                     "description": c["description"],
                     "manacost": c["manacost"],
                     "attack": c["attack"],
@@ -588,13 +741,7 @@ class StandardCardsImporter:
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=4, ensure_ascii=False)
 
-        qrc_entries.append("std/std_metadata.json")
-        create_or_overwrite_qrc_file(
-            os.path.join(self.img_path, "..", "..", "resource_list_std.qrc"),
-            qrc_entries,
-        )
-
-        print(f"Wrote metadata: {meta_path}")
+        print(f"Wrote metadata: {meta_path} (merged total={len(merged)}, batch={len(output)}, reused files={skipped_existing})")
         print(f"Wrote report: {report_path}")
         if self.warnings:
             print("Warnings:")
@@ -648,6 +795,23 @@ def upload_cards_to_db(cards: List[dict], std_root: str, table: str = DB_TABLE):
     cur = conn.cursor()
     print(f"UPLOAD_DB: connected, table={table}, cards={len(cards)}")
 
+    cur.execute(
+        f"""
+        SELECT id, name, description, manacost, rarity, cardtype, classtype,
+               attack, health, tribe, istoken, "set"
+        FROM {table}
+        """
+    )
+    existing_by_key = {}
+    for row in cur.fetchall():
+        set_name = normalize_set_name(row[11]) or (row[11] or "")
+        key = card_identity_key(
+            row[1], row[2], row[3], row[4], row[5], row[6],
+            row[7], row[8], row[9], row[10], set_name,
+        )
+        existing_by_key[key] = row[0]
+    print(f"UPLOAD_DB: existing identity keys={len(existing_by_key)}")
+
     insert_sql = f"""
         INSERT INTO {table}
             (name, description, manacost, rarity, cardtype, classtype,
@@ -663,6 +827,7 @@ def upload_cards_to_db(cards: List[dict], std_root: str, table: str = DB_TABLE):
 
     dbf_to_db_id = {}
     uploaded = []
+    skipped = 0
     failed = 0
 
     for i, card in enumerate(cards):
@@ -673,6 +838,38 @@ def upload_cards_to_db(cards: List[dict], std_root: str, table: str = DB_TABLE):
                 print(f"Skip upload #{i} {card.get('name')}: no card_image file")
                 continue
 
+            set_name = normalize_set_name(card.get("set"))
+            if not set_name and card.get("setId") is not None:
+                set_name = map_set_name(card.get("setId"))
+            if to_int(card.get("setId")) in SKIP_SET_IDS or str(card.get("set") or "") in {"1414", "1463", "1578", "1776"}:
+                print(f"Skip upload #{i} {card.get('name')}: ignored set")
+                continue
+            if set_name is None and card.get("setId") is not None:
+                print(f"Skip upload #{i} {card.get('name')}: unknown/ignored setId={card.get('setId')}")
+                continue
+
+            identity = card_identity_key(
+                card.get("name"),
+                card.get("description"),
+                card.get("manacost"),
+                card.get("rarity"),
+                card.get("cardtype"),
+                card.get("classtype"),
+                card.get("attack"),
+                card.get("health"),
+                card.get("tribe"),
+                card.get("istoken"),
+                set_name,
+            )
+            existing_id = existing_by_key.get(identity)
+            if existing_id is not None:
+                skipped += 1
+                dbf_id = card.get("dbfId")
+                if dbf_id is not None:
+                    dbf_to_db_id[int(dbf_id)] = existing_id
+                print(f"Skip upload #{i} {card.get('name')}: already in db id={existing_id}")
+                continue
+
             with open(card_img_path, "rb") as f:
                 card_image = f.read()
 
@@ -680,11 +877,6 @@ def upload_cards_to_db(cards: List[dict], std_root: str, table: str = DB_TABLE):
             if art_path:
                 with open(art_path, "rb") as f:
                     picture = f.read()
-
-            set_name = card.get("set")
-            if not set_name and card.get("setId") is not None:
-                set_id = int(card["setId"])
-                set_name = SET_ID_TO_NAME.get(set_id, str(set_id))
 
             hash_fields = {
                 "name": card.get("name"),
@@ -729,6 +921,7 @@ def upload_cards_to_db(cards: List[dict], std_root: str, table: str = DB_TABLE):
             db_id = cur.fetchone()[0]
             conn.commit()
 
+            existing_by_key[identity] = db_id
             dbf_id = card.get("dbfId")
             if dbf_id is not None:
                 dbf_to_db_id[int(dbf_id)] = db_id
@@ -766,7 +959,7 @@ def upload_cards_to_db(cards: List[dict], std_root: str, table: str = DB_TABLE):
 
     cur.close()
     conn.close()
-    print(f"UPLOAD_DB: done, inserted={len(uploaded)}, failed={failed}")
+    print(f"UPLOAD_DB: done, inserted={len(uploaded)}, skipped_existing={skipped}, failed={failed}")
 
 def start(limit: Optional[int] = None):
     if limit is not None and limit <= 0:
@@ -783,8 +976,8 @@ def start(limit: Optional[int] = None):
         client = WikiClient()
         importer = StandardCardsImporter(client, img_path=img_path, arts_path=arts_path, limit=limit)
         cards = importer.run(
-            set_ids=LEGACY_SET_IDS,
-            prefer_names=["Harvest Golem"],
+            set_ids=DOWNLOAD_SET_IDS,
+            prefer_names=None,
         )
     else:
         print("DOWNLOAD=0: skip wiki download")
