@@ -391,11 +391,13 @@ class MainMediator(QMainWindow):
         
         response = self.data_presenter.delete_card(metadata)
         if response.ok:
-            if isinstance(metadata, StdMetadata):
+            is_std = isinstance(metadata, StdMetadata)
+            if is_std:
                 self.std_cache_manager.delete_from_cache(metadata.id)
             else:
                 self.cache_manager.delete_from_cache(metadata.id)
-            self.library_view.update()
+            self.library_view.remove_card(metadata.id, from_std=is_std)
+            self._refresh_set_filters()
             NotificationWidget(self, "Карта удалена.", "success")
         else:
             NotificationWidget(self, f"Ошибка: {response.msg}", "error")

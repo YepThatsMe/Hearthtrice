@@ -787,6 +787,35 @@ class LibraryView(QFrame):
         self.original_positions[new_card] = (count //4, count % 4)
         self.card_widgets.append(new_card)
 
+    def remove_card(self, card_id: int, from_std: bool = False) -> bool:
+        if from_std:
+            widgets = self.std_card_widgets
+            positions = self.std_original_positions
+            grid = self.std_gallery_grid
+        else:
+            widgets = self.card_widgets
+            positions = self.original_positions
+            grid = self.main_gallery_grid
+
+        for i, card_widget in enumerate(widgets):
+            if card_widget.metadata.id != card_id:
+                continue
+            grid.grid_layout.removeWidget(card_widget)
+            positions.pop(card_widget, None)
+            widgets.pop(i)
+            card_widget.hide()
+            card_widget.deleteLater()
+
+            for pos, widget in enumerate(widgets):
+                positions[widget] = (pos // 4, pos % 4)
+
+            self.on_filter_changed()
+            return True
+
+        if not from_std:
+            return self.remove_card(card_id, from_std=True)
+        return False
+
     def update_edited_card(self, card_metadata: CardMetadata):
         for i, card_widget in enumerate(self.card_widgets):
             if card_widget.metadata.id == card_metadata.id and not isinstance(card_widget.metadata, StdMetadata):
