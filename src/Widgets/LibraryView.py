@@ -152,7 +152,7 @@ class LibraryView(QFrame):
         self.roll_button.clicked.connect(self.roll)
 
         self.name_filter = QLineEdit(self)
-        self.name_filter.setPlaceholderText("Поиск...")
+        self.name_filter.setPlaceholderText("Поиск (имя / id)...")
         self.name_filter.textChanged.connect(self.on_filter_changed)
 
         self.set_filter = QComboBox(self)
@@ -444,10 +444,17 @@ class LibraryView(QFrame):
     def check_filter_conditions(self, card: CardWidget) -> bool:
         match = True
 
+        query = self.name_filter.text().strip()
+        query_upper = query.upper()
         tribe = card.metadata.tribe if card.metadata.tribe else ""
+        id_str = str(card.metadata.id) if card.metadata.id is not None else ""
 
-        match = match & ( self.name_filter.text().upper() in card.metadata.name.upper() or 
-                         self.name_filter.text().upper() in tribe.upper())
+        match = match & (
+            not query
+            or query_upper in card.metadata.name.upper()
+            or query_upper in tribe.upper()
+            or query in id_str
+        )
         if self.cardtype_filter.currentIndex():
             match = match & ( self.cardtype_filter.currentIndex() == card.metadata.cardtype )
         if self.rarity_filter.currentIndex():
