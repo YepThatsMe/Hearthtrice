@@ -122,8 +122,8 @@ class CardWidget(QWidget):
     def show_preview(self):
         preview = bytes_to_pixmap(self.metadata.card_image)
         
-        scaled_width = int(preview.width() / 3)
-        scaled_height = int(preview.height() / 3)
+        scaled_width = int(preview.width() / 3 * 1.15)
+        scaled_height = int(preview.height() / 3 * 1.15)
         scaled_pixmap = preview.scaled(
             scaled_width, 
             scaled_height, 

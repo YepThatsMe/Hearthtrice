@@ -161,13 +161,13 @@ class FormView(QFrame):
         self.form_layout2.addWidget(self.comment_form)
         self.form_layout2.addSpacing(15)
 
-        self.form_layout2.addWidget(self.set_label)
-        self.form_layout2.addWidget(self.set_form)
-        self.form_layout2.addSpacing(15)
-
         self.form_layout2.addWidget(self.istoken_form)
 
         self.form_layout2.addWidget(self.wip_form)
+        self.form_layout2.addSpacing(15)
+
+        self.form_layout2.addWidget(self.set_label)
+        self.form_layout2.addWidget(self.set_form)
         self.form_layout2.addSpacing(15)
 
         self.form_layout2.addWidget(self.tokenstable_label)

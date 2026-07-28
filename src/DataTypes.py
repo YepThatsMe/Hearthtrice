@@ -130,3 +130,28 @@ class StdMetadata(CardMetadata):
     isstandard: bool = True
     card_image_path: str
 
+
+STD_SET_CHRONOLOGY = (
+    "Classic",
+    "Naxxramas",
+    "Goblins vs Gnomes",
+    "Blackrock Mountain",
+    "The Grand Tournament",
+    "League of Explorers",
+    "Whispers of the Old Gods",
+    "One Night in Karazhan",
+    "Mean Streets of Gadgetzan",
+    "Journey to Un'Goro",
+    "Knights of the Frozen Throne",
+    "Kobolds & Catacombs",
+    "The Witchwood",
+)
+
+
+def sort_sets_chronologically(sets) -> list:
+    order = {name: i for i, name in enumerate(STD_SET_CHRONOLOGY)}
+    return sorted(
+        {s for s in sets if s},
+        key=lambda s: (order.get(s, len(order)), s),
+    )
+

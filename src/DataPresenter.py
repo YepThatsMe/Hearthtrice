@@ -6,7 +6,7 @@ import hashlib
 
 from Communication import CommunicationPostgres
 from utils.BytesEncoder import BytesEncoder, base64_to_bytes, hash_library
-from DataTypes import CardMetadata, Deck, DeckCard, Response, StdMetadata
+from DataTypes import CardMetadata, Deck, DeckCard, Response, StdMetadata, sort_sets_chronologically
 
 
 class DataPresenter(QObject):
@@ -139,7 +139,7 @@ class DataPresenter(QObject):
         custom_map = self.comm.fetch_set_map(False)
         std_map = self.comm.fetch_set_map(True)
         custom_sets = sorted({v for v in custom_map.values() if v})
-        std_sets = sorted({v for v in std_map.values() if v})
+        std_sets = sort_sets_chronologically(std_map.values())
         print(f"Sets loaded: custom={len(custom_sets)} std={len(std_sets)}")
         return {
             "custom": custom_sets,

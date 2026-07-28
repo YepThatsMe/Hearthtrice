@@ -14,7 +14,7 @@ from Widgets.InfoBase import InfoBaseWidget
 from utils.BytesEncoder import bytes_to_pixmap
 from Widgets.components.CardWidget import CardWidget
 from Widgets.components.NotificationWidget import NotificationWidget
-from DataTypes import CardMetadata, Deck, Response, CardType, Rarity, ClassType, StdMetadata
+from DataTypes import CardMetadata, Deck, Response, CardType, Rarity, ClassType, StdMetadata, sort_sets_chronologically
 from utils.XMLGenerator import XMLGenerator
 from utils.string import sanitize
 
@@ -289,7 +289,9 @@ class LibraryView(QFrame):
         if not self.custom_sets and custom_map:
             self.custom_sets = sorted({v for v in custom_map.values() if v})
         if not self.std_sets and std_map:
-            self.std_sets = sorted({v for v in std_map.values() if v})
+            self.std_sets = sort_sets_chronologically(std_map.values())
+        else:
+            self.std_sets = sort_sets_chronologically(self.std_sets)
         self._reload_set_filter_items()
         if self.set_filter.currentIndex():
             self.on_filter_changed()
